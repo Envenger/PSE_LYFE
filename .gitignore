@@ -5,6 +5,15 @@ ehthumbs.db
 # Folder config file
 Desktop.ini
 
+Binaries/
+Intermediate/
+DerivedDataCache/
+Saved/
+PSE_LYFE.opensdf
+PSE_LYFE.sdf
+PSE_LYFE.sln
+PSE_LYFE.v12.suo
+
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 

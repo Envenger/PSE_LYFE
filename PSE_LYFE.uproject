@@ -1,0 +1,13 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{22BDBCBA-4D06-114B-4CA4-2CA9789EB519}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "PSE_LYFE",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}

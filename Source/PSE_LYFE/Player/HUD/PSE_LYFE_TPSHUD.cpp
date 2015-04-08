@@ -4,27 +4,46 @@
 #include "Player/PSE_LYFE_ArmedCharacter.h"
 #include "Engine/Canvas.h"
 #include "Weapons/BaseFiles/PSE_LYFE_ReloadableWeapon.h"
+#include "Player/HUD/Slate/Widget/SPSE_LYFE_PlayerUIWidget.h"
+#include "Player/Inventory/Slate/Widgets/Frames/SPSE_LYFE_EquipmentFrameWidget.h"
+#include "Player/Inventory/Slate/Widgets/Frames/SPSE_LYFE_StorageFrameWidget.h"
+#include "Player/Inventory/Slate/Widgets/Slots/SPSE_LYFE_CursorSlotWidget.h"
 #include "TextureResource.h"
 #include "CanvasItem.h"
+
 #include "PSE_LYFE_TPSHUD.h"
 
 APSE_LYFE_TPSHUD::APSE_LYFE_TPSHUD(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+	bIsInventoryOpen = false;
+	bIsMousePosLocked = false;
 	// Set the crosshair texture
 }
 
-void APSE_LYFE_TPSHUD::BeginPlay()
+bool APSE_LYFE_TPSHUD::CreateUI()
 {
-	GetWorldTimerManager().SetTimer(this, &APSE_LYFE_TPSHUD::PostBeginPlay, 1, false);
-}
-
-void APSE_LYFE_TPSHUD::PostBeginPlay()
-{
-	if (GetOwningPawn())
+	if (GEngine && GEngine->GameViewport && InventoryPtr)
 	{
-		OwningCharacter = Cast<APSE_LYFE_ArmedCharacter>(GetOwningPawn());
-		OwningCharacter->CharacterHUD = this;
+		Viewport = GEngine->GameViewport;
+
+		SAssignNew(MainPlayerUI, SPSE_LYFE_PlayerUIWidget)
+		.InventoryPtr(InventoryPtr);
+
+		Viewport->AddViewportWidgetContent(
+		SAssignNew(MainPlayerUIContainer, SWeakWidget)
+		.PossiblyNullContent(MainPlayerUI.ToSharedRef()));
+
+		MainPlayerUI.Get()->SetVisibility(EVisibility::HitTestInvisible);
+
+		//Create quickslot here
+
+		FInputModeGameOnly GameMode;
+		GetOwningPlayerController()->SetInputMode(GameMode);
+
+		GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Creation scuccess");
+		return true;
 	}
+	return false;
 }
 
 void APSE_LYFE_TPSHUD::DrawHUD()
@@ -72,6 +91,11 @@ void APSE_LYFE_TPSHUD::DrawHUD()
 			FColor::Green
 			);
 		Canvas->DrawItem(NewText);
+
+		if (bIsMousePosLocked == true)
+		{
+			DetectLockMousePosition();
+		}
 	}
 
 	// Draw very simple crosshair
@@ -84,30 +108,126 @@ void APSE_LYFE_TPSHUD::DrawHUD()
 	FCanvasTileItem TileItem(CrosshairDrawPosition, CrosshairTex->Resource, FLinearColor::White);
 	TileItem.BlendMode = SE_BLEND_Translucent;
 	Canvas->DrawItem(TileItem);
-	/*
-	FVector2D Size(50, 50);
-	FVector2D Location(Canvas->SizeX / 2, Canvas->SizeY / 2);
-	DrawMinMap(Canvas);
-	DrawMaterialSimple(TeamBlue, (Location.X - Size.X / 2), (Location.Y - Size.Y / 2), Size.X, Size.Y);*/
-}
 
-void APSE_LYFE_TPSHUD::DrawMinMap(UCanvas* Canvas)
-{
-	FVector2D MapStartLocation(Canvas->SizeX * 0.1, Canvas->SizeY * 0.7);
-	FVector2D MapSize(400, 400);
-	FVector2D MapCenterLocation(MapStartLocation.X - MapSize.X / 2, MapStartLocation.Y - MapSize.Y / 2);
 }
 
 void APSE_LYFE_TPSHUD::CreateInventory()
 {
-	if (GEngine && GEngine->GameViewport)
+	if (Viewport && InventoryPtr && MainPlayerUI.IsValid() && bIsInventoryOpen == false)
 	{
-		Viewport = GEngine->GameViewport;
+		MainPlayerUI.Get()->SetVisibility(EVisibility::Visible);
 
-		SAssignNew(MainInventoryUI, SPlayerInventoryWidget)
-			.InvStorage(OwningCharacter->InventoryPtr);
+		MainPlayerUI.Get()->InventoryOverlay.Get()->AddSlot(1)
+		.VAlign(VAlign_Center)
+		.HAlign(HAlign_Center)
+		[
+			SAssignNew(InventoryHorizontalBox, SHorizontalBox)
+		];
+
+		InventoryHorizontalBox.Get()->AddSlot()
+		.VAlign(VAlign_Fill)
+		.HAlign(HAlign_Fill)
+		.Padding(FMargin(5))
+		[
+			SAssignNew(EquipmentUI, SPSE_LYFE_EquipmentFrameWidget)
+			.InventoryPtr(InventoryPtr)
+		];
+
+		InventoryHorizontalBox.Get()->AddSlot()
+		.VAlign(VAlign_Fill)
+		.HAlign(HAlign_Fill)
+		.Padding(FMargin(5))
+		[
+			SAssignNew(StorageUI, SPSE_LYFE_StorageFrameWidget)
+			.InventoryPtr(InventoryPtr)
+		];
+
+		SAssignNew(CursorItemUI, SPSE_LYFE_CursorSlotWidget)
+			.InventoryPtr(InventoryPtr);
+
 		Viewport->AddViewportWidgetContent(
-			SNew(SWeakWidget).PossiblyNullContent(MainInventoryUI.ToSharedRef())
-			);
+		SAssignNew(CursorItemUIContainer, SWeakWidget)
+		.PossiblyNullContent(CursorItemUI.ToSharedRef()));
+
+		CursorItemUI.Get()->SetVisibility(EVisibility::HitTestInvisible);
+
+		FInputModeUIOnly Mode;
+		Mode.SetWidgetToFocus(MainPlayerUI);
+		GetOwningPlayerController()->SetInputMode(Mode);
+
+		GetOwningPlayerController()->bShowMouseCursor = true;
+
+		bIsInventoryOpen = true;
+	}
+}
+
+void APSE_LYFE_TPSHUD::CloseInventory()
+{
+	if (bIsInventoryOpen == true)
+	{
+		if (MainPlayerUI.IsValid())
+		{
+			MainPlayerUI.Get()->InventoryOverlay.Get()->RemoveSlot(1);
+			MainPlayerUI.Get()->SetVisibility(EVisibility::HitTestInvisible);
+		}
+		if (CursorItemUIContainer.IsValid())
+		{
+			Viewport->RemoveViewportWidgetContent(CursorItemUIContainer.ToSharedRef());
+		}
+		if (InventoryPtr->bIsDisplayRotateActive == true)
+		{
+			InventoryPtr->EndDisplayActorRotate();
+		}
+		FInputModeGameOnly GameMode;
+		GetOwningPlayerController()->SetInputMode(GameMode);
+
+		GetOwningPlayerController()->bShowMouseCursor = false;
+
+		FSlateApplication::Get().SetAllUserFocusToGameViewport();
+		bIsInventoryOpen = false;
+	}
+}
+
+void APSE_LYFE_TPSHUD::StartDisplayActorRotate()
+{
+	if (GetOwningPlayerController())
+	{
+		APlayerController* PC = GetOwningPlayerController();
+		PC->bShowMouseCursor = false;
+		if (PC->GetMousePosition(MouseLockPosition.X, MouseLockPosition.Y))
+		{
+			bIsMousePosLocked = true;
+		}
+		CursorItemUI.Get()->SetVisibility(EVisibility::Visible);
+	}
+}
+
+void APSE_LYFE_TPSHUD::EndDisplayActorRotate()
+{
+	if (GetOwningPlayerController())
+	{
+		APlayerController* PC = GetOwningPlayerController();
+		PC->bShowMouseCursor = true;
+	}
+	CursorItemUI.Get()->SetVisibility(EVisibility::HitTestInvisible);
+	EquipmentUI->bIsDisplayRotating = false;
+	bIsMousePosLocked = false;	
+}
+
+void APSE_LYFE_TPSHUD::DetectLockMousePosition()
+{
+	if (GetOwningPlayerController())
+	{
+		APlayerController* PC = GetOwningPlayerController();
+		FVector2D NewMousePosition;
+		if (PC->GetMousePosition(NewMousePosition.X, NewMousePosition.Y))
+		{
+			if (InventoryPtr)
+			{
+				InventoryPtr->RotateDisplayActor(MouseLockPosition.X - NewMousePosition.X);
+			}
+			FViewport* MainViewPort = Viewport->Viewport;
+			MainViewPort->SetMouse(MouseLockPosition.X, MouseLockPosition.Y);
+		}
 	}
 }

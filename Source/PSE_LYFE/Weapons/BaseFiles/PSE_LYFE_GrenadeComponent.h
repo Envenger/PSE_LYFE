@@ -37,6 +37,8 @@ public:
 	UFUNCTION()
 	void OnRep_GrenadeAnimation();
 
+	FTimerHandle GrenadeLoopTimerHandle;
+
 	float ThrowStartTimer;
 
 	float ThrowEndTimer;
@@ -55,6 +57,8 @@ public:
 
 	UFUNCTION(reliable, server, WithValidation)
 	void ServerThrowGrenadeStart();
+	bool ServerThrowGrenadeStart_Validate();
+	void ServerThrowGrenadeStart_Implementation();
 	
 	void GrenadeLoopStart();
 	
@@ -62,6 +66,8 @@ public:
 
 	UFUNCTION(reliable, server, WithValidation)
 	void ServerThrowGrenadeFinish();
+	bool ServerThrowGrenadeFinish_Validate();
+	void ServerThrowGrenadeFinish_Implementation();
 
 	void SpawnGrenade(float ForwardForce, float VerticalForce);
 
@@ -76,12 +82,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
 	UAnimMontage* GrenadeEndAnimation;
-	/*
-	void ClientThrowGrenadeCancel();
 
-	UFUNCTION(reliable, server, WithValidation)
-	void ServerThrowGrenadeCancel();
-	*/
 
-	//void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const;
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const;
 };

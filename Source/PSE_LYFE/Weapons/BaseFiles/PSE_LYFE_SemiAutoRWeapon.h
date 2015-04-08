@@ -6,13 +6,13 @@
 #include "PSE_LYFE_SemiAutoRWeapon.generated.h"
 
 /**
- * 
- */
+*
+*/
 UCLASS()
 class PSE_LYFE_API APSE_LYFE_SemiAutoRWeapon : public APSE_LYFE_ReloadableWeapon
 {
 	GENERATED_BODY()
-	
+
 public:
 
 	APSE_LYFE_SemiAutoRWeapon(const FObjectInitializer& ObjectInitializer);
@@ -51,6 +51,6 @@ public:
 
 	/** When the semiautomatic cool down goes over */
 	bool ReadyToFire;
-	
-	
+
+
 };

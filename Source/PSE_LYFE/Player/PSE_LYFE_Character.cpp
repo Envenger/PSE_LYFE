@@ -2,8 +2,8 @@
 
 #include "PSE_LYFE.h"
 #include "PSE_LYFE_Character.h"
-#include "Player/Storage/PSE_LYFE_PlayerInventory.h"
 #include "Player/HUD/PSE_LYFE_TPSHUD.h"
+#include "Player/Inventory/PSE_LYFE_Inventory4_QuickSlots.h"
 #include "UnrealNetwork.h"
 
 APSE_LYFE_Character::APSE_LYFE_Character(const FObjectInitializer& ObjectInitializer)
@@ -32,7 +32,6 @@ APSE_LYFE_Character::APSE_LYFE_Character(const FObjectInitializer& ObjectInitial
 	CameraAimLocation->ArrowColor = FColor(FLinearColor(1, 0, 0));
 	CameraAimLocation->AttachTo(RootComponent);
 
-
 	CameraNonAimLocation = ObjectInitializer.CreateDefaultSubobject<UArrowComponent>(this, TEXT("CameraNonAimLocation"));
 	CameraNonAimLocation->ArrowColor = FColor(FLinearColor(0, 1, 0));
 	CameraNonAimLocation->AttachTo(RootComponent);
@@ -48,24 +47,15 @@ APSE_LYFE_Character::APSE_LYFE_Character(const FObjectInitializer& ObjectInitial
 	FollowCamera->AttachTo(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 	
-
 	AnimBP_CrouchStandAlpha = 0;
 	CrouchState = ECrouchState::Null;
 	CrouchingDuration = 0.3;
 
-	bIsInventoryOpen = false;
 	MotionDirection = FVector2D(0, 0);
-
-	bIsTurning90 = false;
-	TurnAngle = 0;
-	TurnSpeed = 0;
-
-	AnimBP_TurningLeft = false;
-	AnimBP_TurningRight = false;
 
 	CameraAimCoeffcient = 0;
 	CameraAimingTime = 0.25;
-	bIsTryingCameraAim = true;
+	bIsTryingCameraAim = false;
 }
 
 void APSE_LYFE_Character::SetupPlayerInputComponent(class UInputComponent* InputComponent)
@@ -76,11 +66,16 @@ void APSE_LYFE_Character::SetupPlayerInputComponent(class UInputComponent* Input
 	InputComponent->BindAction("Crouch", IE_Released, this, &APSE_LYFE_Character::EndCrouch);
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	InputComponent->BindAction("Use", IE_Released, this, &APSE_LYFE_Character::PickInventoryItem);
-	InputComponent->BindAction("OpenInventory", IE_Pressed, this, &APSE_LYFE_Character::OpenInventory);
 
-	InputComponent->BindAction("SecondaryFire", IE_Pressed, this, &APSE_LYFE_Character::RightClickPressed);
-	InputComponent->BindAction("SecondaryFire", IE_Released, this, &APSE_LYFE_Character::RightClickReleased);
+	InputComponent->BindAction("Use", IE_Released, this, &APSE_LYFE_Character::PickInventoryItem);
+
+	InputComponent->BindAction("UseInventory", IE_Pressed, this, &APSE_LYFE_Character::UseInventory);
+
+
+	InputComponent->BindAction("LeftClick", IE_Pressed, this, &APSE_LYFE_Character::LeftClickPressed);
+	InputComponent->BindAction("LeftClick", IE_Released, this, &APSE_LYFE_Character::LeftClickReleased);
+	InputComponent->BindAction("RightClick", IE_Pressed, this, &APSE_LYFE_Character::RightClickPressed);
+	InputComponent->BindAction("RightClick", IE_Released, this, &APSE_LYFE_Character::RightClickReleased);
 
 	InputComponent->BindAxis("MoveForward", this, &APSE_LYFE_Character::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &APSE_LYFE_Character::MoveRight);
@@ -101,6 +96,8 @@ void APSE_LYFE_Character::PostInitializeComponents()
 	AimCameraRotation = CameraAimLocation->RelativeRotation;
 
 	UpdateCamera(NonAimCameraLocation, NonAimCameraRotation);
+
+	WalkSpeedCache = GetCharacterMovement()->MaxWalkSpeed;
 }
 
 void APSE_LYFE_Character::BeginPlay()
@@ -108,24 +105,58 @@ void APSE_LYFE_Character::BeginPlay()
 	Super::BeginPlay();
 	if (Role == ROLE_Authority)
 	{
-		InventoryPtr = GetWorld()->SpawnActor<APSE_LYFE_PlayerInventory>(DefaultInventoryClass);
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, "Spawned");
+		InventoryPtr = GetWorld()->SpawnActor<APSE_LYFE_Inventory4_QuickSlots>(InventoryClass);
 		InventoryPtr->SetOwningPawn(this);
 	}
-	WalkSpeedCache = GetCharacterMovement()->MaxWalkSpeed;
+}
+
+void APSE_LYFE_Character::OnRep_InventoryInitialize()
+{
+	if (InventoryPtr)
+	{
+		HUDStorageOwnerLink();
+	}
+}
+
+void APSE_LYFE_Character::HUDStorageOwnerLink()
+{
+	if (GetController())
+	{
+		APlayerController* TempPC = Cast<APlayerController>(GetController());
+		if (TempPC->GetHUD() && TempPC->GetHUD()->IsA(APSE_LYFE_TPSHUD::StaticClass()))
+		{
+			CharacterHUD = Cast<APSE_LYFE_TPSHUD>(TempPC->GetHUD());
+			CharacterHUD->OwningCharacter = Cast<APSE_LYFE_ArmedCharacter>(this);
+			CharacterHUD->InventoryPtr = InventoryPtr;
+			InventoryPtr->CharacterHUD = CharacterHUD;
+			CharacterHUD->CreateUI();
+			GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "HUD Link Success");
+		}
+		else
+		{
+			FTimerHandle LinkDelayTimerHandle;
+			GetWorldTimerManager().SetTimer(LinkDelayTimerHandle, this, &APSE_LYFE_Character::HUDStorageOwnerLink, 0.5, false);
+			GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "HUD Link Failed1");
+		}
+	}
+	else
+	{
+		FTimerHandle LinkDelayTimerHandle;
+		GetWorldTimerManager().SetTimer(LinkDelayTimerHandle, this, &APSE_LYFE_Character::HUDStorageOwnerLink, 0.5, false);
+		GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "HUD Link Failed2");
+	}
 }
 
 void APSE_LYFE_Character::Tick(float DeltaSeconds)
 {
+
 	Super::Tick(DeltaSeconds);
 
 	AnimBP_MoveSpeed = GetMovementComponent()->Velocity.Size();
 
 	FRotator PCRot = GetControlRotation();
-	//PCRot.Normalize();
-
 	FRotator PawnRot = GetActorRotation();
-	//PawnRot.Normalize();
+
 	FRotator RotDiffrence = PCRot - PawnRot;
 	RotDiffrence.Normalize();
 	
@@ -134,15 +165,6 @@ void APSE_LYFE_Character::Tick(float DeltaSeconds)
 		AnimBP_AimYaw = 0;
 		PawnRot.Yaw = PCRot.Yaw;
 		SetActorRotation(PawnRot);
-		
-		/*if (AnimBP_TurningRight == true)
-		{
-			AnimBP_TurningRight = false;
-		}
-		if (AnimBP_TurningLeft == true)
-		{
-			AnimBP_TurningLeft = false;
-		}*/
 	}
 	else
 	{
@@ -150,79 +172,16 @@ void APSE_LYFE_Character::Tick(float DeltaSeconds)
 		if (FMath::Abs(RotDiffrence.Yaw) <= 90)
 		{
 			AnimBP_AimYaw = RotDiffrence.Yaw;
-			/*if (AnimBP_TurningRight == true)
-			{
-				AnimBP_TurningRight = false;
-			}
-			if (AnimBP_TurningLeft == true)
-			{
-				AnimBP_TurningLeft = false;
-			}*/
 		}
 		else if (FMath::Abs(RotDiffrence.Yaw) > 90)
 		{
-			if (bIsTurning90 == false)
-			{
-				Turn90(RotDiffrence.Yaw);
-			}
-			/*
 			float RotChange = 90 * FMath::Sign(RotDiffrence.Yaw);
 			AnimBP_AimYaw = RotChange;
 			PawnRot.Yaw = PCRot.Yaw - RotChange;
 			SetActorRotation(PawnRot);
-			if (AnimBP_TurningRight == true)
-			{
-				AnimBP_TurningRight = false;
-			}
-			if (AnimBP_TurningLeft == true)
-			{
-				AnimBP_TurningLeft = false;
-			}
-			if (RotChange > 0)
-			{
-				if (AnimBP_TurningRight == false)
-				{
-					AnimBP_TurningRight = true;
-				}
-			}
-			else
-			{
-				if (AnimBP_TurningLeft == false)
-				{
-					AnimBP_TurningLeft = true;
-				}
-			}*/
 		}
 	}
-	if (bIsTurning90 == true)
-	{
-	if (!FMath::IsNearlyZero(TurnAngle))
-		{
-			float DeltaRot = FMath::Sign(TurnAngle)*(FMath::Min((TurnSpeed * DeltaSeconds), FMath::Abs(TurnAngle)));
-			TurnAngle -= DeltaRot;
-			FRotator PawnRotation = GetActorRotation();
-			PawnRotation.Yaw += DeltaRot;
-			AnimBP_AimYaw -= DeltaRot;
-			SetActorRotation(PawnRotation);
-		}
-		else
-		{
-			bIsTurning90 = false;
-		}
-	}
-	if (Role != ROLE_Authority)
-	{
-	if (IsLocallyControlled())
-	{
-		GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds, FColor::Blue, "Controller = " + FString::SanitizeFloat(PCRot.Yaw));
-		GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds, FColor::Blue, "Pawn = " + FString::SanitizeFloat(PawnRot.Yaw));
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds, FColor::Green, "Controller = " + FString::SanitizeFloat(PCRot.Yaw));
-		GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds, FColor::Green, "Pawn = " + FString::SanitizeFloat(PawnRot.Yaw));
-	}
-	}
+
 	if (IsLocallyControlled())
 	{
 		if (MotionDirection.X == 0 && MotionDirection.Y == 0)
@@ -258,6 +217,7 @@ void APSE_LYFE_Character::Tick(float DeltaSeconds)
 	CalculateCrouch(DeltaSeconds);
 	/////////////////////////////////
 	CalculateCameraAim(DeltaSeconds);
+	/////////////////////////////////
 }
 
 void APSE_LYFE_Character::RightClickPressed()
@@ -296,10 +256,6 @@ void APSE_LYFE_Character::CalculateCameraAim(const float DeltaSeconds)
 		DeltaLocation.X = FMath::Lerp(NonAimCameraLocation.X, AimCameraLocation.X, CameraAimCoeffcient);
 		DeltaLocation.Y = FMath::Lerp(NonAimCameraLocation.Y, AimCameraLocation.Y, CameraAimCoeffcient);
 		DeltaLocation.Z = FMath::Lerp(NonAimCameraLocation.Z, AimCameraLocation.Z, CameraAimCoeffcient);
-		//GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds*20, FColor::Blue,
-		//	FString::SanitizeFloat(DeltaLocation.X) + " " +
-		//	FString::SanitizeFloat(DeltaLocation.Y) + " " +
-		//	FString::SanitizeFloat(DeltaLocation.Z));
 		const FRotator DeltaRotation = FMath::Lerp(NonAimCameraRotation, AimCameraRotation, CameraAimCoeffcient);
 		UpdateCamera(DeltaLocation, DeltaRotation);
 
@@ -315,27 +271,6 @@ void APSE_LYFE_Character::UpdateCamera(const FVector CameraLocation, const FRota
 
 	GetFollowCamera()->RelativeRotation = CameraRotation;
 }
-
-void APSE_LYFE_Character::Turn90(const float RotDiffrence)
-{
-	if (RotDiffrence > 0)
-	{
-		PlayAnimMontage(TurnRight90Animation, 1);
-		bIsTurning90 = true;
-		TurnAngle += RotDiffrence;
-		TurnSpeed = FMath::Abs(RotDiffrence)/(TurnRight90Animation->SequenceLength);// 90 degree turn in sequence time
-		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, FString::SanitizeFloat(RotDiffrence));
-	}
-	else if (RotDiffrence < 0)
-	{
-		PlayAnimMontage(TurnLeft90Animation, 1);
-		bIsTurning90 = true;
-		TurnAngle += RotDiffrence;
-		TurnSpeed = FMath::Abs(RotDiffrence) / TurnLeft90Animation->SequenceLength;// 90 degree turn in sequence time
-		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, FString::SanitizeFloat(RotDiffrence));
-	}
-}
-
 
 void APSE_LYFE_Character::TurnAtRate(float Rate)
 {
@@ -503,68 +438,89 @@ void APSE_LYFE_Character::ServerSetAim_Implementation(FVector Origin, FVector Di
 /////////////////////////////////////////////////////////
 // Inventory
 
-void APSE_LYFE_Character::OpenInventory()
+void APSE_LYFE_Character::LeftClickPressed()
+{}
+
+void APSE_LYFE_Character::LeftClickReleased()
+{}
+
+void APSE_LYFE_Character::UseInventory()
 {
-	if (bIsInventoryOpen == false)
+	if (CharacterHUD)
 	{
-		bIsInventoryOpen = true;
-		if (CharacterHUD)
+		if (CharacterHUD->bIsInventoryOpen == false)
 		{
 			CharacterHUD->CreateInventory();
 		}
-	}
-	else
-	{
-		bIsInventoryOpen = false;
+		else
+		{
+			CharacterHUD->CloseInventory();
+		}
 	}
 }
 
 void APSE_LYFE_Character::PickInventoryItem()
 {
 	FVector TraceStart = ViewOrigin;
-	FVector TraceEnd = ViewOrigin + (1000 * ViewDirection);
-	FCollisionQueryParams TraceParams(TEXT("CoverTrace"), true, this);
+	FVector TraceEnd = ViewOrigin + (500 * ViewDirection);
+	FCollisionQueryParams TraceParams(TEXT("ItemPickTrace"), true, this);
+	TraceParams.AddIgnoredActor(this);
 	FHitResult Hit(ForceInit);
+	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor(255, 150, 0), false, 10, 0, 6);
 	GetWorld()->LineTraceSingle(Hit, TraceStart, TraceEnd, ECC_PhysicsBody, TraceParams);
-	if (Hit.bBlockingHit && ((Hit.ImpactPoint - GetActorLocation()).Size() < 300))
+
+	if (Hit.bBlockingHit && ((Hit.ImpactPoint - GetActorLocation()).Size() < 500))
 	{
 		if (Hit.GetActor())
 		{
-			if (Hit.GetActor()->IsA(APSE_LYFE_Item_Base::StaticClass()) && InventoryPtr)
+			if (Hit.GetActor()->IsA(APSE_LYFE_BaseInventoryItem::StaticClass()) && InventoryPtr)
 			{
-				ServerPickInventoryItem();
+				Server_PickInventoryItem();
 			}
 		}
 	}
 }
 
-bool APSE_LYFE_Character::ServerPickInventoryItem_Validate()
+bool APSE_LYFE_Character::Server_PickInventoryItem_Validate()
 {
 	return true;
 }
 
-void APSE_LYFE_Character::ServerPickInventoryItem_Implementation()
+void APSE_LYFE_Character::Server_PickInventoryItem_Implementation()
 {
 	FVector TraceStart = ViewOrigin;
-	FVector TraceEnd = ViewOrigin + (1000 * ViewDirection);
-	FCollisionQueryParams TraceParams(TEXT("CoverTrace"), true, this);
+	FVector TraceEnd = ViewOrigin + (500 * ViewDirection);
+	FCollisionQueryParams TraceParams(TEXT("ItemPickTrace"), true, this);
 	FHitResult Hit(ForceInit);
 	GetWorld()->LineTraceSingle(Hit, TraceStart, TraceEnd, ECC_PhysicsBody, TraceParams);
-	if (Hit.bBlockingHit && ((Hit.ImpactPoint - GetActorLocation()).Size() < 300))
+	if (Hit.bBlockingHit && ((Hit.ImpactPoint - GetActorLocation()).Size() < 500))
 	{
 		if (Hit.GetActor())
 		{
-			if (Hit.GetActor()->IsA(APSE_LYFE_Item_Base::StaticClass()) && InventoryPtr)
+			if (Hit.GetActor()->IsA(APSE_LYFE_BaseInventoryItem::StaticClass()) && InventoryPtr)
 			{
-				APSE_LYFE_Item_Base* TempItem = Cast<APSE_LYFE_Item_Base>(Hit.GetActor());
-				InventoryPtr->AttemptPickItem(TempItem);
+				APSE_LYFE_BaseInventoryItem* TempItem = Cast<APSE_LYFE_BaseInventoryItem>(Hit.GetActor());
+				FItemStruct ItemStructure = TempItem->CreateStruct();
+				if (InventoryPtr->AddItem(ItemStructure))
+				{
+					TempItem->Destroy();
+				}
 			}
 		}
 	}
 }
 
-/////////////////////////////////////////////////////////
+const FVector APSE_LYFE_Character::GetCharacterThrowLocation() const
+{
+	FVector ActorCurrentLocation = GetActorLocation();
+	FVector RandomSpawnLoc;
+	RandomSpawnLoc.X = FMath::FRandRange(-90, 90);
+	RandomSpawnLoc.Y = FMath::FRandRange(-90, 90);
+	RandomSpawnLoc.Z = FMath::FRandRange(45, 75);
+	return (ActorCurrentLocation + RandomSpawnLoc);
+}
 
+/////////////////////////////////////////////////////////
 
 
 void APSE_LYFE_Character::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
@@ -573,6 +529,8 @@ void APSE_LYFE_Character::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >
 
 	DOREPLIFETIME_CONDITION(APSE_LYFE_Character, AnimBP_CrouchStandAlpha, COND_SkipOwner);
 	DOREPLIFETIME_CONDITION(APSE_LYFE_Character, AnimBP_MoveDirection, COND_SkipOwner);
+
 	DOREPLIFETIME_CONDITION(APSE_LYFE_Character, InventoryPtr, COND_OwnerOnly);
+
 }
 

@@ -71,7 +71,7 @@ void UPSE_LYFE_GrenadeComponent::ServerThrowGrenadeStart_Implementation()
 	{
 		APSE_LYFE_ArmedCharacter* Character = Cast<APSE_LYFE_ArmedCharacter>(GetOwner());
 		CurrentGrenadeState = EGrenadeState::ThrowStart;
-		Character->GetWorldTimerManager().SetTimer(this, &UPSE_LYFE_GrenadeComponent::GrenadeLoopStart, ThrowStartTimer, false);
+		Character->GetWorldTimerManager().SetTimer(GrenadeLoopTimerHandle, this, &UPSE_LYFE_GrenadeComponent::GrenadeLoopStart, ThrowStartTimer, false);
 	}
 }
 
@@ -103,8 +103,9 @@ void UPSE_LYFE_GrenadeComponent::ServerThrowGrenadeFinish_Implementation()
 	FTimerHandle UniqueHandle;
 	if (CurrentGrenadeState == EGrenadeState::ThrowStart)
 	{
-		float TimeRemaining = Character->GetWorldTimerManager().GetTimerElapsed(this, &UPSE_LYFE_GrenadeComponent::GrenadeLoopStart);
-		Character->GetWorldTimerManager().ClearTimer(this, &UPSE_LYFE_GrenadeComponent::GrenadeLoopStart);
+		float TimeRemaining = Character->GetWorldTimerManager().GetTimerElapsed(GrenadeLoopTimerHandle);
+		Character->GetWorldTimerManager().ClearTimer(GrenadeLoopTimerHandle);
+
 		float TimerComplitionRatio = TimeRemaining / ThrowStartTimer;
 		float UpForce = FMath::Lerp(MinUpThrowVelocity, MaxUpThrowVelocity, TimerComplitionRatio);
 		float ForwardForce = FMath::Lerp(MinForwardThrowVelocity, MaxForwardThrowVelocity, TimerComplitionRatio);

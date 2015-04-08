@@ -111,6 +111,8 @@ public:
 
 	UFUNCTION(reliable, server, WithValidation)
 	void ServerChangeWeaponTo(uint8 NewWeaponIndex);
+	bool ServerChangeWeaponTo_Validate(uint8 NewWeaponIndex);
+	void ServerChangeWeaponTo_Implementation(uint8 NewWeaponIndex);
 
 	/** Equips a new weapon. Change the index before calling this(Dont call this directly) */
 	void EquipWeapon(uint8 NewWeaponIndex);

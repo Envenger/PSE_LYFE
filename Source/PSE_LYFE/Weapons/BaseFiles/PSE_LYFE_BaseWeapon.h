@@ -54,29 +54,29 @@ struct FRecoilProperties
 {
 	GENERATED_USTRUCT_BODY()
 
-	/** Max Recoil Value at value of 200 shot gets fired(at at 45 degree change it in CalcRecoilDirection)*/
-	UPROPERTY(EditDefaultsOnly, Category = Recoil)
-	float MaxRecoil;
+		/** Max Recoil Value at value of 200 shot gets fired(at at 45 degree change it in CalcRecoilDirection)*/
+		UPROPERTY(EditDefaultsOnly, Category = Recoil)
+		float MaxRecoil;
 
 	/** Current Recoil Value */
 	UPROPERTY()
-	float CurrentRecoil;
+		float CurrentRecoil;
 
 	/** Increase of recoil per shot */
 	UPROPERTY(EditDefaultsOnly, Category = Recoil)
-	float RecoilPerShot;
+		float RecoilPerShot;
 
 	/** How much value of the recoil is reset each second when not firing */
 	UPROPERTY(EditDefaultsOnly, Category = Recoil)
-	float RecoilResetRate;
+		float RecoilResetRate;
 
 	/** Multiplier of the (MaxStamina - CurrentStamina) used for recoil */
 	UPROPERTY(EditDefaultsOnly, Category = Recoil)
-	float StaminaInfluenceCoeff;
+		float StaminaInfluenceCoeff;
 
 	/** How much stamina does 1 shot drain */
 	UPROPERTY(EditDefaultsOnly, Category = Recoil)
-	float StaminaDrain;
+		float StaminaDrain;
 
 	void DoRecoil()
 	{
@@ -118,21 +118,21 @@ public:
 
 	/** pawn owner */
 	UPROPERTY(Transient, Replicated)
-	APSE_LYFE_ArmedCharacter* MyPawn;
+		APSE_LYFE_ArmedCharacter* MyPawn;
 
 	/** weapon mesh: 3rd person view */
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	UStaticMeshComponent* Mesh3P;
+		UStaticMeshComponent* Mesh3P;
 
 	////////////////////////////////////////////////////////////
 	//EQuiping Logic and Properties
 
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponProperties)
-	float EquippingTime;
+		float EquippingTime;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponProperties)
-	float UnEquippingTime;
+		float UnEquippingTime;
 
 	/** weapon is being equipped by owner pawn */
 	virtual void StartEquip();
@@ -142,6 +142,7 @@ public:
 
 	UFUNCTION(NetMulticast, Unreliable)
 	virtual void ClientStartEquip();
+	virtual void ClientStartEquip_Implementation();
 
 	virtual void StartUnEquip();
 
@@ -149,19 +150,21 @@ public:
 
 	UFUNCTION(NetMulticast, Unreliable)
 	virtual void ClientStartUnEquip();
+	virtual void ClientStartUnEquip_Implementation();
+
 
 	UPROPERTY(ReplicatedUsing = OnRep_WeaponEquipReplication)
-	bool bIsWeaponEquiped;
+		bool bIsWeaponEquiped;
 
 	UFUNCTION()
-	void OnRep_WeaponEquipReplication();
+		void OnRep_WeaponEquipReplication();
 
 	////////////////////////////////////////////////////////////
 	//Firing Properties
 
 	/** Time between fires (Dont use 0)*/
 	UPROPERTY(EditDefaultsOnly, Category = WeaponProperties)
-	float FiringRate;
+		float FiringRate;
 
 	/** Current State of the Weapon */
 	EWeaponState::Type CurrentState;
@@ -183,11 +186,19 @@ public:
 
 	UFUNCTION(reliable, server, WithValidation)
 	virtual void ServerStartFire();
+	virtual bool ServerStartFire_Validate();
+	virtual void ServerStartFire_Implementation();
+
+
 
 	virtual void StopFire();
 
 	UFUNCTION(reliable, server, WithValidation)
 	virtual void ServerStopFire();
+	virtual bool ServerStopFire_Validate();
+	virtual void ServerStopFire_Implementation();
+
+
 
 	virtual void Fire();
 
@@ -204,14 +215,14 @@ public:
 	//Firing Effects
 
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
-	UAnimMontage* FireAnimation;
+		UAnimMontage* FireAnimation;
 
 	float PlayWeaponAnimation(UAnimMontage* Animation, float PlayRate = 1);
 
 	void StopWeaponAnimation(UAnimMontage* Animation);
 
 	UPROPERTY(ReplicatedUsing = OnRep_UpdateClientFireCounter)
-	int8 FireCounter;
+		int8 FireCounter;
 
 	UFUNCTION()
 	void OnRep_UpdateClientFireCounter();
@@ -219,10 +230,13 @@ public:
 	/** spawn effects for impact */
 	UFUNCTION(NetMulticast, Unreliable)
 	void SpawnImpactEffects(const FHitResult& Impact);
+	void SpawnImpactEffects_Implementation(const FHitResult& Impact);
+
+
 
 	/** impact effects */
 	UPROPERTY(EditDefaultsOnly, Category = Effects)
-	TSubclassOf<class APSE_LYFE_HitImpact> ImpactTemplate;
+		TSubclassOf<class APSE_LYFE_HitImpact> ImpactTemplate;
 
 	////////////////////////////////////////////////////////////
 	//Weapon Recoil
@@ -231,7 +245,7 @@ public:
 	bool bCanRecoil;
 
 	UPROPERTY(EditDefaultsOnly, Category = Recoil)
-	FRecoilProperties Recoil;
+		FRecoilProperties Recoil;
 
 	FVector CalcRecoilDirection(FVector OriginalDirection);
 
@@ -245,6 +259,6 @@ public:
 protected:
 	/** Returns Mesh3P subobject **/
 	FORCEINLINE UStaticMeshComponent* GetMesh3P() const { return Mesh3P; }
-	
-	
+
+
 };

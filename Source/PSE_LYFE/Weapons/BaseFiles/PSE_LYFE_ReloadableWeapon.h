@@ -6,32 +6,41 @@
 #include "PSE_LYFE_ReloadableWeapon.generated.h"
 
 /**
- * 
- */
+*
+*/
 UCLASS()
 class PSE_LYFE_API APSE_LYFE_ReloadableWeapon : public APSE_LYFE_BaseWeapon
 {
 	GENERATED_BODY()
-	
+
 public:
 
 	APSE_LYFE_ReloadableWeapon(const FObjectInitializer& ObjectInitializer);
 
 	void PostInitializeComponents() override;
 
+	FTimerHandle ClientReloadTimeHandler;
+
+	FTimerHandle ServerReloadTimeHandler;
+
 	virtual void StartReload();
 
-	virtual void FinishReload();
+	virtual void ClientEndReload();
 
 	UFUNCTION(reliable, server, WithValidation)
 	virtual void ServerStartReload();
+	virtual bool ServerStartReload_Validate();
+	virtual void ServerStartReload_Implementation();
 
-	virtual void ServerEndReload();
+	virtual void ServerFinishReload();
 
 	virtual void CancelReload();
 
 	UFUNCTION(reliable, server, WithValidation)
 	virtual void ServerCancelReload();
+	virtual bool ServerCancelReload_Validate();
+	virtual void ServerCancelReload_Implementation();
+
 
 	virtual bool AmmoCheck();//Called in both server and client
 
@@ -39,28 +48,28 @@ public:
 	virtual bool CanReload();
 
 	UPROPERTY(EditDefaultsOnly, Category = Ammo)
-	float ReloadingTime;
+		float ReloadingTime;
 
 	UPROPERTY(Transient, Replicated)
-	int32 CurrentAmmoInClip;
+		int32 CurrentAmmoInClip;
 
 	UPROPERTY(Transient, Replicated)
-	int32 CurrentAmmo;
+		int32 CurrentAmmo;
 
 	UPROPERTY(EditDefaultsOnly, Category = Ammo)
-	int32 MaxAmmoInClip;
+		int32 MaxAmmoInClip;
 
 	UPROPERTY(EditDefaultsOnly, Category = Ammo)
-	int32 MaxAmmo;
+		int32 MaxAmmo;
 
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
-	UAnimMontage* ReloadingAnimation;
+		UAnimMontage* ReloadingAnimation;
 
 	/** Replicated variable used to set server and client reloading animation */
 	UPROPERTY(ReplicatedUsing = OnRep_SetReloadAnimation)
-	bool bIsReloading;
+		bool bIsReloading;
 
 	UFUNCTION()
-	virtual void OnRep_SetReloadAnimation();
-	
+		virtual void OnRep_SetReloadAnimation();
+
 };

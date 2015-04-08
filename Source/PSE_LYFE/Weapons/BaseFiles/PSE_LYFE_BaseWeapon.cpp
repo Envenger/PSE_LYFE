@@ -20,7 +20,6 @@ APSE_LYFE_BaseWeapon::APSE_LYFE_BaseWeapon(const FObjectInitializer& ObjectIniti
 	PrimaryActorTick.TickGroup = TG_PrePhysics;
 	SetRemoteRoleForBackwardsCompat(ROLE_SimulatedProxy);
 	bReplicates = true;
-	bReplicateInstigator = true;
 	bNetUseOwnerRelevancy = true;
 
 	FiringRate = 0.1;
@@ -58,7 +57,7 @@ void APSE_LYFE_BaseWeapon::Tick(float DeltaSeconds)
 			}
 		}
 	}
-	
+
 }
 
 void APSE_LYFE_BaseWeapon::SetOwningPawn(APSE_LYFE_ArmedCharacter* NewOwner)
@@ -76,7 +75,8 @@ void APSE_LYFE_BaseWeapon::StartEquip()
 	SetActorHiddenInGame(false);
 	CurrentState = EWeaponState::Passive;
 	ClientStartEquip();
-	GetWorldTimerManager().SetTimer(this, &APSE_LYFE_BaseWeapon::FinishEquip, EquippingTime, false);
+	FTimerHandle EquipTimerHandle;
+	GetWorldTimerManager().SetTimer(EquipTimerHandle, this, &APSE_LYFE_BaseWeapon::FinishEquip, EquippingTime, false);
 }
 
 void APSE_LYFE_BaseWeapon::ClientStartEquip_Implementation()
@@ -96,7 +96,8 @@ void APSE_LYFE_BaseWeapon::StartUnEquip()
 {
 	CurrentState = EWeaponState::Passive;
 	ClientStartUnEquip();
-	GetWorldTimerManager().SetTimer(this, &APSE_LYFE_BaseWeapon::FinishUnEquip, UnEquippingTime, false);
+	FTimerHandle UnEquipTimerHandle;
+	GetWorldTimerManager().SetTimer(UnEquipTimerHandle, this, &APSE_LYFE_BaseWeapon::FinishUnEquip, UnEquippingTime, false);
 }
 
 void APSE_LYFE_BaseWeapon::ClientStartUnEquip_Implementation()

@@ -27,7 +27,7 @@ APSE_LYFE_AutoRWeapon::APSE_LYFE_AutoRWeapon(const FObjectInitializer& ObjectIni
 void APSE_LYFE_AutoRWeapon::StartFire()
 {
 	RepeatingStartFire();
-	GetWorldTimerManager().SetTimer(this, &APSE_LYFE_AutoRWeapon::RepeatingStartFire, FiringRate, true);
+	GetWorldTimerManager().SetTimer(RepeatingStartFireTimerHandle, this, &APSE_LYFE_AutoRWeapon::RepeatingStartFire, FiringRate, true);
 }
 
 void APSE_LYFE_AutoRWeapon::RepeatingStartFire()
@@ -38,20 +38,20 @@ void APSE_LYFE_AutoRWeapon::RepeatingStartFire()
 		float TimeGap = CurrentTime - LastFiringTime;
 		if (TimeGap > FiringRate)
 		{
-			CallStartFire();
+			ClientCallStartFire();
 		}
 		else
 		{
 			if (DelayedFireStart == false)
 			{
-				GetWorldTimerManager().SetTimer(this, &APSE_LYFE_AutoRWeapon::CallStartFire, (FiringRate - TimeGap), false);
+				GetWorldTimerManager().SetTimer(ClientCallFireHandle, this, &APSE_LYFE_AutoRWeapon::ClientCallStartFire, (FiringRate - TimeGap), false);
 				DelayedFireStart = true;
 			}
 		}
 	}
 }
 
-void APSE_LYFE_AutoRWeapon::CallStartFire()
+void APSE_LYFE_AutoRWeapon::ClientCallStartFire()
 {
 	ServerStartFire();
 	StartRepeatingClientFire();
@@ -65,7 +65,7 @@ void APSE_LYFE_AutoRWeapon::StartRepeatingClientFire()
 {
 	CurrentState = EWeaponState::Firing;
 	ClientFire();
-	GetWorldTimerManager().SetTimer(this, &APSE_LYFE_AutoRWeapon::ClientFire, FiringRate, true);
+	GetWorldTimerManager().SetTimer(ClientFireHandle, this, &APSE_LYFE_AutoRWeapon::ClientFire, FiringRate, true);
 }
 
 void APSE_LYFE_AutoRWeapon::ClientFire()
@@ -80,7 +80,7 @@ void APSE_LYFE_AutoRWeapon::ClientFire()
 	}
 	else
 	{
-		CallStopFire();
+		ClientCallStopFire();
 	}
 }
 
@@ -100,7 +100,7 @@ void APSE_LYFE_AutoRWeapon::ServerStartFire_Implementation()
 	else if (DelayedFireStart == false)
 	{
 		DelayedFireStart = true;
-		GetWorldTimerManager().SetTimer(this, &APSE_LYFE_AutoRWeapon::ServerCallStartFire, (FiringRate - TimeGap), false);
+		GetWorldTimerManager().SetTimer(ServerCallFireHandle, this, &APSE_LYFE_AutoRWeapon::ServerCallStartFire, (FiringRate - TimeGap), false);
 	}
 }
 
@@ -110,7 +110,7 @@ void APSE_LYFE_AutoRWeapon::ServerCallStartFire()
 	{
 		CurrentState = EWeaponState::Firing;
 		Fire();
-		GetWorldTimerManager().SetTimer(this, &APSE_LYFE_AutoRWeapon::Fire, FiringRate, true);
+		GetWorldTimerManager().SetTimer(ServerFireTimerHandle, this, &APSE_LYFE_AutoRWeapon::Fire, FiringRate, true);
 	}
 	if (DelayedFireStart == true)
 	{
@@ -139,23 +139,20 @@ void APSE_LYFE_AutoRWeapon::Fire()
 				FVector WeaponTraceEnd = WeaponTraceStart + (30000 * RecoiledDirection);
 				const FHitResult Impact = WeaponTrace(WeaponTraceStart, WeaponTraceEnd);// 2nd Trace
 
-				//
-
-				//float Angle = FMath::Acos(RecoiledDirection.DotProduct(RecoiledDirection, WeaponTraceDirection));
-				//GEngine->AddOnScreenDebugMessage(-1, 1.2f, FColor::Cyan, FString::SanitizeFloat(FMath::RadiansToDegrees(Angle)));
-
-				//	FVector WeaponTraceEnd = WeaponTraceStart + (30000 * WeaponTraceDirection);
-
+				DrawDebugLine(GetWorld(), WeaponTraceStart, WeaponTraceEnd, FColor(255, 0, 0, 1), true);
 
 				SpawnImpactEffects(Impact);
 
 				LastFiringTime = GetWorld()->GetRealTimeSeconds();
 				if (Impact.GetActor())
 				{
-					if (Impact.GetActor()->GetRootComponent())
+					if (Impact.GetComponent()->Mobility == EComponentMobility::Movable && Impact.GetComponent()->IsSimulatingPhysics())
 					{
-						UPrimitiveComponent* Object = Cast<UPrimitiveComponent>(Impact.GetActor()->GetRootComponent());
-						Object->AddImpulse(WeaponTraceDirection * 60000);
+						Impact.GetComponent()->AddImpulse(WeaponTraceDirection * 60000);
+						GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Cyan, Impact.GetActor()->GetName());
+					
+						//UPrimitiveComponent* Object = Cast<UPrimitiveComponent>(Impact.GetActor()->GetRootComponent());
+						//Object->AddImpulse(WeaponTraceDirection * 6000000);
 					}
 				}
 				FireCounter++;
@@ -165,37 +162,37 @@ void APSE_LYFE_AutoRWeapon::Fire()
 			}
 			else
 			{
-				GetWorldTimerManager().ClearTimer(this, &APSE_LYFE_AutoRWeapon::Fire);
+				GetWorldTimerManager().ClearTimer(ServerFireTimerHandle);
 			}
 		}
 		else
 		{
-			GetWorldTimerManager().ClearTimer(this, &APSE_LYFE_AutoRWeapon::Fire);
+			GetWorldTimerManager().ClearTimer(ServerFireTimerHandle);
 		}
 	}
 }
 
 void APSE_LYFE_AutoRWeapon::StopFire()
 {
-	GetWorldTimerManager().ClearTimer(this, &APSE_LYFE_AutoRWeapon::RepeatingStartFire);
-	CallStopFire();
+	GetWorldTimerManager().ClearTimer(RepeatingStartFireTimerHandle);
+	ClientCallStopFire();
 }
 
-void APSE_LYFE_AutoRWeapon::CallStopFire()
+void APSE_LYFE_AutoRWeapon::ClientCallStopFire()
 {
 	StopWeaponAnimation(FireAnimation);
 	ServerStopFire();
-	if (GetWorldTimerManager().IsTimerActive(this, &APSE_LYFE_AutoRWeapon::CallStartFire))
+	if (GetWorldTimerManager().IsTimerActive(ClientCallFireHandle))
 	{
-		GetWorldTimerManager().ClearTimer(this, &APSE_LYFE_AutoRWeapon::CallStartFire);
+		GetWorldTimerManager().ClearTimer(ClientCallFireHandle);
 	}
 	if (CurrentState == EWeaponState::Firing)
 	{
 		CurrentState = EWeaponState::Idle;
-		GetWorldTimerManager().ClearTimer(this, &APSE_LYFE_AutoRWeapon::ClientFire);
+		GetWorldTimerManager().ClearTimer(ClientFireHandle);
 		if (DelayedFireStart == true)
 		{
-			GetWorldTimerManager().ClearTimer(this, &APSE_LYFE_AutoRWeapon::CallStartFire);
+			GetWorldTimerManager().ClearTimer(ClientCallFireHandle);
 		}
 	}
 }
@@ -208,23 +205,19 @@ bool APSE_LYFE_AutoRWeapon::ServerStopFire_Validate()
 void APSE_LYFE_AutoRWeapon::ServerStopFire_Implementation()
 {
 	FireCounter = 0;
-	if (GetWorldTimerManager().IsTimerActive(this, &APSE_LYFE_AutoRWeapon::ServerCallStartFire))
+	if (GetWorldTimerManager().IsTimerActive(ServerCallFireHandle))
 	{
-		GetWorldTimerManager().ClearTimer(this, &APSE_LYFE_AutoRWeapon::ServerCallStartFire);
+		GetWorldTimerManager().ClearTimer(ServerCallFireHandle);
 	}
 	if (CurrentState == EWeaponState::Firing)
 	{
 		CurrentState = EWeaponState::Idle;
 	}
-	if (DelayedFireStart == true)
-	{
-		GetWorldTimerManager().ClearTimer(this, &APSE_LYFE_AutoRWeapon::CallStartFire);
-	}
 }
 
 void APSE_LYFE_AutoRWeapon::StartReload()
 {
-	CallStopFire();
+	ClientCallStopFire();
 	Super::StartReload();
 }
 

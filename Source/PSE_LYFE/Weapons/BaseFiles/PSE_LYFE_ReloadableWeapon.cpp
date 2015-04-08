@@ -27,18 +27,14 @@ void APSE_LYFE_ReloadableWeapon::StartReload()
 	if (CurrentState == EWeaponState::Idle)
 	{
 		CurrentState = EWeaponState::Reloading;
-		GetWorldTimerManager().SetTimer(this, &APSE_LYFE_ReloadableWeapon::FinishReload, ReloadingTime, false);
+		GetWorldTimerManager().SetTimer(ClientReloadTimeHandler, this, &APSE_LYFE_ReloadableWeapon::ClientEndReload, ReloadingTime, false);
 		PlayWeaponAnimation(ReloadingAnimation);
 		ServerStartReload();
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, "Can only reload in idel state client");
 	}
 }
 
 
-void APSE_LYFE_ReloadableWeapon::FinishReload()
+void APSE_LYFE_ReloadableWeapon::ClientEndReload()
 {
 	CurrentState = EWeaponState::Idle;
 	StopWeaponAnimation(ReloadingAnimation);
@@ -54,7 +50,7 @@ void APSE_LYFE_ReloadableWeapon::ServerStartReload_Implementation()
 	if (CurrentState == EWeaponState::Idle)
 	{
 		CurrentState = EWeaponState::Reloading;
-		GetWorldTimerManager().SetTimer(this, &APSE_LYFE_ReloadableWeapon::ServerEndReload, (ReloadingTime - 0.1f), false);
+		GetWorldTimerManager().SetTimer(ServerReloadTimeHandler, this, &APSE_LYFE_ReloadableWeapon::ServerFinishReload, (ReloadingTime - 0.1f), false);
 		bIsReloading = true;
 	}
 	else
@@ -63,7 +59,7 @@ void APSE_LYFE_ReloadableWeapon::ServerStartReload_Implementation()
 	}
 }
 
-void APSE_LYFE_ReloadableWeapon::ServerEndReload()
+void APSE_LYFE_ReloadableWeapon::ServerFinishReload()
 {
 	CurrentState = EWeaponState::Idle;
 	CurrentAmmoInClip = MaxAmmoInClip;
@@ -73,10 +69,10 @@ void APSE_LYFE_ReloadableWeapon::ServerEndReload()
 
 void APSE_LYFE_ReloadableWeapon::CancelReload()
 {
-	ServerCancelReload();
-	GetWorldTimerManager().ClearTimer(this, &APSE_LYFE_ReloadableWeapon::FinishReload);
 	CurrentState = EWeaponState::Idle;
+	GetWorldTimerManager().ClearTimer(ClientReloadTimeHandler);
 	StopWeaponAnimation(ReloadingAnimation);
+	ServerCancelReload();
 }
 
 bool APSE_LYFE_ReloadableWeapon::ServerCancelReload_Validate()
@@ -86,7 +82,7 @@ bool APSE_LYFE_ReloadableWeapon::ServerCancelReload_Validate()
 
 void APSE_LYFE_ReloadableWeapon::ServerCancelReload_Implementation()
 {
-	GetWorldTimerManager().ClearTimer(this, &APSE_LYFE_ReloadableWeapon::ServerEndReload);
+	GetWorldTimerManager().ClearTimer(ServerReloadTimeHandler);
 	CurrentState = EWeaponState::Idle;
 	bIsReloading = false;
 }
@@ -120,7 +116,7 @@ void APSE_LYFE_ReloadableWeapon::OnRep_SetReloadAnimation()
 	if (MyPawn)
 		if (bIsReloading == true)
 		{
-		PlayWeaponAnimation(ReloadingAnimation);
+			PlayWeaponAnimation(ReloadingAnimation);
 		}
 		else
 		{

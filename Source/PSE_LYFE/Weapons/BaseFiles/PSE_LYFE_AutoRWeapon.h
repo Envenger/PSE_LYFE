@@ -6,24 +6,31 @@
 #include "PSE_LYFE_AutoRWeapon.generated.h"
 
 /**
- * 
- */
+*
+*/
 UCLASS()
 class PSE_LYFE_API APSE_LYFE_AutoRWeapon : public APSE_LYFE_ReloadableWeapon
 {
 	GENERATED_BODY()
-	
-public:
 
+public:
+	
 	APSE_LYFE_AutoRWeapon(const FObjectInitializer& ObjectInitializer);
 
 	virtual void StartFire() override;
 
+	FTimerHandle RepeatingStartFireTimerHandle;
+
+	/** A repeating counter that keeps getting called when the fire button is pressed */
 	virtual void RepeatingStartFire();
 
-	virtual void CallStartFire();
+	FTimerHandle ClientCallFireHandle;
+
+	virtual void ClientCallStartFire();
 
 	virtual void StartRepeatingClientFire();
+
+	FTimerHandle ClientFireHandle;
 
 	virtual void ClientFire() override;
 
@@ -31,17 +38,21 @@ public:
 
 	virtual void ServerStartFire_Implementation() override;
 
+	FTimerHandle ServerCallFireHandle;
+
 	virtual void ServerCallStartFire();// Starts repeating server fire..
 
 	float LastFiringTime;
 
 	bool DelayedFireStart;
 
+	FTimerHandle ServerFireTimerHandle;
+
 	virtual void Fire() override;
 
 	virtual void StopFire() override;
 
-	virtual void CallStopFire();
+	virtual void ClientCallStopFire();
 
 	virtual bool ServerStopFire_Validate() override;
 
@@ -50,6 +61,6 @@ public:
 	virtual bool PreFireChecks() override;
 
 	virtual void StartReload() override;
-	
-	
+
+
 };

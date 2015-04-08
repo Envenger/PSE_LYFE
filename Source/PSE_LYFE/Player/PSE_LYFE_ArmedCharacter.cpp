@@ -7,6 +7,7 @@
 #include "Weapons/BaseFiles/PSE_LYFE_SemiAutoRWeapon.h"
 #include "Weapons/BaseFiles/PSE_LYFE_GrenadeComponent.h"
 #include "Weapons/Zoomable/PSE_LYFE_AutoRZWeapon.h"
+#include "Player/Inventory/PSE_LYFE_Inventory4_QuickSlots.h"
 #include "UnrealNetwork.h"
 #include "PSE_LYFE_ArmedCharacter.h"
 
@@ -32,8 +33,6 @@ void APSE_LYFE_ArmedCharacter::SetupPlayerInputComponent(class UInputComponent* 
 {
 	Super::SetupPlayerInputComponent(InputComponent);
 
-	InputComponent->BindAction("PrimaryFire", IE_Pressed, this, &APSE_LYFE_ArmedCharacter::LeftClickPressed);
-	InputComponent->BindAction("PrimaryFire", IE_Released, this, &APSE_LYFE_ArmedCharacter::LeftClickReleased);
 	InputComponent->BindAction("GrenadeThrow", IE_Pressed, this, &APSE_LYFE_ArmedCharacter::GrenadeThrowPressed);
 	InputComponent->BindAction("GrenadeThrow", IE_Released, this, &APSE_LYFE_ArmedCharacter::GrenadeThrowReleased);
 
@@ -130,16 +129,15 @@ void APSE_LYFE_ArmedCharacter::StopWeaponFire()
 void APSE_LYFE_ArmedCharacter::StartWeaponReload()
 {
 	APSE_LYFE_BaseWeapon* TempWeapon = GetCurrentWeapon();
-	if (TempWeapon)
-		if (TempWeapon->IsA(APSE_LYFE_ReloadableWeapon::StaticClass()))
-		{
+	if (TempWeapon->IsA(APSE_LYFE_ReloadableWeapon::StaticClass()))
+	{
 		APSE_LYFE_ReloadableWeapon* ReloadableWeapon = Cast<APSE_LYFE_ReloadableWeapon>(TempWeapon);
 		if (ReloadableWeapon->CanReload() && (ReloadableWeapon->CurrentState == EWeaponState::Firing ||
-			ReloadableWeapon->CurrentState == EWeaponState::Idle))
+		ReloadableWeapon->CurrentState == EWeaponState::Idle))
 		{
 			ReloadableWeapon->StartReload();
 		}
-		}
+	}
 }
 
 bool APSE_LYFE_ArmedCharacter::CanFire()
@@ -149,7 +147,7 @@ bool APSE_LYFE_ArmedCharacter::CanFire()
 
 void APSE_LYFE_ArmedCharacter::ChangeWeaponTo(uint8 NewWeaponIndex)
 {
-	if (CurrentWeaponIndex != NewWeaponIndex && (GetWeaponWithIndex(NewWeaponIndex) != nullptr))
+	if (CurrentWeaponIndex != NewWeaponIndex && (GetWeaponWithIndex(NewWeaponIndex) != nullptr) && CharacterHUD->bIsInventoryOpen == false)
 	{
 		if (CurrentWeaponIndex != 0)
 		{
@@ -207,22 +205,17 @@ void APSE_LYFE_ArmedCharacter::EquipWeapon(uint8 NewWeaponIndex)
 
 void APSE_LYFE_ArmedCharacter::ChangeWeaponTo1()
 {
-	if (GetCurrentWeapon()->CurrentState == EWeaponState::Idle)
-	{
-		ChangeWeaponTo(1);
-	}
+	ChangeWeaponTo(1);
 }
 
 void APSE_LYFE_ArmedCharacter::ChangeWeaponTo2()
 {
-	if (GetCurrentWeapon()->CurrentState == EWeaponState::Idle)
-	{
-		ChangeWeaponTo(2);
-	}
+	ChangeWeaponTo(2);
 }
 
 void APSE_LYFE_ArmedCharacter::LeftClickPressed()
 {
+	Super::LeftClickPressed();
 	bWantsToFire = true;
 	if (GrenadeComp->CurrentGrenadeState == EGrenadeState::Null)
 	{
@@ -232,6 +225,7 @@ void APSE_LYFE_ArmedCharacter::LeftClickPressed()
 
 void APSE_LYFE_ArmedCharacter::LeftClickReleased()
 {
+	Super::LeftClickReleased();
 	bWantsToFire = false;
 	StopWeaponFire();
 }
@@ -292,6 +286,7 @@ void APSE_LYFE_ArmedCharacter::GrenadeThrowReleased()
 		GrenadeComp->ClientThrowGrenadeFinish();
 	}
 }
+
 
 void APSE_LYFE_ArmedCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {

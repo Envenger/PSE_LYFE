@@ -3,8 +3,8 @@
 #pragma once
 
 #include "GameFramework/Character.h"
-#include "Player/Storage/PSE_LYFE_PlayerInventory.h"
 #include "Player/HUD/PSE_LYFE_TPSHUD.h"
+#include "Player/Inventory/PSE_LYFE_Inventory4_QuickSlots.h"
 #include "PSE_LYFE_Character.generated.h"
 
 namespace ECrouchState
@@ -50,6 +50,8 @@ public:
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerSetAim(FVector Origin, FVector Direction);
+	bool ServerSetAim_Validate(FVector Origin, FVector Direction);
+	void ServerSetAim_Implementation(FVector Origin, FVector Direction);
 
 	/** Direction in which the character moves to control animations */
 	FVector2D MotionDirection;
@@ -71,26 +73,8 @@ public:
 	/** Updates the move offset to all other clients through the server(NEED NETWwRK OPTIMIZATION) */
 	UFUNCTION(Server, reliable, WithValidation)
 	void ServerUpdateMoveDirection(float NewMoveDirection);
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AnimBP)
-	bool AnimBP_TurningLeft;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AnimBP)
-	bool AnimBP_TurningRight;
-
-	UPROPERTY(EditDefaultsOnly, Category = Animation)
-	UAnimMontage* TurnRight90Animation;
-
-	UPROPERTY(EditDefaultsOnly, Category = Animation)
-	UAnimMontage* TurnLeft90Animation;
-
-	void Turn90(const float RotDiffrence);
-
-	bool bIsTurning90;
-
-	float TurnAngle;
-
-	float TurnSpeed;
+	bool ServerUpdateMoveDirection_Validate(float NewMoveDirection);
+	void ServerUpdateMoveDirection_Implementation(float NewMoveDirection);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AnimBP)
 	float AnimBP_AimPitch;
@@ -112,11 +96,15 @@ public:
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerStartCrouch();
+	bool ServerStartCrouch_Validate();
+	void ServerStartCrouch_Implementation();
 
 	void EndCrouch();
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerEndCrouch();
+	bool ServerEndCrouch_Validate();
+	void ServerEndCrouch_Implementation();
 
 	ECrouchState::Type CrouchState;
 
@@ -125,10 +113,13 @@ public:
 
 	void CalculateCrouch(const float DeltaSeconds);
 
+
 ///////////////////////////////////////////
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerSetAimOffset(float NewAimOffset);
+	bool ServerSetAimOffset_Validate(float NewAimOffset);
+	void ServerSetAimOffset_Implementation(float NewAimOffset);
 
 	/** Called for forwards/backward input */
 	void MoveForward(float Value);
@@ -152,22 +143,43 @@ public:
 // Inventory
 
 	UPROPERTY(EditDefaultsOnly, Category = Inventory)
-	TSubclassOf<APSE_LYFE_PlayerInventory> DefaultInventoryClass;
+	TSubclassOf<APSE_LYFE_Inventory4_QuickSlots> InventoryClass;
 
-	UPROPERTY(Replicated)
-	APSE_LYFE_PlayerInventory* InventoryPtr;
+	UPROPERTY(ReplicatedUsing = OnRep_InventoryInitialize, Transient)
+	class APSE_LYFE_Inventory4_QuickSlots* InventoryPtr;
+
+	UFUNCTION()
+	void OnRep_InventoryInitialize();
+
+	void HUDStorageOwnerLink();
 
 	void PickInventoryItem();
 
 	UFUNCTION(reliable, server, WithValidation)
-	void ServerPickInventoryItem();
+	void Server_PickInventoryItem();
+	bool Server_PickInventoryItem_Validate();
+	void Server_PickInventoryItem_Implementation();
 
-	void OpenInventory();
-
-	bool bIsInventoryOpen;
+	void UseInventory();
 
 	UPROPERTY()
 	APSE_LYFE_TPSHUD* CharacterHUD;
+
+	virtual void LeftClickPressed();
+
+	void ShiftLeftClickPressed();
+
+	bool bIsLeftClickPressed;
+
+	virtual void LeftClickReleased();
+
+	float AllItemThrowTimer;
+
+	void ThrowAllItemsTest() const;
+
+	void RightClick();
+
+	const FVector GetCharacterThrowLocation() const;
 
 ///////////////////////////////////////////////////////////////////
 // Camera change

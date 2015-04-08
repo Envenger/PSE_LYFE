@@ -36,7 +36,8 @@ void APSE_LYFE_SemiAutoRWeapon::ClientFire()
 	PlayWeaponAnimation(FireAnimation);
 	CurrentState = EWeaponState::Firing;
 	ReadyToFire = false;
-	GetWorldTimerManager().SetTimer(this, &APSE_LYFE_SemiAutoRWeapon::ClientResetTimer, FiringRate, false);
+	FTimerHandle ClientFireResetHandle;
+	GetWorldTimerManager().SetTimer(ClientFireResetHandle, this, &APSE_LYFE_SemiAutoRWeapon::ClientResetTimer, FiringRate, false);
 }
 
 void APSE_LYFE_SemiAutoRWeapon::ClientResetTimer()
@@ -67,7 +68,8 @@ void APSE_LYFE_SemiAutoRWeapon::ServerStartFire_Implementation()
 			float Now = GetWorld()->GetRealTimeSeconds();
 			if ((Now - LastFiringTime) > FiringRate)
 			{
-				GetWorldTimerManager().SetTimer(this, &APSE_LYFE_SemiAutoRWeapon::Fire, (Now - LastFiringTime), false);
+				FTimerHandle ServerFireDelayHandle;
+				GetWorldTimerManager().SetTimer(ServerFireDelayHandle, this, &APSE_LYFE_SemiAutoRWeapon::Fire, (Now - LastFiringTime), false);
 			}
 		}
 	}
@@ -79,20 +81,20 @@ void APSE_LYFE_SemiAutoRWeapon::Fire()
 	{
 		ReadyToFire = false;
 		CurrentState = EWeaponState::Firing;
+
 		FVector StartTrace = MyPawn->ViewOrigin;
 		FVector TraceDirection = MyPawn->ViewDirection;
 		FVector EndTrace = StartTrace + (30000 * TraceDirection);
+		const FHitResult HudImpact = WeaponTrace(StartTrace, EndTrace);// First Trace
+
 		FVector WeaponTraceStart = Mesh3P->GetSocketLocation(GetFiringStartLoc());
-		FVector WeaponTraceDirection = (EndTrace - WeaponTraceStart);
+		FVector WeaponTraceDirection = (HudImpact.ImpactPoint - WeaponTraceStart);
 		WeaponTraceDirection.Normalize();
+		FVector RecoiledDirection = CalcRecoilDirection(WeaponTraceDirection);
+		FVector WeaponTraceEnd = WeaponTraceStart + (30000 * RecoiledDirection);
+		const FHitResult Impact = WeaponTrace(WeaponTraceStart, WeaponTraceEnd);// 2nd Trace
 
-		FVector Test = CalcRecoilDirection(WeaponTraceDirection);
-
-		float Angle = FMath::Acos(Test.DotProduct(Test, WeaponTraceDirection));
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::SanitizeFloat(FMath::RadiansToDegrees(Angle)));
-
-		FVector WeaponTraceEnd = WeaponTraceStart + (30000 * WeaponTraceDirection);
-		const FHitResult Impact = WeaponTrace(WeaponTraceStart, WeaponTraceEnd);
+		SpawnImpactEffects(Impact);
 
 		LastFiringTime = GetWorld()->GetRealTimeSeconds();
 		if (Impact.GetActor())
@@ -107,7 +109,8 @@ void APSE_LYFE_SemiAutoRWeapon::Fire()
 		CurrentAmmoInClip -= 1;
 		DoRecoil();
 	}
-	GetWorldTimerManager().SetTimer(this, &APSE_LYFE_SemiAutoRWeapon::ServerResetTimer, FiringRate, false);//Resets fire after each fire
+	FTimerHandle ServerFireRestHandle;
+	GetWorldTimerManager().SetTimer(ServerFireRestHandle, this, &APSE_LYFE_SemiAutoRWeapon::ServerResetTimer, FiringRate, false);//Resets fire after each fire
 }
 
 void APSE_LYFE_SemiAutoRWeapon::ServerResetTimer()

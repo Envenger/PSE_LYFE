@@ -15,11 +15,4 @@ class PSE_LYFE_API APSE_LYFE_TPSPlayerController : public APlayerController
 	
 	APSE_LYFE_TPSPlayerController(const FObjectInitializer& ObjectInitializer);
 
-	void EnableMouseMove();
-
-	void DisableMouseMove();
-
-	//virtual void SetupInputComponent() override;
-	
-	
 };

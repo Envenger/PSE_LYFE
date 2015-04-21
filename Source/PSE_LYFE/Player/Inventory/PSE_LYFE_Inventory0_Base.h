@@ -5,7 +5,7 @@
 #include "GameFramework/Actor.h"
 #include "PSE_LYFE_Inventory0_Base.generated.h"
 
-class APSE_LYFE_Character;
+class APSE_LYFE_Character4_Weapon;
 
 class APSE_LYFE_TPSHUD;
 
@@ -22,10 +22,10 @@ public:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	virtual void SetOwningPawn(APSE_LYFE_Character* NewOwner);
+	virtual void SetOwningPawn(APSE_LYFE_Character4_Weapon* NewOwner);
 
 	UPROPERTY(replicated)
-	APSE_LYFE_Character* OwningPawn;
+	APSE_LYFE_Character4_Weapon* OwningPawn;
 
 	APSE_LYFE_TPSHUD* CharacterHUD;
 

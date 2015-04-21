@@ -20,7 +20,7 @@ void APSE_LYFE_Inventory0_Base::BeginPlay()
 	Super::BeginPlay();
 }
 
-void APSE_LYFE_Inventory0_Base::SetOwningPawn(APSE_LYFE_Character* NewOwner)
+void APSE_LYFE_Inventory0_Base::SetOwningPawn(APSE_LYFE_Character4_Weapon* NewOwner)
 {
 	OwningPawn = NewOwner;
 	Instigator = NewOwner;

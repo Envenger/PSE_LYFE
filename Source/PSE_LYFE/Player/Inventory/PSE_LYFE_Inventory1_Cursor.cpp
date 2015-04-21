@@ -5,7 +5,7 @@
 #include "PSE_LYFE_InventoryStructures.h"
 #include "PSE_LYFE_Inventory2_Storage.h"
 #include "PSE_LYFE_Inventory3_Equipment.h"
-#include "Player/PSE_LYFE_Character.h"
+#include "Player/Character/PSE_LYFE_Character4_Weapon.h"
 #include "UnrealNetwork.h"
 #include "PSE_LYFE_Inventory1_Cursor.h"
 

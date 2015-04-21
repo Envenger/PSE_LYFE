@@ -95,7 +95,7 @@ struct FRecoilProperties
 	}
 };
 
-class APSE_LYFE_ArmedCharacter;
+class APSE_LYFE_Character4_Weapon;
 
 UCLASS()
 class PSE_LYFE_API APSE_LYFE_BaseWeapon : public AActor
@@ -114,11 +114,11 @@ public:
 	void AttachMeshToPawn();
 
 	/** set the weapon's owning pawn */
-	void SetOwningPawn(APSE_LYFE_ArmedCharacter* AShooterCharacter);
+	void SetOwningPawn(APSE_LYFE_Character4_Weapon* AShooterCharacter);
 
 	/** pawn owner */
 	UPROPERTY(Transient, Replicated)
-		APSE_LYFE_ArmedCharacter* MyPawn;
+		APSE_LYFE_Character4_Weapon* MyPawn;
 
 	/** weapon mesh: 3rd person view */
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)

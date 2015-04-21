@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PSE_LYFE.h"
-#include "Player/PSE_LYFE_ArmedCharacter.h"
+#include "Player/Character/PSE_LYFE_Character4_Weapon.h"
 #include "PSE_LYFE_AutoRWeapon.h"
 
 

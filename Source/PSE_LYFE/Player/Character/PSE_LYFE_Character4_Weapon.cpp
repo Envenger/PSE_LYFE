@@ -37,7 +37,6 @@ void APSE_LYFE_Character4_Weapon::BeginPlay()
 
 void APSE_LYFE_Character4_Weapon::SpawnDefaultWeapon()
 {
-	/*
 	if (Role < ROLE_Authority)
 	{
 		return;
@@ -71,7 +70,7 @@ void APSE_LYFE_Character4_Weapon::SpawnDefaultWeapon()
 				CurrentWeaponIndex = 2;
 			}
 		}
-	}*/
+	}
 }
 
 void APSE_LYFE_Character4_Weapon::StartWeaponFire()

@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PSE_LYFE.h"
-#include "Player/PSE_LYFE_ArmedCharacter.h"
+#include "Player/Character/PSE_LYFE_Character4_Weapon.h"
 #include "PSE_LYFE_BaseGrenade.h"
 #include "UnrealNetwork.h"
 #include "PSE_LYFE_GrenadeComponent.h"
@@ -24,7 +24,7 @@ UPSE_LYFE_GrenadeComponent::UPSE_LYFE_GrenadeComponent(const FObjectInitializer&
 
 void UPSE_LYFE_GrenadeComponent::OnRep_GrenadeAnimation()
 {
-	APSE_LYFE_ArmedCharacter* Character = Cast<APSE_LYFE_ArmedCharacter>(GetOwner());
+	APSE_LYFE_Character4_Weapon* Character = Cast<APSE_LYFE_Character4_Weapon>(GetOwner());
 	
 	if (CurrentGrenadeState == EGrenadeState::ThrowStart)
 	{
@@ -48,9 +48,9 @@ void UPSE_LYFE_GrenadeComponent::OnRep_GrenadeAnimation()
 
 void UPSE_LYFE_GrenadeComponent::ClientThrowGrenadeStart()
 {
-	if (GetOwner()->IsA(APSE_LYFE_ArmedCharacter::StaticClass()))
+	if (GetOwner()->IsA(APSE_LYFE_Character4_Weapon::StaticClass()))
 	{
-		APSE_LYFE_ArmedCharacter* Character = Cast<APSE_LYFE_ArmedCharacter>(GetOwner());
+		APSE_LYFE_Character4_Weapon* Character = Cast<APSE_LYFE_Character4_Weapon>(GetOwner());
 		if (Character->bWantsToFire == true)
 		{
 			Character->StopWeaponFire();
@@ -69,7 +69,7 @@ void UPSE_LYFE_GrenadeComponent::ServerThrowGrenadeStart_Implementation()
 {
 	if (CurrentGrenadeState == EGrenadeState::Null)
 	{
-		APSE_LYFE_ArmedCharacter* Character = Cast<APSE_LYFE_ArmedCharacter>(GetOwner());
+		APSE_LYFE_Character4_Weapon* Character = Cast<APSE_LYFE_Character4_Weapon>(GetOwner());
 		CurrentGrenadeState = EGrenadeState::ThrowStart;
 		Character->GetWorldTimerManager().SetTimer(GrenadeLoopTimerHandle, this, &UPSE_LYFE_GrenadeComponent::GrenadeLoopStart, ThrowStartTimer, false);
 	}
@@ -85,7 +85,7 @@ void UPSE_LYFE_GrenadeComponent::GrenadeLoopStart()
 
 void UPSE_LYFE_GrenadeComponent::ClientThrowGrenadeFinish()
 {
-	if (GetOwner()->IsA(APSE_LYFE_ArmedCharacter::StaticClass()))
+	if (GetOwner()->IsA(APSE_LYFE_Character4_Weapon::StaticClass()))
 	{
 		ServerThrowGrenadeFinish();
 	}
@@ -99,7 +99,7 @@ bool UPSE_LYFE_GrenadeComponent::ServerThrowGrenadeFinish_Validate()
 //_Implementation
 void UPSE_LYFE_GrenadeComponent::ServerThrowGrenadeFinish_Implementation()
 {
-	APSE_LYFE_ArmedCharacter* Character = Cast<APSE_LYFE_ArmedCharacter>(GetOwner());
+	APSE_LYFE_Character4_Weapon* Character = Cast<APSE_LYFE_Character4_Weapon>(GetOwner());
 	FTimerHandle UniqueHandle;
 	if (CurrentGrenadeState == EGrenadeState::ThrowStart)
 	{
@@ -125,7 +125,7 @@ void UPSE_LYFE_GrenadeComponent::ServerThrowGrenadeFinish_Implementation()
 
 void UPSE_LYFE_GrenadeComponent::SpawnGrenade(float ForwardForce, float VerticalForce)
 {
-	APSE_LYFE_ArmedCharacter* Character = Cast<APSE_LYFE_ArmedCharacter>(GetOwner());
+	APSE_LYFE_Character4_Weapon* Character = Cast<APSE_LYFE_Character4_Weapon>(GetOwner());
 	
 	float Direction = Character->ViewDirection.Rotation().Yaw;
 	FQuat ForceQuat = FRotator(0, Direction, 0).Quaternion();

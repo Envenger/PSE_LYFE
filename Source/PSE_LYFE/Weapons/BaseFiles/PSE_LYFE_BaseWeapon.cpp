@@ -2,7 +2,7 @@
 
 #include "PSE_LYFE.h"
 #include "UnrealNetwork.h"
-#include "Player/PSE_LYFE_ArmedCharacter.h"
+#include "Player/Character/PSE_LYFE_Character4_Weapon.h"
 #include "Weapons/Effects/PSE_LYFE_HitImpact.h"
 #include "PSE_LYFE_BaseWeapon.h"
 
@@ -60,7 +60,7 @@ void APSE_LYFE_BaseWeapon::Tick(float DeltaSeconds)
 
 }
 
-void APSE_LYFE_BaseWeapon::SetOwningPawn(APSE_LYFE_ArmedCharacter* NewOwner)
+void APSE_LYFE_BaseWeapon::SetOwningPawn(APSE_LYFE_Character4_Weapon* NewOwner)
 {
 	MyPawn = NewOwner;
 	Instigator = NewOwner;

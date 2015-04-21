@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Player/Character/PSE_LYFE_Character2_Inventory.h"
+#include "Player/Character/PSE_LYFE_Character3_Survival.h"
 #include "Weapons/BaseFiles/PSE_LYFE_BaseWeapon.h"
 #include "Weapons/BaseFiles/PSE_LYFE_GrenadeComponent.h"
 #include "PSE_LYFE_Character4_Weapon.generated.h"
@@ -50,7 +50,7 @@ struct FArmedWeapons
 };
 
 UCLASS()
-class PSE_LYFE_API APSE_LYFE_Character4_Weapon : public APSE_LYFE_Character2_Inventory
+class PSE_LYFE_API APSE_LYFE_Character4_Weapon : public APSE_LYFE_Character3_Survival
 {
 	GENERATED_BODY()
 	

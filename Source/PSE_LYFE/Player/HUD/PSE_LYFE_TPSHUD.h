@@ -6,7 +6,7 @@
 #include "Player/Inventory/PSE_LYFE_Inventory4_QuickSlots.h"
 #include "PSE_LYFE_TPSHUD.generated.h"
 
-class APSE_LYFE_ArmedCharacter;
+class APSE_LYFE_Character4_Weapon;
 
 UCLASS()
 class PSE_LYFE_API APSE_LYFE_TPSHUD : public AHUD
@@ -42,7 +42,7 @@ public:
 	UGameViewportClient* Viewport;
 
 	UPROPERTY()
-	APSE_LYFE_ArmedCharacter* OwningCharacter;
+	APSE_LYFE_Character4_Weapon* OwningCharacter;
 
 	UPROPERTY()
 	APSE_LYFE_Inventory4_QuickSlots* InventoryPtr;

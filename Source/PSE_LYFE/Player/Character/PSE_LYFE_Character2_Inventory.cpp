@@ -3,6 +3,7 @@
 #include "PSE_LYFE.h"
 #include "Player/HUD/PSE_LYFE_TPSHUD.h"
 #include "Player/Inventory/PSE_LYFE_Inventory4_QuickSlots.h"
+#include "PSE_LYFE_Character4_Weapon.h"
 #include "UnrealNetwork.h"
 #include "PSE_LYFE_Character2_Inventory.h"
 
@@ -37,14 +38,17 @@ void APSE_LYFE_Character2_Inventory::OnRep_InventoryInitialize()
 
 void APSE_LYFE_Character2_Inventory::HUDStorageOwnerLink()
 {
-	/*
+	
 	if (GetController())
 	{
 		APlayerController* TempPC = Cast<APlayerController>(GetController());
 		if (TempPC->GetHUD() && TempPC->GetHUD()->IsA(APSE_LYFE_TPSHUD::StaticClass()))
 		{
 			CharacterHUD = Cast<APSE_LYFE_TPSHUD>(TempPC->GetHUD());
-			CharacterHUD->OwningCharacter = Cast<APSE_LYFE_ArmedCharacter>(this);
+			if (this->IsA(APSE_LYFE_Character4_Weapon::StaticClass()))
+			{
+				CharacterHUD->OwningCharacter = Cast<APSE_LYFE_Character4_Weapon>(this);
+			}
 			CharacterHUD->InventoryPtr = InventoryPtr;
 			InventoryPtr->CharacterHUD = CharacterHUD;
 			CharacterHUD->CreateUI();
@@ -53,16 +57,16 @@ void APSE_LYFE_Character2_Inventory::HUDStorageOwnerLink()
 		else
 		{
 			FTimerHandle LinkDelayTimerHandle;
-			GetWorldTimerManager().SetTimer(LinkDelayTimerHandle, this, &APSE_LYFE_Character::HUDStorageOwnerLink, 0.5, false);
+			GetWorldTimerManager().SetTimer(LinkDelayTimerHandle, this, &APSE_LYFE_Character2_Inventory::HUDStorageOwnerLink, 0.5, false);
 			GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "HUD Link Failed1");
 		}
 	}
 	else
 	{
 		FTimerHandle LinkDelayTimerHandle;
-		GetWorldTimerManager().SetTimer(LinkDelayTimerHandle, this, &APSE_LYFE_Character::HUDStorageOwnerLink, 0.5, false);
+		GetWorldTimerManager().SetTimer(LinkDelayTimerHandle, this, &APSE_LYFE_Character2_Inventory::HUDStorageOwnerLink, 0.5, false);
 		GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "HUD Link Failed2");
-	}*/
+	}
 }
 
 void APSE_LYFE_Character2_Inventory::UseInventory()

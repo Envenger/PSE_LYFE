@@ -2,7 +2,7 @@
 
 #include "PSE_LYFE.h"
 #include "PSE_LYFE_SemiAutoRWeapon.h"
-#include "Player/PSE_LYFE_ArmedCharacter.h"
+#include "Player/Character/PSE_LYFE_Character4_Weapon.h"
 #include "UnrealNetwork.h"
 
 APSE_LYFE_SemiAutoRWeapon::APSE_LYFE_SemiAutoRWeapon(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)

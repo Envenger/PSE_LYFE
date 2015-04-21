@@ -13,6 +13,8 @@ class PSE_LYFE_API APSE_LYFE_Character3_Survival : public APSE_LYFE_Character2_I
 {
 	GENERATED_BODY()
 
+public:
+
 	APSE_LYFE_Character3_Survival();
 	
 	virtual void Tick(float DeltaSeconds) override;

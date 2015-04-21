@@ -22,7 +22,7 @@ class PSE_LYFE_API APSE_LYFE_Character1_Movement : public APSE_LYFE_Character0_B
 
 public:
 
-	APSE_LYFE_Character1_Movement();
+	APSE_LYFE_Character1_Movement(const FObjectInitializer& ObjectInitializer);
 	
 	void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 

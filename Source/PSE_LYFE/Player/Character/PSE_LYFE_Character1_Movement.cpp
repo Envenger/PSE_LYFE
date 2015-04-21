@@ -1,10 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PSE_LYFE.h"
+#include "Player/PSE_LYFE_CMovementComponent.h"
 #include "UnrealNetwork.h"
 #include "PSE_LYFE_Character1_Movement.h"
 
-APSE_LYFE_Character1_Movement::APSE_LYFE_Character1_Movement()
+APSE_LYFE_Character1_Movement::APSE_LYFE_Character1_Movement(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UPSE_LYFE_CMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 	// set our turn rates for input
 	BaseTurnRate = 45.f;

@@ -22,7 +22,7 @@ private:
 
 public:
 	// Sets default values for this character's properties
-	APSE_LYFE_Character0_Base();
+	APSE_LYFE_Character0_Base(const FObjectInitializer& ObjectInitializer);
 
 	virtual void PostInitializeComponents() override;
 

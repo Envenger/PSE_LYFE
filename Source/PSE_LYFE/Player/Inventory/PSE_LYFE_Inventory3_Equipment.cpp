@@ -58,7 +58,7 @@ bool APSE_LYFE_Inventory3_Equipment::CheckSlotType(const uint8 EquipmentSlotLoc,
 	return false;
 }
 
-void APSE_LYFE_Inventory3_Equipment::AddInventoryEquipment(const uint8 EquipmentSlotLoc, FItemStruct &NewItem)
+void APSE_LYFE_Inventory3_Equipment::AddInventoryEquipment(FItemStruct &NewItem, const uint8 EquipmentSlotLoc)
 {
 	const APSE_LYFE_BaseInventoryItem* GetDefault = NewItem.GetDefaultItem();
 	if (EquipmentStorage[EquipmentSlotLoc].ItemClass == nullptr)
@@ -96,7 +96,7 @@ void APSE_LYFE_Inventory3_Equipment::EquipItem(const FStorageLoc ItemLoc)
 		if (CheckSlotType(i, BaseItem->EquipmentSlotType))
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Blue, "found");
-			AddInventoryEquipment(i, Storage.GetItem(ItemLoc));
+			AddInventoryEquipment(Storage.GetItem(ItemLoc), i);
 			break;
 		}
 	}
@@ -118,8 +118,7 @@ void APSE_LYFE_Inventory3_Equipment::Server_EquipmentSlotLeftClick_Implementatio
 	{
 		if (EquipmentStorage[SlotLoc].ItemClass != nullptr)
 		{
-			CursorItem = EquipmentStorage[SlotLoc];
-			RemoveInventoryEquipment(SlotLoc);
+			AddItemToCursor(EquipmentStorage[SlotLoc], SlotLoc);
 		}
 	}
 	else
@@ -129,11 +128,11 @@ void APSE_LYFE_Inventory3_Equipment::Server_EquipmentSlotLeftClick_Implementatio
 		{
 			if (EquipmentStorage[SlotLoc].ItemClass == nullptr)
 			{
-				AddInventoryEquipment(SlotLoc, CursorItem);
+				AddInventoryEquipment(CursorItem, SlotLoc);
 			}
 			else
 			{
-				AddInventoryEquipment(SlotLoc, CursorItem);
+				AddInventoryEquipment(CursorItem, SlotLoc);
 			}
 		}
 	}

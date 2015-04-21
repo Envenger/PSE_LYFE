@@ -7,7 +7,7 @@
 #include "Player/Inventory/PSE_LYFE_Inventory4_QuickSlots.h"
 #include "PSE_LYFE_Character.generated.h"
 
-namespace ECrouchState
+namespace ECrouchStateDE
 {
 	enum Type
 	{
@@ -76,17 +76,25 @@ public:
 	bool ServerUpdateMoveDirection_Validate(float NewMoveDirection);
 	void ServerUpdateMoveDirection_Implementation(float NewMoveDirection);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AnimBP)
+
+
+	/** Used to update client rotation to all clients */
+	UPROPERTY(replicated)
+	FRotator AimRotation;
+
+	UFUNCTION(Server, unreliable, WithValidation)
+	void ServerUpdateAimRotation(FRotator NewAimRotation);
+	bool ServerUpdateAimRotation_Validate(FRotator NewAimRotation);
+	void ServerUpdateAimRotation_Implementation(FRotator NewAimRotation);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = AnimBP)
 	float AnimBP_AimPitch;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AnimBP)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = AnimBP)
 	float AnimBP_AimYaw;
 
 ///////////////////////////////////////////
 // Crouch
-
-	/** A temporary storage used to store the walkspeed while crouching */
-	float WalkSpeedCache;
 
 	/** Has value off 0 for normal and 1 for crouched */
 	UPROPERTY(VisibleAnywhere, replicated, BlueprintReadOnly, Category = AnimBP)
@@ -106,13 +114,41 @@ public:
 	bool ServerEndCrouch_Validate();
 	void ServerEndCrouch_Implementation();
 
-	ECrouchState::Type CrouchState;
+	ECrouchStateDE::Type CrouchState;
 
 	/** DUration taken from stand to crouch */
 	float CrouchingDuration;
 
 	void CalculateCrouch(const float DeltaSeconds);
 
+	/** Height decrease if the camera when crouching */
+	UPROPERTY(Category = Crouch, EditDefaultsOnly)
+	float CrouchHeightDecrease;
+
+	/** A value of crouch stored by the camera to do camera height calculations */
+	float CameraCrouchAlpha;
+
+	/** A value of crouch stored by the camera to do camera height calculations */
+	float CurrentCrouchDecreasedHeight;
+
+///////////////////////////////////////////
+// Sprint
+
+	bool bIsSprinting;
+
+	void StartSprint();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerStartSprint();
+	bool ServerStartSprint_Validate();
+	void ServerStartSprint_Implementation();
+
+	void EndSprint();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerEndSprint();
+	bool ServerEndSprint_Validate();
+	void ServerEndSprint_Implementation();
 
 ///////////////////////////////////////////
 
@@ -167,17 +203,11 @@ public:
 
 	virtual void LeftClickPressed();
 
-	void ShiftLeftClickPressed();
-
 	bool bIsLeftClickPressed;
 
 	virtual void LeftClickReleased();
 
 	float AllItemThrowTimer;
-
-	void ThrowAllItemsTest() const;
-
-	void RightClick();
 
 	const FVector GetCharacterThrowLocation() const;
 

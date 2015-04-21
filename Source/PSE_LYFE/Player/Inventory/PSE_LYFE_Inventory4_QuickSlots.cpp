@@ -26,6 +26,7 @@ void APSE_LYFE_Inventory4_QuickSlots::InitializeQuickSlots()
 
 const FStorageLoc APSE_LYFE_Inventory4_QuickSlots::FindFirstItemOfType(const TSubclassOf<class APSE_LYFE_BaseInventoryItem> ItemClass)
 {
+	uint32 NoOfStorageSlots = 0;
 	for (int32 i = 0; i < Storage.Rows.Num(); i++)
 	{
 		for (int32 j = 0; j < Storage.Rows[i].Columns.Num(); j++)
@@ -33,6 +34,11 @@ const FStorageLoc APSE_LYFE_Inventory4_QuickSlots::FindFirstItemOfType(const TSu
 			if (ItemClass == Storage.GetItem(FStorageLoc(i, j)).ItemClass)
 			{
 				return FStorageLoc(i, j);
+			}
+			NoOfStorageSlots += 1;
+			if (NoOfStorageSlots == StorageSize)
+			{
+				return FStorageLoc(-1, -1);
 			}
 		}
 	}
@@ -67,10 +73,33 @@ void APSE_LYFE_Inventory4_QuickSlots::QuickSlotLeftClick(const uint8 SlotLoc)
 		if (DefualtItem->ItemType == EItemType::UsableItem || DefualtItem->ItemType == EItemType::StackableUsableItem)
 		{
 			QuickSlots[SlotLoc] = CursorItem.ItemClass;
-			ResetItemLastLocation();
+			Server_QuickSlotLeftClick(SlotLoc);
 		}
+		else
 		{
 			//Error message item cant be equiuped in quick slot
+		}
+	}
+	else if (QuickSlots[SlotLoc] != nullptr)
+	{
+		Server_QuickSlotLeftClick(SlotLoc);
+	}
+}
+
+bool APSE_LYFE_Inventory4_QuickSlots::Server_QuickSlotLeftClick_Validate(const uint8 SlotLoc)
+{
+	return true;
+}
+
+void APSE_LYFE_Inventory4_QuickSlots::Server_QuickSlotLeftClick_Implementation(const uint8 SlotLoc)
+{
+	if(CursorItem.ItemClass != nullptr)
+	{
+		const APSE_LYFE_BaseInventoryItem* DefualtItem = CursorItem.GetDefaultItem();
+		if (DefualtItem->ItemType == EItemType::UsableItem || DefualtItem->ItemType == EItemType::StackableUsableItem)
+		{
+			QuickSlots[SlotLoc] = CursorItem.ItemClass;
+			ResetItemLastLocation();
 		}
 	}
 	else
@@ -84,6 +113,21 @@ void APSE_LYFE_Inventory4_QuickSlots::QuickSlotRightClick(const uint8 SlotLoc)
 	if (QuickSlots[SlotLoc] != nullptr)
 	{
 		QuickSlots[SlotLoc] = nullptr;
+		Server_QuickSlotRightClick(SlotLoc);
+	}
+}
+
+bool APSE_LYFE_Inventory4_QuickSlots::Server_QuickSlotRightClick_Validate(const uint8 SlotLoc)
+{
+	return true;
+}
+
+void APSE_LYFE_Inventory4_QuickSlots::Server_QuickSlotRightClick_Implementation(const uint8 SlotLoc)
+{
+	if (QuickSlots[SlotLoc] != nullptr)
+	{
+		QuickSlots[SlotLoc] = nullptr;
+
 	}
 }
 

@@ -7,6 +7,7 @@
 #include "Player/HUD/Slate/Widget/SPSE_LYFE_PlayerUIWidget.h"
 #include "Player/Inventory/Slate/Widgets/Frames/SPSE_LYFE_EquipmentFrameWidget.h"
 #include "Player/Inventory/Slate/Widgets/Frames/SPSE_LYFE_StorageFrameWidget.h"
+#include "Player/Inventory/Slate/Widgets/Frames/SPSE_LYFE_QuickUseFrameWidget.h"
 #include "Player/Inventory/Slate/Widgets/Slots/SPSE_LYFE_CursorSlotWidget.h"
 #include "TextureResource.h"
 #include "CanvasItem.h"
@@ -32,6 +33,15 @@ bool APSE_LYFE_TPSHUD::CreateUI()
 		Viewport->AddViewportWidgetContent(
 		SAssignNew(MainPlayerUIContainer, SWeakWidget)
 		.PossiblyNullContent(MainPlayerUI.ToSharedRef()));
+
+		MainPlayerUI.Get()->InventoryOverlay.Get()->AddSlot(0)// Creating the quick slots
+		.VAlign(VAlign_Center)
+		.HAlign(HAlign_Right)
+		.Padding(FMargin(0, 0, 3, 0))
+		[
+			SAssignNew(QuickSlotUI, SPSE_LYFE_QuickUseFrameWidget)
+			.InventoryPtr(InventoryPtr)
+		];
 
 		MainPlayerUI.Get()->SetVisibility(EVisibility::HitTestInvisible);
 

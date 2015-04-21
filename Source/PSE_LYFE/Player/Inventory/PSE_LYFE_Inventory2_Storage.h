@@ -37,7 +37,7 @@ public:
 //////////////////////////////////////////////////
 
 	/** Row, Col size of the storage */
-	int32 StorageSize;
+	uint32 StorageSize;
 
 	void SetBagSize(const int32 BagSize);
 

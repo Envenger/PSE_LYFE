@@ -169,3 +169,20 @@ void SPSE_LYFE_StorageFrameWidget::Construct(const FArguments& InArgs)
 		];
 }
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION
+
+FReply SPSE_LYFE_StorageFrameWidget::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+{
+	if (MouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
+	{
+		return FReply::Handled();
+	}
+	else
+	{
+		return FReply::Unhandled();
+	}
+}
+
+FReply SPSE_LYFE_StorageFrameWidget::OnMouseButtonDoubleClick(const FGeometry& InMyGeometry, const FPointerEvent& InMouseEvent)
+{
+	return OnMouseButtonDown(InMyGeometry, InMouseEvent);
+}

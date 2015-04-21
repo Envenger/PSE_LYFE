@@ -10,7 +10,7 @@
 
 /** Passive weapon inventory to store weapons used for defualt inventories and such*/
 USTRUCT()
-struct FWeaponInventory
+struct FWeaponInventoryDE
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -23,13 +23,13 @@ struct FWeaponInventory
 	UPROPERTY(EditDefaultsOnly, Category = Weapon)
 	TSubclassOf<APSE_LYFE_BaseWeapon> MeleeWeapon;
 
-	FWeaponInventory()
+	FWeaponInventoryDE()
 	{}
 };
 
 /** Structure used to hold the actual pointer to the weapons */
 USTRUCT()
-struct FArmedWeapons
+struct FArmedWeaponsDE
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -42,7 +42,7 @@ struct FArmedWeapons
 	UPROPERTY()
 	APSE_LYFE_BaseWeapon* MeleeWeapon;
 
-	FArmedWeapons()
+	FArmedWeaponsDE()
 	{
 		PrimaryWeapon = nullptr;
 		SecondaryWeapon = nullptr;
@@ -90,10 +90,10 @@ public:
 	// Equip and Unequip
 
 	UPROPERTY(EditDefaultsOnly, Category = Weapon)
-	FWeaponInventory DefaultInventory;
+	FWeaponInventoryDE DefaultInventory;
 
 	UPROPERTY(Transient, Replicated, RepRetry)
-	FArmedWeapons CurrentArmedWeapons;
+	FArmedWeaponsDE CurrentArmedWeapons;
 
 	/** Index of the armed weapon 1 = primary, 2 = secondary, 3 = melee */
 	UPROPERTY(Transient, Replicated)

@@ -6,7 +6,14 @@
 #include "PSE_LYFE_InventoryStructures.h"
 #include "PSE_LYFE_Inventory1_Cursor.generated.h"
 
-
+UENUM(BlueprintType)
+enum class ELastClickedStorageType : uint8
+{
+	StorageSlot,
+	EquipmentSlot,
+	//
+	Nothing,
+};
 
 UCLASS()
 class PSE_LYFE_API APSE_LYFE_Inventory1_Cursor : public APSE_LYFE_Inventory0_Base
@@ -28,11 +35,17 @@ public:
 
 	void AddItemToCursor(FItemStruct& StoredItem, FStorageLoc StoredLoc);
 
+	void AddItemToCursor(FItemStruct& StoredItem, uint8 EquipmentSlotLoc);
+
 	void AddItemToCursorAlt(FItemStruct& StoredItem, FStorageLoc StoredLoc);
 
 	void CursorSwap(FItemStruct& StoredItem, FStorageLoc StoredLoc);
 
+	/** Item picked for storage slot */
 	void ItemPicked(AActor* StoragePtr, FStorageLoc StoredLoc);
+
+	/** Item picked for equipment slot */
+	void ItemPicked(AActor* StoragePtr, uint8 EquipmentSlotLoc);
 
 	//void ItemPicked(AInventoryStorage* StoragePtr, EquipmentLoc uint8);
 
@@ -49,10 +62,12 @@ public:
 	AActor* LastStoragePtr;
 
 	/** Last location item was stored before the item was picked up */
-	FStorageLoc LastStoredLoc;
+	FStorageLoc LastStoredStorageLoc;
 
 	/** Lost stored location incase item was from an equipment slot */
 	uint8 LastStoredEquipmentLoc;
+
+	ELastClickedStorageType LastStoragePtrType;
 
 	void AltPressed();
 

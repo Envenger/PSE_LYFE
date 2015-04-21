@@ -1,13 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PSE_LYFE.h"
-#include "PSE_LYFE_Character.h"
 #include "Player/HUD/PSE_LYFE_TPSHUD.h"
 #include "Player/Inventory/PSE_LYFE_Inventory4_QuickSlots.h"
+#include "PSE_LYFE_CMovementComponent.h"
 #include "UnrealNetwork.h"
+#include "PSE_LYFE_Character.h"
 
 APSE_LYFE_Character::APSE_LYFE_Character(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UPSE_LYFE_CMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -18,7 +19,7 @@ APSE_LYFE_Character::APSE_LYFE_Character(const FObjectInitializer& ObjectInitial
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
+	bUseControllerRotationYaw = true;
 	bUseControllerRotationRoll = false;
 
 	// Configure character movement
@@ -48,8 +49,15 @@ APSE_LYFE_Character::APSE_LYFE_Character(const FObjectInitializer& ObjectInitial
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 	
 	AnimBP_CrouchStandAlpha = 0;
-	CrouchState = ECrouchState::Null;
+	CrouchState = ECrouchStateDE::Null;
 	CrouchingDuration = 0.3;
+
+	CrouchHeightDecrease = 40;
+	CameraCrouchAlpha = AnimBP_CrouchStandAlpha;
+
+	CurrentCrouchDecreasedHeight = 0;
+
+	bIsSprinting = false;
 
 	MotionDirection = FVector2D(0, 0);
 
@@ -96,8 +104,6 @@ void APSE_LYFE_Character::PostInitializeComponents()
 	AimCameraRotation = CameraAimLocation->RelativeRotation;
 
 	UpdateCamera(NonAimCameraLocation, NonAimCameraRotation);
-
-	WalkSpeedCache = GetCharacterMovement()->MaxWalkSpeed;
 }
 
 void APSE_LYFE_Character::BeginPlay()
@@ -151,36 +157,7 @@ void APSE_LYFE_Character::Tick(float DeltaSeconds)
 {
 
 	Super::Tick(DeltaSeconds);
-
 	AnimBP_MoveSpeed = GetMovementComponent()->Velocity.Size();
-
-	FRotator PCRot = GetControlRotation();
-	FRotator PawnRot = GetActorRotation();
-
-	FRotator RotDiffrence = PCRot - PawnRot;
-	RotDiffrence.Normalize();
-	
-	if (AnimBP_MoveSpeed > 1)
-	{
-		AnimBP_AimYaw = 0;
-		PawnRot.Yaw = PCRot.Yaw;
-		SetActorRotation(PawnRot);
-	}
-	else
-	{
-		float RotationDiffrence = PawnRot.Yaw - PCRot.Yaw;
-		if (FMath::Abs(RotDiffrence.Yaw) <= 90)
-		{
-			AnimBP_AimYaw = RotDiffrence.Yaw;
-		}
-		else if (FMath::Abs(RotDiffrence.Yaw) > 90)
-		{
-			float RotChange = 90 * FMath::Sign(RotDiffrence.Yaw);
-			AnimBP_AimYaw = RotChange;
-			PawnRot.Yaw = PCRot.Yaw - RotChange;
-			SetActorRotation(PawnRot);
-		}
-	}
 
 	if (IsLocallyControlled())
 	{
@@ -220,6 +197,18 @@ void APSE_LYFE_Character::Tick(float DeltaSeconds)
 	/////////////////////////////////
 }
 
+bool APSE_LYFE_Character::ServerUpdateAimRotation_Validate(FRotator NewAimRotation)
+{
+	return true;
+}
+
+void APSE_LYFE_Character::ServerUpdateAimRotation_Implementation(FRotator NewAimRotation)
+{
+	AimRotation = NewAimRotation;
+}
+
+
+
 void APSE_LYFE_Character::RightClickPressed()
 {
 	bIsTryingCameraAim = true;
@@ -249,6 +238,18 @@ void APSE_LYFE_Character::CalculateCameraAim(const float DeltaSeconds)
 			NewCameraAimCoeffcient = FMath::Max((NewCameraAimCoeffcient - DeltaIncrement), 0.0f);
 		}
 	}
+
+	bool bDidAimDecrease = false;
+	float NewCrouchHeightDifference = 0;
+	if (CameraCrouchAlpha != AnimBP_CrouchStandAlpha)
+	{
+		CameraCrouchAlpha = AnimBP_CrouchStandAlpha;
+		float NewCrouchDecreasedHeight = FMath::Lerp(0.0f, CrouchHeightDecrease, CameraCrouchAlpha);
+		NewCrouchHeightDifference = CurrentCrouchDecreasedHeight - NewCrouchDecreasedHeight;
+		CurrentCrouchDecreasedHeight = NewCrouchDecreasedHeight;
+
+		bDidAimDecrease = true;
+	}
 	if (CameraAimCoeffcient != NewCameraAimCoeffcient)
 	{
 		CameraAimCoeffcient = NewCameraAimCoeffcient;
@@ -256,10 +257,28 @@ void APSE_LYFE_Character::CalculateCameraAim(const float DeltaSeconds)
 		DeltaLocation.X = FMath::Lerp(NonAimCameraLocation.X, AimCameraLocation.X, CameraAimCoeffcient);
 		DeltaLocation.Y = FMath::Lerp(NonAimCameraLocation.Y, AimCameraLocation.Y, CameraAimCoeffcient);
 		DeltaLocation.Z = FMath::Lerp(NonAimCameraLocation.Z, AimCameraLocation.Z, CameraAimCoeffcient);
+
+		DeltaLocation.Z -= CurrentCrouchDecreasedHeight;
+
 		const FRotator DeltaRotation = FMath::Lerp(NonAimCameraRotation, AimCameraRotation, CameraAimCoeffcient);
+
 		UpdateCamera(DeltaLocation, DeltaRotation);
 
 		GetFollowCamera()->FieldOfView = FMath::Lerp(90, 75, CameraAimCoeffcient);
+	}
+	else if (bDidAimDecrease == true)
+	{
+		CameraCrouchAlpha = AnimBP_CrouchStandAlpha;
+
+		FVector DeltaLocation = GetCameraBoom()->RelativeLocation;
+		DeltaLocation.Z += NewCrouchHeightDifference;
+		GetCameraBoom()->SetRelativeLocation(DeltaLocation);
+	}
+	
+	if (IsLocallyControlled())
+	{
+		FVector TestLocation = GetCameraBoom()->RelativeLocation;
+		GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds, FColor::Green, FString::SanitizeFloat(TestLocation.Z));
 	}
 }
 
@@ -321,9 +340,9 @@ void APSE_LYFE_Character::MoveRight(float Value)
 
 void APSE_LYFE_Character::StartCrouch()
 {
-	if (CrouchState != ECrouchState::StartCrouch)
+	if (CrouchState != ECrouchStateDE::StartCrouch)
 	{
-		CrouchState = ECrouchState::StartCrouch;
+		CrouchState = ECrouchStateDE::StartCrouch;
 		ServerStartCrouch();
 	}
 }
@@ -335,17 +354,17 @@ bool APSE_LYFE_Character::ServerStartCrouch_Validate()
 
 void APSE_LYFE_Character::ServerStartCrouch_Implementation()
 {
-	if (CrouchState != ECrouchState::StartCrouch)
+	if (CrouchState != ECrouchStateDE::StartCrouch)
 	{
-		CrouchState = ECrouchState::StartCrouch;
+		CrouchState = ECrouchStateDE::StartCrouch;
 	}
 }
 
 void APSE_LYFE_Character::EndCrouch()
 {
-	if (CrouchState != ECrouchState::EndCrouch)
+	if (CrouchState != ECrouchStateDE::EndCrouch)
 	{
-		CrouchState = ECrouchState::EndCrouch;
+		CrouchState = ECrouchStateDE::EndCrouch;
 		ServerEndCrouch();
 	}
 }
@@ -357,46 +376,85 @@ bool APSE_LYFE_Character::ServerEndCrouch_Validate()
 
 void APSE_LYFE_Character::ServerEndCrouch_Implementation()
 {
-	if (CrouchState != ECrouchState::EndCrouch)
+	if (CrouchState != ECrouchStateDE::EndCrouch)
 	{
-		CrouchState = ECrouchState::EndCrouch;
+		CrouchState = ECrouchStateDE::EndCrouch;
 	}
 }
 
 void APSE_LYFE_Character::CalculateCrouch(const float DeltaSeconds)
 {
-
 	if (!GetCharacterMovement()->IsFalling())
 	{
-		if (CrouchState == ECrouchState::StartCrouch)
+		if (CrouchState == ECrouchStateDE::StartCrouch)
 		{
 			if (AnimBP_CrouchStandAlpha < 1)
 			{
 				AnimBP_CrouchStandAlpha = FMath::Min((AnimBP_CrouchStandAlpha + (1 / CrouchingDuration*DeltaSeconds)), 1.0f);
-				GetCharacterMovement()->MaxWalkSpeed = FMath::Lerp(WalkSpeedCache, GetCharacterMovement()->MaxWalkSpeedCrouched, AnimBP_CrouchStandAlpha);
-			}
-			else if (AnimBP_CrouchStandAlpha == 1)// Crouch Complete
-			{
-				GetCharacterMovement()->MaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeedCrouched;
 			}
 		}
-		else if (CrouchState == ECrouchState::EndCrouch)
+		else if (CrouchState == ECrouchStateDE::EndCrouch)
 		{
 			if (AnimBP_CrouchStandAlpha > 0)
 			{
 				AnimBP_CrouchStandAlpha = FMath::Max((AnimBP_CrouchStandAlpha - ((1 / CrouchingDuration)*DeltaSeconds)), 0.0f);
-				GetCharacterMovement()->MaxWalkSpeed = FMath::Lerp(WalkSpeedCache, GetCharacterMovement()->MaxWalkSpeedCrouched, AnimBP_CrouchStandAlpha);
 			}
 			else if (AnimBP_CrouchStandAlpha == 0)// Crouch End competly
 			{
-				GetCharacterMovement()->MaxWalkSpeed = WalkSpeedCache;
-				CrouchState = ECrouchState::Null;
+				CrouchState = ECrouchStateDE::Null;
 			}
 		}
 	}
 	else if (AnimBP_CrouchStandAlpha != 0)
 	{
 		AnimBP_CrouchStandAlpha = 0;
+	}
+}
+
+///////////////////////////////////////////
+// Sprint
+
+void APSE_LYFE_Character::StartSprint()
+{
+	if (bIsSprinting == false)
+	{
+		bIsSprinting = true;
+		ServerStartSprint();
+	}
+}
+
+bool APSE_LYFE_Character::ServerStartSprint_Validate()
+{
+	return true;
+}
+
+void APSE_LYFE_Character::ServerStartSprint_Implementation()
+{
+	if (bIsSprinting == false)
+	{
+		bIsSprinting = true;
+	}
+}
+
+void APSE_LYFE_Character::EndSprint()
+{
+	if (bIsSprinting == true)
+	{
+		bIsSprinting = false;
+		ServerStartSprint();
+	}
+}
+
+bool APSE_LYFE_Character::ServerEndSprint_Validate()
+{
+	return true;
+}
+
+void APSE_LYFE_Character::ServerEndSprint_Implementation()
+{
+	if (bIsSprinting == true)
+	{
+		bIsSprinting = false;
 	}
 }
 
@@ -527,6 +585,7 @@ void APSE_LYFE_Character::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME_CONDITION(APSE_LYFE_Character, AimRotation, COND_SkipOwner);
 	DOREPLIFETIME_CONDITION(APSE_LYFE_Character, AnimBP_CrouchStandAlpha, COND_SkipOwner);
 	DOREPLIFETIME_CONDITION(APSE_LYFE_Character, AnimBP_MoveDirection, COND_SkipOwner);
 

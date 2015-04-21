@@ -349,3 +349,20 @@ FReply SPSE_LYFE_EquipmentFrameWidget::OnDisplayPressed(const FGeometry& MyGeome
 	return FReply::Handled();
 }
 
+
+FReply SPSE_LYFE_EquipmentFrameWidget::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+{
+	if (MouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
+	{
+		return FReply::Handled();
+	}
+	else
+	{
+		return FReply::Unhandled();
+	}
+}
+
+FReply SPSE_LYFE_EquipmentFrameWidget::OnMouseButtonDoubleClick(const FGeometry& InMyGeometry, const FPointerEvent& InMouseEvent)
+{
+	return OnMouseButtonDown(InMyGeometry, InMouseEvent);
+}

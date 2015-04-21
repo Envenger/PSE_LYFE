@@ -4,6 +4,7 @@
 #include "Items/PSE_LYFE_BaseInventoryItem.h"
 #include "PSE_LYFE_InventoryStructures.h"
 #include "PSE_LYFE_Inventory2_Storage.h"
+#include "PSE_LYFE_Inventory3_Equipment.h"
 #include "Player/PSE_LYFE_Character.h"
 #include "UnrealNetwork.h"
 #include "PSE_LYFE_Inventory1_Cursor.h"
@@ -16,6 +17,7 @@ APSE_LYFE_Inventory1_Cursor::APSE_LYFE_Inventory1_Cursor()
 
 	bIsCursorFunctional = true;
 	bIsAltPressed = false;
+	LastStoragePtrType = ELastClickedStorageType::Nothing;
 }
 
 
@@ -27,6 +29,17 @@ void APSE_LYFE_Inventory1_Cursor::AddItemToCursor(FItemStruct& StoredItem, FStor
 		CursorItem = StoredItem;
 		StoragePtr->DeleteItems(StoredLoc, -1); // All items deleted                                                                                                  
 		ItemPicked(StoragePtr, StoredLoc);
+	}
+}
+
+void APSE_LYFE_Inventory1_Cursor::AddItemToCursor(FItemStruct& StoredItem, uint8 EquipmentSlotLoc)
+{
+	if (this->IsA(APSE_LYFE_Inventory3_Equipment::StaticClass()))
+	{
+		APSE_LYFE_Inventory3_Equipment* EquipmentPtr = Cast<APSE_LYFE_Inventory3_Equipment>(this);
+		CursorItem = StoredItem;
+		EquipmentPtr->RemoveInventoryEquipment(EquipmentSlotLoc);
+		ItemPicked(EquipmentPtr, EquipmentSlotLoc);
 	}
 }
 
@@ -92,7 +105,15 @@ void APSE_LYFE_Inventory1_Cursor::CursorSwap(FItemStruct& StoredItem, FStorageLo
 void APSE_LYFE_Inventory1_Cursor::ItemPicked(AActor* StoragePtr, FStorageLoc StoredLoc)
 {
 	LastStoragePtr = StoragePtr;
-	LastStoredLoc = StoredLoc;
+	LastStoredStorageLoc = StoredLoc;
+	LastStoragePtrType = ELastClickedStorageType::StorageSlot;
+}
+
+void APSE_LYFE_Inventory1_Cursor::ItemPicked(AActor* StoragePtr, uint8 EquipmentSlotLoc)
+{
+	LastStoragePtr = StoragePtr;
+	LastStoredEquipmentLoc = EquipmentSlotLoc;
+	LastStoragePtrType = ELastClickedStorageType::EquipmentSlot;
 }
 
 void APSE_LYFE_Inventory1_Cursor::ResetItemLastLocation()
@@ -112,10 +133,15 @@ void APSE_LYFE_Inventory1_Cursor::Server_ResetItemLastLocation_Implementation()
 {
 	if (LastStoragePtr && CursorItem.ItemClass != nullptr)
 	{
-		if (LastStoragePtr->IsA(APSE_LYFE_Inventory2_Storage::StaticClass()))
+		if (LastStoragePtrType == ELastClickedStorageType::StorageSlot)
 		{
 			APSE_LYFE_Inventory2_Storage* TempStoragePtr = Cast<APSE_LYFE_Inventory2_Storage>(LastStoragePtr);
-			TempStoragePtr->AddItem(CursorItem, LastStoredLoc);
+			TempStoragePtr->AddItem(CursorItem, LastStoredStorageLoc);
+		}
+		else if (LastStoragePtrType == ELastClickedStorageType::EquipmentSlot)
+		{
+			APSE_LYFE_Inventory3_Equipment* TempStoragePtr = Cast<APSE_LYFE_Inventory3_Equipment>(LastStoragePtr);
+			TempStoragePtr->AddInventoryEquipment(CursorItem, LastStoredEquipmentLoc);
 		}
 	}
 }
@@ -154,6 +180,10 @@ bool APSE_LYFE_Inventory1_Cursor::Server_ThrowCursorItem_Validate()
 
 void APSE_LYFE_Inventory1_Cursor::Server_ThrowCursorItem_Implementation()
 {
+	if (CursorItem.ItemClass == nullptr)
+	{
+		return;
+	}
 	const APSE_LYFE_BaseInventoryItem* ThrownItem = CursorItem.GetDefaultItem();
 	if (ThrownItem->ItemType == EItemType::StackableItem || ThrownItem->ItemType == EItemType::StackableUsableItem)
 	{
@@ -174,7 +204,8 @@ void APSE_LYFE_Inventory1_Cursor::Server_ThrowCursorItem_Implementation()
 	}
 	else
 	{
-		CursorItem.CreateItem(GetWorld(), FVector(600, 0, 270));
+		const FVector GetItemThrowLocation = OwningPawn->GetCharacterThrowLocation();
+		CursorItem.CreateItem(GetWorld(), GetItemThrowLocation);
 		CursorItem.EmptyItem();
 	}
 }

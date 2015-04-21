@@ -42,7 +42,15 @@ public:
 
 	void QuickSlotLeftClick(const uint8 SlotLoc);
 
+	UFUNCTION(reliable, server, WithValidation)
+	void Server_QuickSlotLeftClick(const uint8 SlotLoc);
+	bool Server_QuickSlotLeftClick_Validate(const uint8 SlotLoc);
+	void Server_QuickSlotLeftClick_Implementation(const uint8 SlotLoc);
+
 	void QuickSlotRightClick(const uint8 SlotLoc);
 	
-	
+	UFUNCTION(reliable, server, WithValidation)
+	void Server_QuickSlotRightClick(const uint8 SlotLoc);
+	bool Server_QuickSlotRightClick_Validate(const uint8 SlotLoc);
+	void Server_QuickSlotRightClick_Implementation(const uint8 SlotLoc);
 };

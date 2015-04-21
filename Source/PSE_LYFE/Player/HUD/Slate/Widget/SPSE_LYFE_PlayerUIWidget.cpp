@@ -11,25 +11,12 @@ void SPSE_LYFE_PlayerUIWidget::Construct(const FArguments& InArgs)
 
 	ChildSlot
 	[
-		SNew(SBorder)
-		.VAlign(VAlign_Fill)
-		.HAlign(HAlign_Fill)
-		.OnMouseButtonDown(this, &SPSE_LYFE_PlayerUIWidget::OnHUDPressed)
-		.OnMouseButtonUp(this, &SPSE_LYFE_PlayerUIWidget::OnHUDReleased)
-		.OnMouseDoubleClick(this, &SPSE_LYFE_PlayerUIWidget::OnHUDDoubleClicked)
-		[		
-			SAssignNew(InventoryOverlay, SOverlay)
-		]
+		SAssignNew(InventoryOverlay, SOverlay)
 	];
 }
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
-FReply SPSE_LYFE_PlayerUIWidget::OnHUDDoubleClicked(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
-{
-	return OnHUDPressed(MyGeometry, MouseEvent);
-}
-
-FReply SPSE_LYFE_PlayerUIWidget::OnHUDPressed(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+FReply SPSE_LYFE_PlayerUIWidget::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
 	if (MouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
 	{
@@ -43,9 +30,9 @@ FReply SPSE_LYFE_PlayerUIWidget::OnHUDPressed(const FGeometry& MyGeometry, const
 	}
 }
 
-FReply SPSE_LYFE_PlayerUIWidget::OnHUDReleased(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+FReply SPSE_LYFE_PlayerUIWidget::OnMouseButtonDoubleClick(const FGeometry& InMyGeometry, const FPointerEvent& InMouseEvent)
 {
-	return FReply::Handled();
+	return OnMouseButtonDown(InMyGeometry, InMouseEvent);
 }
 
 FReply SPSE_LYFE_PlayerUIWidget::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)

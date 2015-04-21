@@ -29,11 +29,9 @@ public:
 
 private:
 
-	FReply OnHUDPressed(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent);
+	virtual FReply OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 
-	FReply OnHUDReleased(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent);
-
-	FReply OnHUDDoubleClicked(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent);
+	virtual FReply OnMouseButtonDoubleClick(const FGeometry& InMyGeometry, const FPointerEvent& InMouseEvent) override;
 
 	TWeakObjectPtr<class APSE_LYFE_Inventory4_QuickSlots> InventoryPtr;
 };

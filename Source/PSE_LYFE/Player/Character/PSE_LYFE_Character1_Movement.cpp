@@ -50,8 +50,6 @@ void APSE_LYFE_Character1_Movement::SetupPlayerInputComponent(class UInputCompon
 
 void APSE_LYFE_Character1_Movement::Tick(float DeltaSeconds)
 {
-	ACharacter::Tick(DeltaSeconds);
-
 	AnimBP_MoveSpeed = GetMovementComponent()->Velocity.Size();
 
 	if (IsLocallyControlled())
@@ -88,8 +86,7 @@ void APSE_LYFE_Character1_Movement::Tick(float DeltaSeconds)
 	////////////////////////////////
 	CalculateCrouch(DeltaSeconds);
 	/////////////////////////////////
-	CalculateCameraAim(DeltaSeconds);
-	/////////////////////////////////
+	Super::Tick(DeltaSeconds);
 }
 
 void APSE_LYFE_Character1_Movement::CalculateCameraAim(const float DeltaSeconds)

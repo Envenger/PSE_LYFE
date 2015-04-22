@@ -29,7 +29,6 @@ APSE_LYFE_Character1_Movement::APSE_LYFE_Character1_Movement(const FObjectInitia
 
 	bIsSprinting = false;
 
-	MotionDirection = FVector2D(0, 0);
 }
 
 void APSE_LYFE_Character1_Movement::SetupPlayerInputComponent(class UInputComponent* InputComponent)
@@ -58,33 +57,17 @@ void APSE_LYFE_Character1_Movement::Tick(float DeltaSeconds)
 {
 	AnimBP_MoveSpeed = GetMovementComponent()->Velocity.Size();
 
-	if (IsLocallyControlled())
+
+	FRotator MovementDirection = GetMovementComponent()->Velocity.Rotation();
+	MovementDirection.Normalize();
+	FRotator AimDirection = GetActorRotation();
+	AimDirection.Normalize();
+	AnimBP_MoveDirection = MovementDirection.Yaw - AimDirection.Yaw;
+	if (AnimBP_MoveDirection > 180)
 	{
-		if (MotionDirection.X == 0 && MotionDirection.Y == 0)
-		{
-			AnimBP_MoveDirection = 0;
-		}
-		else
-		{
-			if (MotionDirection.X == 0 || MotionDirection.Y == 0)
-			{
-				if (MotionDirection.Y == 0)
-				{
-					AnimBP_MoveDirection = (MotionDirection.X * -90) + 90;
-				}
-				else
-				{
-					AnimBP_MoveDirection = (90 * MotionDirection.Y);
-				}
-			}
-			else
-			{
-				AnimBP_MoveDirection = (90 - (45 * MotionDirection.X)) * MotionDirection.Y;
-			}
-			ServerUpdateMoveDirection(AnimBP_MoveDirection);
-			MotionDirection = FVector2D(0, 0);
-		}
+		AnimBP_MoveDirection -= 360;
 	}
+
 	////////////////////////////////
 	FRotator AimRotation = GetBaseAimRotation();
 	AimRotation.Normalize();
@@ -92,17 +75,7 @@ void APSE_LYFE_Character1_Movement::Tick(float DeltaSeconds)
 	////////////////////////////////
 	CalculateCrouch(DeltaSeconds);
 	/////////////////////////////////
-	if (Role == ROLE_Authority)
-	{
-		if (bIsSprinting == true)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds, FColor::Green, "Server Sprinting");
-		}
-		else
-		{
-			GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds, FColor::Red, "Server not Sprinting");
-		}
-	}
+
 
 	Super::Tick(DeltaSeconds);
 }
@@ -166,7 +139,6 @@ void APSE_LYFE_Character1_Movement::CalculateCameraAim(const float DeltaSeconds)
 	if (IsLocallyControlled())
 	{
 		FVector TestLocation = GetCameraBoom()->RelativeLocation;
-		GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds, FColor::Green, FString::SanitizeFloat(TestLocation.Z));
 	}
 }
 
@@ -207,8 +179,6 @@ void APSE_LYFE_Character1_Movement::MoveForward(float Value)
 			// get forward vector
 			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 			AddMovementInput(Direction, 1);
-			GEngine->AddOnScreenDebugMessage(-1, GetWorld()->GetDeltaSeconds(), FColor::Cyan, FString::SanitizeFloat((Value)) + " " + Direction.ToString());
-			MotionDirection.X = Value;
 
 			if (Value >= 0)
 			{
@@ -220,8 +190,6 @@ void APSE_LYFE_Character1_Movement::MoveForward(float Value)
 				// get forward vector
 				const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 				AddMovementInput(Direction, Value);
-				GEngine->AddOnScreenDebugMessage(-1, GetWorld()->GetDeltaSeconds(), FColor::Cyan, FString::SanitizeFloat((Value)) + " " + Direction.ToString());
-				MotionDirection.X = Value;
 			}
 			else
 			{
@@ -233,8 +201,6 @@ void APSE_LYFE_Character1_Movement::MoveForward(float Value)
 				// get forward vector
 				const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 				AddMovementInput(Direction, Value);
-				GEngine->AddOnScreenDebugMessage(-1, GetWorld()->GetDeltaSeconds(), FColor::Cyan, FString::SanitizeFloat((Value)) + " " + Direction.ToString());
-				MotionDirection.X = Value;
 			}
 		}
 		else if (Value != 0.0f)
@@ -247,8 +213,6 @@ void APSE_LYFE_Character1_Movement::MoveForward(float Value)
 			// get forward vector
 			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 			AddMovementInput(Direction, Value);
-			GEngine->AddOnScreenDebugMessage(-1, GetWorld()->GetDeltaSeconds(), FColor::Cyan, FString::SanitizeFloat((Value)) + " " + Direction.ToString());
-			MotionDirection.X = Value;
 		}
 	}
 }
@@ -269,7 +233,6 @@ void APSE_LYFE_Character1_Movement::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
-		MotionDirection.Y = Value;
 	}
 
 }
@@ -400,18 +363,6 @@ void APSE_LYFE_Character1_Movement::ServerEndSprint_Implementation()
 	{
 		bIsSprinting = false;
 	}
-}
-
-///////////////////////////////////////////
-
-bool APSE_LYFE_Character1_Movement::ServerUpdateMoveDirection_Validate(float NewMoveDirection)
-{
-	return true;
-}
-
-void APSE_LYFE_Character1_Movement::ServerUpdateMoveDirection_Implementation(float NewMoveDirection)
-{
-	AnimBP_MoveDirection = NewMoveDirection;
 }
 
 

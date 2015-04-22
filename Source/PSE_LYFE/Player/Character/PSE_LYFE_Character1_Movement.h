@@ -42,8 +42,6 @@ public:
 	bool ServerSetAim_Validate(FVector Origin, FVector Direction);
 	void ServerSetAim_Implementation(FVector Origin, FVector Direction);
 
-	/** Direction in which the character moves to control animations */
-	FVector2D MotionDirection;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
@@ -58,13 +56,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AnimBP)
 	float AnimBP_MoveSpeed;
-
-	/** Updates the move offset to all other clients through the server(NEED NETWwRK OPTIMIZATION) */
-	UFUNCTION(Server, reliable, WithValidation)
-	void ServerUpdateMoveDirection(float NewMoveDirection);
-	bool ServerUpdateMoveDirection_Validate(float NewMoveDirection);
-	void ServerUpdateMoveDirection_Implementation(float NewMoveDirection);
-
 
 	/** Used to update client rotation to all clients */
 	UPROPERTY(replicated)

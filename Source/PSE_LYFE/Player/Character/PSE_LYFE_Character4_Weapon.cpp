@@ -11,6 +11,12 @@
 #include "UnrealNetwork.h"
 #include "PSE_LYFE_Character4_Weapon.h"
 
+APSE_LYFE_Character4_Weapon::APSE_LYFE_Character4_Weapon()
+{
+	GrenadeComp = CreateDefaultSubobject<UPSE_LYFE_GrenadeComponent>(TEXT("GrenadeComponent"));
+	GrenadeComp->SetIsReplicated(true);
+}
+
 void APSE_LYFE_Character4_Weapon::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
 	Super::SetupPlayerInputComponent(InputComponent);
@@ -23,6 +29,8 @@ void APSE_LYFE_Character4_Weapon::SetupPlayerInputComponent(class UInputComponen
 
 	InputComponent->BindAction("Reload", IE_Pressed, this, &APSE_LYFE_Character4_Weapon::StartWeaponReload);
 
+	InputComponent->BindAction("Weapon1", IE_Pressed, this, &APSE_LYFE_Character4_Weapon::ChangeWeaponTo1);
+	InputComponent->BindAction("Weapon2", IE_Pressed, this, &APSE_LYFE_Character4_Weapon::ChangeWeaponTo2);
 }
 
 void APSE_LYFE_Character4_Weapon::BeginPlay()
@@ -71,6 +79,7 @@ void APSE_LYFE_Character4_Weapon::SpawnDefaultWeapon()
 			}
 		}
 	}
+
 }
 
 void APSE_LYFE_Character4_Weapon::StartWeaponFire()
@@ -106,6 +115,10 @@ void APSE_LYFE_Character4_Weapon::StartWeaponReload()
 		if (ReloadableWeapon->CanReload() && (ReloadableWeapon->CurrentState == EWeaponState::Firing ||
 			ReloadableWeapon->CurrentState == EWeaponState::Idle))
 		{
+			if (bIsSprinting == true)
+			{
+				EndSprint();
+			}
 			ReloadableWeapon->StartReload();
 		}
 	}
@@ -151,6 +164,19 @@ void APSE_LYFE_Character4_Weapon::ChangeWeaponTo(uint8 NewWeaponIndex)
 	}
 }
 
+void APSE_LYFE_Character4_Weapon::CancleWeaponReload()
+{
+	APSE_LYFE_BaseWeapon* TempWeapon = GetCurrentWeapon();
+	if (TempWeapon->IsA(APSE_LYFE_ReloadableWeapon::StaticClass()))
+	{
+		APSE_LYFE_ReloadableWeapon* ReloadableWeapon = Cast<APSE_LYFE_ReloadableWeapon>(TempWeapon);
+		if (ReloadableWeapon->CurrentState == EWeaponState::Reloading)
+		{
+			ReloadableWeapon->CancelReload();
+		}
+	}
+}
+
 bool APSE_LYFE_Character4_Weapon::ServerChangeWeaponTo_Validate(uint8 NewWeaponIndex)
 {
 	return true;
@@ -186,6 +212,10 @@ void APSE_LYFE_Character4_Weapon::ChangeWeaponTo2()
 
 void APSE_LYFE_Character4_Weapon::LeftClickPressed()
 {
+	if (bIsSprinting == true)
+	{
+		EndSprint();
+	}
 	bWantsToFire = true;
 	if (GrenadeComp->CurrentGrenadeState == EGrenadeState::Null)
 	{

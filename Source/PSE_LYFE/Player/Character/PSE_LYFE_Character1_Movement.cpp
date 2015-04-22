@@ -2,6 +2,7 @@
 
 #include "PSE_LYFE.h"
 #include "Player/PSE_LYFE_CMovementComponent.h"
+#include "PSE_LYFE_Character4_Weapon.h"
 #include "UnrealNetwork.h"
 #include "PSE_LYFE_Character1_Movement.h"
 
@@ -39,6 +40,9 @@ void APSE_LYFE_Character1_Movement::SetupPlayerInputComponent(class UInputCompon
 	InputComponent->BindAction("Crouch", IE_Released, this, &APSE_LYFE_Character1_Movement::EndCrouch);
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+
+	InputComponent->BindAction("Sprint", IE_Pressed, this, &APSE_LYFE_Character1_Movement::StartSprint);
+	InputComponent->BindAction("Sprint", IE_Released, this, &APSE_LYFE_Character1_Movement::EndSprint);
 
 	InputComponent->BindAxis("MoveForward", this, &APSE_LYFE_Character1_Movement::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &APSE_LYFE_Character1_Movement::MoveRight);
@@ -88,6 +92,18 @@ void APSE_LYFE_Character1_Movement::Tick(float DeltaSeconds)
 	////////////////////////////////
 	CalculateCrouch(DeltaSeconds);
 	/////////////////////////////////
+	if (Role == ROLE_Authority)
+	{
+		if (bIsSprinting == true)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds, FColor::Green, "Server Sprinting");
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds, FColor::Red, "Server not Sprinting");
+		}
+	}
+
 	Super::Tick(DeltaSeconds);
 }
 
@@ -178,21 +194,71 @@ void APSE_LYFE_Character1_Movement::LookUpAtRate(float Rate)
 
 void APSE_LYFE_Character1_Movement::MoveForward(float Value)
 {
-	if ((Controller != NULL) && (Value != 0.0f))
+	if ((Controller != NULL))
 	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		if (bIsSprinting == true)
+		{
+			//Value = 1;
 
-		// get forward vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		AddMovementInput(Direction, Value);
-		MotionDirection.X = Value;
+			// find out which way is forward
+			const FRotator Rotation = Controller->GetControlRotation();
+			const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+			// get forward vector
+			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+			AddMovementInput(Direction, 1);
+			GEngine->AddOnScreenDebugMessage(-1, GetWorld()->GetDeltaSeconds(), FColor::Cyan, FString::SanitizeFloat((Value)) + " " + Direction.ToString());
+			MotionDirection.X = Value;
+
+			if (Value >= 0)
+			{
+				Value = 1;
+
+				const FRotator Rotation = Controller->GetControlRotation();
+				const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+				// get forward vector
+				const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+				AddMovementInput(Direction, Value);
+				GEngine->AddOnScreenDebugMessage(-1, GetWorld()->GetDeltaSeconds(), FColor::Cyan, FString::SanitizeFloat((Value)) + " " + Direction.ToString());
+				MotionDirection.X = Value;
+			}
+			else
+			{
+				EndSprint();
+
+				const FRotator Rotation = Controller->GetControlRotation();
+				const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+				// get forward vector
+				const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+				AddMovementInput(Direction, Value);
+				GEngine->AddOnScreenDebugMessage(-1, GetWorld()->GetDeltaSeconds(), FColor::Cyan, FString::SanitizeFloat((Value)) + " " + Direction.ToString());
+				MotionDirection.X = Value;
+			}
+		}
+		else if (Value != 0.0f)
+		{
+
+			// find out which way is forward
+			const FRotator Rotation = Controller->GetControlRotation();
+			const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+			// get forward vector
+			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+			AddMovementInput(Direction, Value);
+			GEngine->AddOnScreenDebugMessage(-1, GetWorld()->GetDeltaSeconds(), FColor::Cyan, FString::SanitizeFloat((Value)) + " " + Direction.ToString());
+			MotionDirection.X = Value;
+		}
 	}
 }
 
 void APSE_LYFE_Character1_Movement::MoveRight(float Value)
 {
+	if (bIsSprinting == true)
+	{
+		return;
+	}
 	if ((Controller != NULL) && (Value != 0.0f))
 	{
 		// find out which way is right
@@ -288,7 +354,12 @@ void APSE_LYFE_Character1_Movement::CalculateCrouch(const float DeltaSeconds)
 // Sprint
 
 void APSE_LYFE_Character1_Movement::StartSprint()
-{
+{	
+	APSE_LYFE_Character4_Weapon* WeaponCharacter = Cast<APSE_LYFE_Character4_Weapon>(this);
+	if (WeaponCharacter)
+	{
+		WeaponCharacter->StopWeaponFire();
+	}
 	if (bIsSprinting == false)
 	{
 		bIsSprinting = true;
@@ -314,7 +385,7 @@ void APSE_LYFE_Character1_Movement::EndSprint()
 	if (bIsSprinting == true)
 	{
 		bIsSprinting = false;
-		ServerStartSprint();
+		ServerEndSprint();
 	}
 }
 
@@ -370,6 +441,7 @@ void APSE_LYFE_Character1_Movement::GetLifetimeReplicatedProps(TArray< FLifetime
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME_CONDITION(APSE_LYFE_Character1_Movement, bIsSprinting, COND_SkipOwner);
 	DOREPLIFETIME_CONDITION(APSE_LYFE_Character1_Movement, AimRotation, COND_SkipOwner);
 	DOREPLIFETIME_CONDITION(APSE_LYFE_Character1_Movement, AnimBP_CrouchStandAlpha, COND_SkipOwner);
 	DOREPLIFETIME_CONDITION(APSE_LYFE_Character1_Movement, AnimBP_MoveDirection, COND_SkipOwner);

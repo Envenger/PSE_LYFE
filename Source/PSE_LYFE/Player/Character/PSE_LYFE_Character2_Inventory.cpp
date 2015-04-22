@@ -24,7 +24,10 @@ void APSE_LYFE_Character2_Inventory::BeginPlay()
 	if (Role == ROLE_Authority)
 	{
 		InventoryPtr = GetWorld()->SpawnActor<APSE_LYFE_Inventory4_QuickSlots>(InventoryClass);
-		//InventoryPtr->SetOwningPawn(this);
+		if (this->IsA(APSE_LYFE_Character4_Weapon::StaticClass()))
+		{
+			InventoryPtr->SetOwningPawn(Cast<APSE_LYFE_Character4_Weapon>(this));
+		}
 	}
 }
 

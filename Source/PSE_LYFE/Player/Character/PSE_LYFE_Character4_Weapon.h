@@ -56,6 +56,8 @@ class PSE_LYFE_API APSE_LYFE_Character4_Weapon : public APSE_LYFE_Character3_Sur
 	
 public:
 
+	APSE_LYFE_Character4_Weapon();
+
 	virtual void BeginPlay() override;
 
 	void SetupPlayerInputComponent(class UInputComponent* InputComponent);
@@ -78,6 +80,8 @@ public:
 
 	UFUNCTION()
 	void StartWeaponReload();
+
+	void CancleWeaponReload();
 
 	UFUNCTION()
 	void StopWeaponFire();

@@ -124,6 +124,7 @@ public:
 	///////////////////////////////////////////
 	// Sprint
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, replicated, Category = AnimBP)
 	bool bIsSprinting;
 
 	void StartSprint();

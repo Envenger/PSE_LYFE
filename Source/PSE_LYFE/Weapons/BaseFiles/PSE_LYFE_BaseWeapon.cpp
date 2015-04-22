@@ -289,6 +289,7 @@ void APSE_LYFE_BaseWeapon::DoRecoil()
 	if (Role == ROLE_Authority)
 	{
 		float StaminaDec = FMath::Min(MyPawn->CurrentStamina, Recoil.StaminaDrain);
+
 		MyPawn->CurrentStamina -= StaminaDec;
 	}
 	Recoil.DoRecoil();

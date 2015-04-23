@@ -91,7 +91,7 @@ void APSE_LYFE_TPSHUD::DrawHUD()
 			Canvas->DrawItem(NewText);
 			}
 
-		int8 CurrentStamina = OwningCharacter->CurrentStaminaRep;
+		int8 CurrentStamina = OwningCharacter->GetCurrentStaminaDisplay();
 		int8 MaxStamina = OwningCharacter->MaxStamina;
 
 		FCanvasTextItem NewText(

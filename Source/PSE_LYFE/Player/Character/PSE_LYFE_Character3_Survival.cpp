@@ -35,7 +35,7 @@ void APSE_LYFE_Character3_Survival::BeginPlay()
 
 			CalculateHunger();
 			FTimerHandle HungerTimerHandle;
-			GetWorldTimerManager().SetTimer(HungerTimerHandle, this, &APSE_LYFE_Character3_Survival::CalculateHunger, WorldCondtionActor->HungerDeducationPerTick, true);
+			GetWorldTimerManager().SetTimer(HungerTimerHandle, this, &APSE_LYFE_Character3_Survival::CalculateHunger, WorldCondtionActor->TickDuration, true);
 		}
 
 	}
@@ -60,6 +60,11 @@ void APSE_LYFE_Character3_Survival::Tick(float DeltaSeconds)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds, FColor::Cyan, FString::FromInt(CurrentHungerRep));
 	}
+}
+
+const int8 APSE_LYFE_Character3_Survival::GetCurrentStaminaDisplay() const
+{
+	return CurrentStaminaRep;
 }
 
 void APSE_LYFE_Character3_Survival::CalculateHunger()
@@ -88,7 +93,7 @@ const float APSE_LYFE_Character3_Survival::GetHungerIncrease()
 {
 	if (WorldCondtionActor)
 	{
-		float HungetDeducation = WorldCondtionActor->HungerDeducationPerMinuite;
+		float HungetDeducation = WorldCondtionActor->HungerIncreasePerTick;
 		HungetDeducation = HungetDeducation* ((100 - HungetDeducation) / 100);
 		return HungetDeducation;
 	}

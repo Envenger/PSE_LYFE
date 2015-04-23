@@ -28,11 +28,12 @@ public:
 //////////////////////////////////////////////////////////////////////////
 // Stamina
 
-
+private:
 	/** Current Stamina that is replicated */
 	UPROPERTY(Replicated)
 	int8 CurrentStaminaRep;
 
+public:
 	/** This holds the actual value of stamina it is decreased to int8 just for replication purposes */
 	float CurrentStamina;
 
@@ -42,6 +43,7 @@ public:
 	/** Stamina increase per second */
 	float StaminaRegenRate;
 
+	const int8 GetCurrentStaminaDisplay() const;
 
 //////////////////////////////////////////////////////////////////////////
 // Hunger

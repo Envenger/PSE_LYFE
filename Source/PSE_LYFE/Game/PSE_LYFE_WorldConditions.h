@@ -22,10 +22,10 @@ public:
 
 	/** Tick time for Hunger and Thirst in real time(seconds) */
 	UPROPERTY(EditDefaultsOnly, Category = WorldConditions)
-	float HungerDeducationPerTick;
+	float HungerIncreasePerTick;
 
 	/** Value of hunger reduced pet minute of real time */
 	UPROPERTY(EditDefaultsOnly, Category = WorldConditions)
-	float HungerDeducationPerTick;
+	float TickDuration;
 	
 };

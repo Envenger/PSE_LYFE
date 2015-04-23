@@ -9,7 +9,7 @@ APSE_LYFE_Inventory2_Storage::APSE_LYFE_Inventory2_Storage()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	StorageSize = 32;//Initializing defualt bag size
+	StorageSize = 32;//Initializing default bag size
 
 	InventoryWidth = 500;
 	InventoryIconSize = 65;
@@ -103,7 +103,6 @@ void APSE_LYFE_Inventory2_Storage::Server_StorageSlotLeftClick_Implementation(co
 
 void APSE_LYFE_Inventory2_Storage::StorageSlotRightClick(const FStorageLoc ItemLoc)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, "EquipItem Client");
 	Server_StorageSlotRightClick(ItemLoc);
 }
 
@@ -114,7 +113,6 @@ bool APSE_LYFE_Inventory2_Storage::Server_StorageSlotRightClick_Validate(const F
 
 void APSE_LYFE_Inventory2_Storage::Server_StorageSlotRightClick_Implementation(const FStorageLoc ItemLoc)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, "EquipItem Server");
 	if (!bIsCursorFunctional || Storage.GetItem(ItemLoc).ItemClass == nullptr)
 	{
 		ResetItemLastLocation();
@@ -123,6 +121,7 @@ void APSE_LYFE_Inventory2_Storage::Server_StorageSlotRightClick_Implementation(c
 	const APSE_LYFE_BaseInventoryItem* BaseItem = Storage.GetItem(ItemLoc).GetDefaultItem();
 	if (BaseItem->ItemType == EItemType::UsableItem || BaseItem->ItemType == EItemType::StackableUsableItem)
 	{
+		BaseItem->UseItem(OwningPawn);
 		DeleteItems(ItemLoc, 1); // Use Item
 	}
 	else if (BaseItem->ItemType == EItemType::EquipableItem)
@@ -189,7 +188,7 @@ void APSE_LYFE_Inventory2_Storage::DeleteItems(const FStorageLoc ItemLoc, const 
 			ItemRemoved(Storage.GetItem(ItemLoc).ItemClass, Stacks);
 			CurrentStacks -= Stacks;
 		}
-		else // Item needs to be completly removed
+		else // Item needs to be completely removed
 		{
 			ItemRemoved(Storage.GetItem(ItemLoc).ItemClass, Storage.GetItem(ItemLoc).ItemProperties[0]);
 			Storage.GetItem(ItemLoc).EmptyItem();
@@ -238,7 +237,7 @@ const bool APSE_LYFE_Inventory2_Storage::AddItem(FItemStruct &ItemStruct, const 
 					ItemStruct.EmptyItem();
 				}
 			}
-			else // No empty or exsisting items present
+			else // No empty or existing items present
 			{
 				const FStorageLoc FirstEmptyItemLoc = FindFirstEmptySlot();
 				if (FirstEmptyItemLoc.RowNum <= -1 || FirstEmptyItemLoc.ColNum <= -1) // Inventory full
@@ -278,7 +277,7 @@ const bool APSE_LYFE_Inventory2_Storage::AddItem(FItemStruct &ItemStruct, const 
 			}
 			else
 			{
-				if (Storage.GetItem(ItemLoc).ItemClass != nullptr) // Is Location emptry (triggered when adding item by mouse)
+				if (Storage.GetItem(ItemLoc).ItemClass != nullptr) // Is Location empty (triggered when adding item by mouse)
 				{
 					if (Storage.GetItem(ItemLoc).ItemClass == ItemStruct.ItemClass)
 					{

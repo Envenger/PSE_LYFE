@@ -5,6 +5,8 @@
 #include "GameFramework/Actor.h"
 #include "PSE_LYFE_BaseInventoryItem.generated.h"
 
+class APSE_LYFE_Character4_Weapon;
+
 UENUM(BlueprintType)		//"BlueprintType" is essential to include
 enum class EItemType : uint8
 {
@@ -124,7 +126,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = ItemProperties)
 	EEquipmentSlotType EquipmentSlotType;
 
-	virtual void UseItem() const;
+	virtual void UseItem(APSE_LYFE_Character4_Weapon* UsingPawn) const;
 
 	virtual void EquipItem() const;
 

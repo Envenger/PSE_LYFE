@@ -17,6 +17,9 @@ APSE_LYFE_BaseInventoryItem::APSE_LYFE_BaseInventoryItem()
 	CurrentUses = MaxUses;
 
 	EquipmentSlotType = EEquipmentSlotType::Nothing;
+
+	bReplicates = true;
+	bReplicateMovement = true;
 }
 
 FItemStruct APSE_LYFE_BaseInventoryItem::CreateStruct() const
@@ -33,7 +36,7 @@ FItemStruct APSE_LYFE_BaseInventoryItem::CreateStruct() const
 	return TempStruct;
 }
 
-void APSE_LYFE_BaseInventoryItem::UseItem() const
+void APSE_LYFE_BaseInventoryItem::UseItem(APSE_LYFE_Character4_Weapon* UsingPawn) const
 {
 
 }

@@ -108,7 +108,7 @@ public:
 
 	APSE_LYFE_BaseWeapon* GetCurrentWeapon();
 
-	APSE_LYFE_BaseWeapon* GetWeaponWithIndex(uint8 Index);
+	APSE_LYFE_BaseWeapon* GetWeaponWithIndex(uint8 Index) const;
 
 	/** Called on clients calls its server function */
 	void ChangeWeaponTo(uint8 NewWeaponIndex);
@@ -137,4 +137,7 @@ protected:
 
 	void ChangeWeaponTo2();
 	
+public:
+
+	const TArray<APSE_LYFE_BaseWeapon*> GetAllWeapons() const;
 };

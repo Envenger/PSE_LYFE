@@ -9,6 +9,7 @@ APSE_LYFE_BaseInventoryItem::APSE_LYFE_BaseInventoryItem()
 {
 	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ItemMesh"));
 	RootComponent = ItemMesh;
+	
 
 	ItemType = EItemType::BaseItem;
 	MaxStacks = 1;
@@ -17,6 +18,7 @@ APSE_LYFE_BaseInventoryItem::APSE_LYFE_BaseInventoryItem()
 	CurrentUses = MaxUses;
 
 	EquipmentSlotType = EEquipmentSlotType::Nothing;
+
 
 	bReplicates = true;
 	bReplicateMovement = true;

@@ -79,12 +79,12 @@ void APSE_LYFE_TPSHUD::DrawHUD()
 			{
 			APSE_LYFE_ReloadableWeapon* Weapon = Cast<APSE_LYFE_ReloadableWeapon>(OwningCharacter->GetCurrentWeapon());
 
-			int32 CurrentClipAmmo = Weapon->CurrentAmmoInClip;
 			int32 CurrentAmmo = Weapon->CurrentAmmo;
+			int32 NoOfClips = Weapon->NoOfClips;
 
 			FCanvasTextItem NewText(
 				FVector2D(10, (Canvas->SizeY - 40)),
-				FText::FromString(FString::FromInt(CurrentClipAmmo) + "/" + FString::FromInt(CurrentAmmo)),
+				FText::FromString(FString::FromInt(CurrentAmmo) + "/" + FString::FromInt(NoOfClips)),
 				UE4Font,
 				FColor::Black
 				);

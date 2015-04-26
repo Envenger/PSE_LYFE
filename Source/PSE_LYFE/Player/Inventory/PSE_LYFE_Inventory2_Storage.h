@@ -87,6 +87,12 @@ public:
 
 	void ItemRemoved(const TSubclassOf<class APSE_LYFE_BaseInventoryItem> ItemClass, const uint8 Stacks = 1);
 
+//////////////////////////////////////////////
+// Total No Of Items //
 
+	FTotalItemStruct TotalItemsArray;
+
+	uint16 Int1;
+	uint16 Int2;
 	
 };

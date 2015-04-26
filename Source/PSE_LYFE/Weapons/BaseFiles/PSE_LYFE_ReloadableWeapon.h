@@ -3,6 +3,7 @@
 #pragma once
 
 #include "PSE_LYFE_BaseWeapon.h"
+#include "Items/PSE_LYFE_BaseInventoryItem.h"
 #include "PSE_LYFE_ReloadableWeapon.generated.h"
 
 /**
@@ -48,28 +49,30 @@ public:
 	virtual bool CanReload();
 
 	UPROPERTY(EditDefaultsOnly, Category = Ammo)
-		float ReloadingTime;
+	float ReloadingTime;
 
 	UPROPERTY(Transient, Replicated)
-		int32 CurrentAmmoInClip;
+	uint16 NoOfClips;
 
 	UPROPERTY(Transient, Replicated)
-		int32 CurrentAmmo;
+	int32 CurrentAmmo;
 
 	UPROPERTY(EditDefaultsOnly, Category = Ammo)
-		int32 MaxAmmoInClip;
+	int32 AmmoPerClip;
 
 	UPROPERTY(EditDefaultsOnly, Category = Ammo)
-		int32 MaxAmmo;
+	TSubclassOf<class APSE_LYFE_BaseInventoryItem> AmmoClass;
+
+	bool UseAmmoClip();
 
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
-		UAnimMontage* ReloadingAnimation;
+	UAnimMontage* ReloadingAnimation;
 
 	/** Replicated variable used to set server and client reloading animation */
 	UPROPERTY(ReplicatedUsing = OnRep_SetReloadAnimation)
-		bool bIsReloading;
+	bool bIsReloading;
 
 	UFUNCTION()
-		virtual void OnRep_SetReloadAnimation();
+	virtual void OnRep_SetReloadAnimation();
 
 };

@@ -45,4 +45,9 @@ public:
 	float AllItemThrowTimer;
 
 	const FVector GetCharacterThrowLocation() const;
+
+	FTotalItemStruct TotalItemsArray;
+
+
+
 };

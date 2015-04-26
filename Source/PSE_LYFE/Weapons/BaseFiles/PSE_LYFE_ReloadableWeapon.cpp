@@ -2,12 +2,14 @@
 
 #include "PSE_LYFE.h"
 #include "PSE_LYFE_ReloadableWeapon.h"
+#include "Player/Character/PSE_LYFE_Character4_Weapon.h"
+#include "Player/Inventory/PSE_LYFE_Inventory4_QuickSlots.h"
 #include "UnrealNetwork.h"
 
 APSE_LYFE_ReloadableWeapon::APSE_LYFE_ReloadableWeapon(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	MaxAmmoInClip = 5;
-	MaxAmmo = 25;
+	AmmoPerClip = 25;
+
 	ReloadingTime = 2.17f;
 	ReloadingType = EReloadingType::FullClip;
 
@@ -18,8 +20,8 @@ void APSE_LYFE_ReloadableWeapon::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	CurrentAmmo = MaxAmmo;
-	CurrentAmmoInClip = MaxAmmoInClip;
+	CurrentAmmo = AmmoPerClip;
+	NoOfClips = 0;
 }
 
 void APSE_LYFE_ReloadableWeapon::StartReload()
@@ -55,16 +57,29 @@ void APSE_LYFE_ReloadableWeapon::ServerStartReload_Implementation()
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, "Can only reload in idel state client");
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, "Can only reload in idle state client");
 	}
 }
 
 void APSE_LYFE_ReloadableWeapon::ServerFinishReload()
 {
 	CurrentState = EWeaponState::Idle;
-	CurrentAmmoInClip = MaxAmmoInClip;
-	CurrentAmmo -= MaxAmmoInClip;
+	if (UseAmmoClip())
+	{
+		CurrentAmmo = AmmoPerClip;
+	}
 	bIsReloading = false;
+}
+
+bool APSE_LYFE_ReloadableWeapon::UseAmmoClip()
+{
+	const FStorageLoc AmmoLocation = MyPawn->InventoryPtr->FindFirstItemOfType(AmmoClass);
+	if (AmmoLocation.RowNum > -1 && AmmoLocation.RowNum > -1)
+	{
+		MyPawn->InventoryPtr->DeleteItems(AmmoLocation, 1);
+		return true;
+	}
+	return false;
 }
 
 void APSE_LYFE_ReloadableWeapon::CancelReload()
@@ -89,7 +104,7 @@ void APSE_LYFE_ReloadableWeapon::ServerCancelReload_Implementation()
 
 bool APSE_LYFE_ReloadableWeapon::AmmoCheck()
 {
-	if (CurrentAmmoInClip > 0)
+	if (CurrentAmmo > 0)
 	{
 		return true;
 	}
@@ -101,7 +116,7 @@ bool APSE_LYFE_ReloadableWeapon::AmmoCheck()
 
 bool APSE_LYFE_ReloadableWeapon::CanReload()
 {
-	if ((CurrentAmmo >= MaxAmmoInClip) && (CurrentAmmoInClip < MaxAmmoInClip) && (CurrentAmmo > 0))
+	if ((CurrentAmmo < AmmoPerClip) && (NoOfClips > 0))
 	{
 		return true;
 	}
@@ -130,7 +145,7 @@ void APSE_LYFE_ReloadableWeapon::GetLifetimeReplicatedProps(TArray< FLifetimePro
 
 	DOREPLIFETIME_CONDITION(APSE_LYFE_ReloadableWeapon, bIsReloading, COND_SkipOwner);
 
-	DOREPLIFETIME_CONDITION(APSE_LYFE_ReloadableWeapon, CurrentAmmoInClip, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(APSE_LYFE_ReloadableWeapon, NoOfClips, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(APSE_LYFE_ReloadableWeapon, CurrentAmmo, COND_OwnerOnly);
 }
 

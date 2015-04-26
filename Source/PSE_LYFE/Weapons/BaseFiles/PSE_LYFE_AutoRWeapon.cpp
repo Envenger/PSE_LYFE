@@ -13,8 +13,7 @@ APSE_LYFE_AutoRWeapon::APSE_LYFE_AutoRWeapon(const FObjectInitializer& ObjectIni
 	LastFiringTime = FiringRate;
 	DelayedFireStart = false;
 
-	MaxAmmoInClip = 30;
-	MaxAmmo = 300;
+	AmmoPerClip = 30;
 
 	//Recoil
 	Recoil.MaxRecoil = 60;
@@ -156,7 +155,7 @@ void APSE_LYFE_AutoRWeapon::Fire()
 					}
 				}
 				FireCounter++;
-				CurrentAmmoInClip -= 1;
+				CurrentAmmo -= 1;
 				LastFiringTime = GetWorld()->GetRealTimeSeconds();
 				DoRecoil();
 			}

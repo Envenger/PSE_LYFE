@@ -152,6 +152,111 @@ struct FStorageArray
 	{}
 };
 
+
+USTRUCT(BlueprintType)
+struct FTotalItemUnitStruct
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY()
+	TSubclassOf<class APSE_LYFE_BaseInventoryItem> ItemClass;
+
+	UPROPERTY()
+	uint16 TotalStacks;
+
+	TArray<uint16*> HoldingValues;
+
+	void AddPointerValue(uint16* NewPointerLocation)
+	{
+
+		*NewPointerLocation = TotalStacks;
+		HoldingValues.AddUnique(NewPointerLocation);
+	}
+
+	//default properties
+	FTotalItemUnitStruct()
+	{
+		ItemClass = nullptr;
+		TotalStacks = 0;
+	}
+
+	FTotalItemUnitStruct(TSubclassOf<class APSE_LYFE_BaseInventoryItem> NewItemClass, const uint16 NewTotalStacks)
+	{
+		ItemClass = NewItemClass;
+		TotalStacks = NewTotalStacks;
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FTotalItemStruct
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY()
+	TArray<FTotalItemUnitStruct> ItemArray;
+
+	const int16 GetItemClassLocation(TSubclassOf<class APSE_LYFE_BaseInventoryItem> CheckItemClass) const
+	{
+		if (CheckItemClass != nullptr)
+		{
+			for (uint16 i = 0; i < ItemArray.Num(); i++)
+			{
+				if (ItemArray[i].ItemClass == CheckItemClass)
+				{
+					return i;
+				}
+			}
+		}
+		return -1;
+	}
+
+	const uint16 GetTotalItemsPresent(TSubclassOf<class APSE_LYFE_BaseInventoryItem> CheckItemClass) const
+	{
+		const int16 ItemPosition = GetItemClassLocation(CheckItemClass);
+		if (ItemPosition >= 0)
+		{
+			return ItemArray[ItemPosition].TotalStacks;
+		}
+		return 0;
+	}
+
+	void AddItemClass(TSubclassOf<class APSE_LYFE_BaseInventoryItem> CheckItemClass, const uint16 Stacks)
+	{
+		FTotalItemUnitStruct TempTotalItemUnit(CheckItemClass, Stacks);
+		ItemArray.Add(TempTotalItemUnit);
+	}
+
+	void UpdateItemStacks(const uint16 ItemLocation, const uint16 NewItemStacks)
+	{
+		if (ItemArray.IsValidIndex(ItemLocation))
+		{
+			if (NewItemStacks > 0)
+			{
+				ItemArray[ItemLocation].TotalStacks = NewItemStacks;
+				for (int32 i = 0; i < ItemArray[ItemLocation].HoldingValues.Num(); i++)
+				{
+					*ItemArray[ItemLocation].HoldingValues[i] = NewItemStacks;
+				}
+			}
+			else
+			{
+				for (int32 i = 0; i < ItemArray[ItemLocation].HoldingValues.Num(); i++)
+				{
+					*ItemArray[ItemLocation].HoldingValues[i] = 0;
+				}
+				ItemArray.RemoveAtSwap(ItemLocation);
+			}
+		}
+	}
+
+
+
+	FTotalItemStruct()
+	{
+
+	}
+};
+
 UCLASS()
 class PSE_LYFE_API UPSE_LYFE_InventoryStructures : public UObject
 {

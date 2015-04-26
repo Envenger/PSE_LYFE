@@ -2,6 +2,9 @@
 
 #include "PSE_LYFE.h"
 #include "Items/PSE_LYFE_BaseInventoryItem.h"
+#include "Items/Ammo/PSE_LYFE_BaseWeaponMagazine.h"
+#include "Weapons/BaseFiles/PSE_LYFE_ReloadableWeapon.h"
+#include "Player/Character/PSE_LYFE_Character4_Weapon.h"
 #include "UnrealNetwork.h"
 #include "PSE_LYFE_Inventory2_Storage.h"
 
@@ -40,6 +43,11 @@ void APSE_LYFE_Inventory2_Storage::BeginPlay()
 void APSE_LYFE_Inventory2_Storage::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	for (uint8 i = 0; i < TotalItemsArray.ItemArray.Num(); i++)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds, FColor::Blue, TotalItemsArray.ItemArray[i].ItemClass->GetName() + " " +
+			FString::FromInt(TotalItemsArray.ItemArray[i].TotalStacks));
+	}
 }
 
 void APSE_LYFE_Inventory2_Storage::StorageSlotLeftClick(const FStorageLoc ItemLoc)
@@ -131,9 +139,7 @@ void APSE_LYFE_Inventory2_Storage::Server_StorageSlotRightClick_Implementation(c
 }
 
 void APSE_LYFE_Inventory2_Storage::EquipItem(const FStorageLoc ItemLoc)
-{
-	/* Should be overladed in the Inventory3 */
-}
+{	/* Should be overladed in the Inventory3 */}
 
 const FStorageLoc APSE_LYFE_Inventory2_Storage::FindFirstEmptySlot()
 {
@@ -179,6 +185,7 @@ void APSE_LYFE_Inventory2_Storage::SwapItems(const FStorageLoc Loc1, const FStor
 
 void APSE_LYFE_Inventory2_Storage::DeleteItems(const FStorageLoc ItemLoc, const int32 Stacks)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::FromInt(Stacks));
 	const APSE_LYFE_BaseInventoryItem* DeletingItemType = Storage.GetItem(ItemLoc).GetDefaultItem();
 	if (DeletingItemType->ItemType == EItemType::StackableItem || DeletingItemType->ItemType == EItemType::StackableUsableItem)
 	{
@@ -217,7 +224,7 @@ const bool APSE_LYFE_Inventory2_Storage::AddItem(FItemStruct &ItemStruct, const 
 		if (ItemLoc.RowNum <= -1 || ItemLoc.ColNum <= -1) // No particular slots are allocated for the item storage
 		{
 			const FStorageLoc FirstFreeItemLoc = FindFirstFreeSlot(ItemStruct.ItemClass);
-			if (FirstFreeItemLoc.RowNum > -1 && FirstFreeItemLoc.ColNum > -1) //Empty or exsisting items present
+			if (FirstFreeItemLoc.RowNum > -1 && FirstFreeItemLoc.ColNum > -1) //Empty or existing items present
 			{
 				const int32 MaxStacks = AddedItem->MaxStacks;
 				int32 &StoredCurrentStacks = Storage.GetItem(FirstFreeItemLoc).ItemProperties[0];
@@ -347,7 +354,7 @@ const bool APSE_LYFE_Inventory2_Storage::AddItem(FItemStruct &ItemStruct, const 
 			}
 			else
 			{
-				if (Storage.GetItem(ItemLoc).ItemClass == nullptr) // Is Location emptry (triggered when adding item by mouse)
+				if (Storage.GetItem(ItemLoc).ItemClass == nullptr) // Is Location empty (triggered when adding item by mouse)
 				{
 					Storage.GetItem(ItemLoc) = ItemStruct;
 					ItemAdded(ItemStruct.ItemClass); // Items Added
@@ -362,12 +369,66 @@ const bool APSE_LYFE_Inventory2_Storage::AddItem(FItemStruct &ItemStruct, const 
 
 void APSE_LYFE_Inventory2_Storage::ItemAdded(const TSubclassOf<class APSE_LYFE_BaseInventoryItem> ItemClass, const uint8 Stacks)
 {
+	int16 ItemLocation = TotalItemsArray.GetItemClassLocation(ItemClass);
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::FromInt(ItemLocation));
+	if (ItemLocation >= 0)
+	{
+		uint16 TotalStacks = TotalItemsArray.ItemArray[ItemLocation].TotalStacks;
+		TotalStacks += Stacks;
+		TotalItemsArray.UpdateItemStacks(ItemLocation, TotalStacks);
+		//if (ItemLocation == 1)
+	//	{
+		//	TotalItemsArray.ItemArray[1].AddPointerValue(&Int2);
+	//	}
+	}
+	else
+	{
+		TotalItemsArray.AddItemClass(ItemClass, Stacks);
+		
 
+		if (ItemClass->IsChildOf(APSE_LYFE_BaseWeaponMagazine::StaticClass()))
+		{
+			TArray<APSE_LYFE_BaseWeapon*> Weapons = OwningPawn->GetAllWeapons();
+			for (int8 i = 0; i < Weapons.Num(); i++)
+			{
+				if (Weapons[i]->IsA(APSE_LYFE_ReloadableWeapon::StaticClass()))
+				{
+					APSE_LYFE_ReloadableWeapon* ReloadableWeapon = Cast<APSE_LYFE_ReloadableWeapon>(Weapons[i]);
+					if (ReloadableWeapon->AmmoClass == ItemClass)
+					{
+						GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Green, "Works");
+						TotalItemsArray.ItemArray[TotalItemsArray.ItemArray.Num() - 1].AddPointerValue(&ReloadableWeapon->NoOfClips);
+					}
+					else
+					{
+						FString String1 = "nullpptr";
+						FString String2 = "nullpptr";
+						if (ReloadableWeapon->AmmoClass)
+						{
+							String1 = ReloadableWeapon->AmmoClass->GetName();
+						}
+						if (ItemClass)
+						{
+							String2 = ItemClass->GetName();
+						}
+						GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, String1 +
+								" vs " + String2);
+					}
+				}
+			}
+		}
+	}
 }
 
 void APSE_LYFE_Inventory2_Storage::ItemRemoved(const TSubclassOf<class APSE_LYFE_BaseInventoryItem> ItemClass, const uint8 Stacks)
 {
-
+	int16 ItemLocation = TotalItemsArray.GetItemClassLocation(ItemClass);
+	if (ItemLocation >= 0)
+	{
+		uint16 TotalStacks = TotalItemsArray.ItemArray[ItemLocation].TotalStacks;
+		TotalStacks -= Stacks;
+		TotalItemsArray.UpdateItemStacks(ItemLocation, TotalStacks);
+	}
 }
 
 void APSE_LYFE_Inventory2_Storage::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const

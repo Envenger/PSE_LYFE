@@ -106,7 +106,7 @@ void APSE_LYFE_SemiAutoRWeapon::Fire()
 			}
 		}
 		FireCounter++;
-		CurrentAmmoInClip -= 1;
+		CurrentAmmo -= 1;
 		DoRecoil();
 	}
 	FTimerHandle ServerFireRestHandle;

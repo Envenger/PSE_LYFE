@@ -3,6 +3,7 @@
 #include "PSE_LYFE.h"
 #include "Player/PSE_LYFE_CMovementComponent.h"
 #include "PSE_LYFE_Character4_Weapon.h"
+#include "Weapons/BaseFiles/PSE_LYFE_ReloadableWeapon.h"
 #include "UnrealNetwork.h"
 #include "PSE_LYFE_Character1_Movement.h"
 
@@ -242,6 +243,10 @@ void APSE_LYFE_Character1_Movement::MoveRight(float Value)
 
 void APSE_LYFE_Character1_Movement::StartCrouch()
 {
+	if (bIsSprinting == true)
+	{
+		EndSprint();
+	}
 	if (CrouchState != ECrouchState::StartCrouch)
 	{
 		CrouchState = ECrouchState::StartCrouch;
@@ -301,7 +306,7 @@ void APSE_LYFE_Character1_Movement::CalculateCrouch(const float DeltaSeconds)
 			{
 				AnimBP_CrouchStandAlpha = FMath::Max((AnimBP_CrouchStandAlpha - ((1 / CrouchingDuration)*DeltaSeconds)), 0.0f);
 			}
-			else if (AnimBP_CrouchStandAlpha == 0)// Crouch End competly
+			else if (AnimBP_CrouchStandAlpha == 0)// Crouch End completely
 			{
 				CrouchState = ECrouchState::Null;
 			}
@@ -321,7 +326,19 @@ void APSE_LYFE_Character1_Movement::StartSprint()
 	APSE_LYFE_Character4_Weapon* WeaponCharacter = Cast<APSE_LYFE_Character4_Weapon>(this);
 	if (WeaponCharacter)
 	{
+		if (WeaponCharacter->GetCurrentWeapon() && WeaponCharacter->GetCurrentWeapon()->IsA(APSE_LYFE_ReloadableWeapon::StaticClass()))
+		{
+			APSE_LYFE_ReloadableWeapon* ReloadableWeapon = Cast<APSE_LYFE_ReloadableWeapon>(WeaponCharacter->GetCurrentWeapon());
+			if (ReloadableWeapon->CurrentState == EWeaponState::Reloading)
+			{
+				ReloadableWeapon->CancelReload();
+			}
+		}
 		WeaponCharacter->StopWeaponFire();
+	}
+	if (CrouchState != ECrouchState::Null)
+	{
+		EndCrouch();
 	}
 	if (bIsSprinting == false)
 	{
@@ -359,6 +376,10 @@ bool APSE_LYFE_Character1_Movement::ServerEndSprint_Validate()
 
 void APSE_LYFE_Character1_Movement::ServerEndSprint_Implementation()
 {
+	if (CrouchState != ECrouchState::Null)
+	{
+		ServerEndCrouch();
+	}
 	if (bIsSprinting == true)
 	{
 		bIsSprinting = false;

@@ -250,7 +250,7 @@ APSE_LYFE_BaseWeapon* APSE_LYFE_Character4_Weapon::GetCurrentWeapon()
 	}
 }
 
-APSE_LYFE_BaseWeapon* APSE_LYFE_Character4_Weapon::GetWeaponWithIndex(uint8 Index)
+APSE_LYFE_BaseWeapon* APSE_LYFE_Character4_Weapon::GetWeaponWithIndex(uint8 Index) const
 {
 	if (Index == 1)
 	{
@@ -286,6 +286,19 @@ void APSE_LYFE_Character4_Weapon::GrenadeThrowReleased()
 	}
 }
 
+const TArray<APSE_LYFE_BaseWeapon*> APSE_LYFE_Character4_Weapon::GetAllWeapons() const
+{
+	TArray<APSE_LYFE_BaseWeapon*> Weapons;
+	for (int8 i = 1; i <= 3; i++)
+	{
+		APSE_LYFE_BaseWeapon* TempWeapon = GetWeaponWithIndex(i);
+		if (TempWeapon)
+		{
+			Weapons.Add(TempWeapon);
+		}
+	}
+	return Weapons;
+}
 
 void APSE_LYFE_Character4_Weapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {

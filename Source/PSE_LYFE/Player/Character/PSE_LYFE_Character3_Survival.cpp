@@ -54,11 +54,6 @@ void APSE_LYFE_Character3_Survival::Tick(float DeltaSeconds)
 			CurrentStaminaRep = FMath::RoundToInt(CurrentStamina);
 
 		}
-
-	}
-	if (IsLocallyControlled())
-	{
-		GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds, FColor::Cyan, FString::FromInt(CurrentHungerRep));
 	}
 }
 

@@ -26,6 +26,12 @@ public:
 
 	void CloseInventory();
 
+	/** Used when swapping bags */
+	void CreateStorageSlot();
+
+	/** Used when swapping bags */
+	void CloseStorageSlot();
+
 	bool ItemThrowHoverTest();
 
 	bool bIsInventoryOpen;

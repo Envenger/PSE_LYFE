@@ -39,7 +39,16 @@ public:
 	/** Row, Col size of the storage */
 	uint32 StorageSize;
 
-	void SetBagSize(const int32 BagSize);
+	void SetStorageBagSize(const uint32 BagSize);
+
+	void TestFunction();
+
+	void ResetStorageSize(const uint32 NewBagSize);
+
+	UFUNCTION(client, reliable)
+	void ClientResetBagSize(const uint32 NewBagSize);
+
+	void ClientResetBagSize_Implementation(const uint32 NewBagSize);
 
 	FStorageLoc StorageDisplaySize;
 
@@ -52,9 +61,12 @@ public:
 	const FStorageLoc FindFirstFreeSlot(const TSubclassOf<class APSE_LYFE_BaseInventoryItem> ItemClass);
 
 	/** Deletes item from the storage. Stack < 0 means delete all items of that slot */
+	void ThrowItems(const FStorageLoc ItemLoc, const int32 Stacks = -1);
+
+	/** Deletes item from the storage. Stack < 0 means delete all items of that slot */
 	void DeleteItems(const FStorageLoc ItemLoc, const int32 Stacks = -1);
 
-	/** Adds StackableItem if inventory locaiton is not given, it find the first nonempty slot */
+	/** Adds StackableItem if inventory location is not given, it find the first nonempty slot */
 	const bool AddItem(FItemStruct &ItemStruct, const FStorageLoc ItemLoc = FStorageLoc(-1, -1));
 	
 /////////////////////////////////////////

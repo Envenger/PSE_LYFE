@@ -198,6 +198,26 @@ void APSE_LYFE_TPSHUD::CloseInventory()
 	}
 }
 
+void APSE_LYFE_TPSHUD::CreateStorageSlot()
+{
+	InventoryHorizontalBox.Get()->AddSlot()
+		.VAlign(VAlign_Fill)
+		.HAlign(HAlign_Fill)
+		.Padding(FMargin(5))
+		[
+			SAssignNew(StorageUI, SPSE_LYFE_StorageFrameWidget)
+			.InventoryPtr(InventoryPtr)
+		];
+}
+
+void APSE_LYFE_TPSHUD::CloseStorageSlot()
+{
+	if (StorageUI.IsValid())
+	{
+		InventoryHorizontalBox.Get()->RemoveSlot(StorageUI.ToSharedRef());
+	}
+}
+
 void APSE_LYFE_TPSHUD::StartDisplayActorRotate()
 {
 	if (GetOwningPlayerController())

@@ -70,6 +70,10 @@ FReply SPSE_LYFE_ItemSlotWidget::OnItemDoubleClicked(const FGeometry& MyGeometry
 FReply SPSE_LYFE_ItemSlotWidget::OnItemPressed(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
 	FStorageLoc ItemLoc = SlotLoc.Get();
+	if (!InventoryPtr->Storage.Rows.IsValidIndex(ItemLoc.RowNum) || !InventoryPtr->Storage.Rows[ItemLoc.RowNum].Columns.IsValidIndex(ItemLoc.ColNum))
+	{
+		return FReply::Handled();
+	}
 	if (InventoryPtr->Storage.Rows[ItemLoc.RowNum].Columns[ItemLoc.ColNum].Index < 0)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.5f, FColor::Red, "Slot disabled");
@@ -97,6 +101,10 @@ FReply SPSE_LYFE_ItemSlotWidget::OnItemPressed(const FGeometry& MyGeometry, cons
 FReply SPSE_LYFE_ItemSlotWidget::OnItemReleased(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
 	FStorageLoc ItemLoc = SlotLoc.Get();
+	if (!InventoryPtr->Storage.Rows.IsValidIndex(ItemLoc.RowNum) || !InventoryPtr->Storage.Rows[ItemLoc.RowNum].Columns.IsValidIndex(ItemLoc.ColNum))
+	{
+		return FReply::Handled();
+	}
 	if (InventoryPtr->Storage.Rows[ItemLoc.RowNum].Columns[ItemLoc.ColNum].Index < 0)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.5f, FColor::Red, "Slot disabled");
@@ -122,6 +130,10 @@ FReply SPSE_LYFE_ItemSlotWidget::OnItemReleased(const FGeometry& MyGeometry, con
 FString SPSE_LYFE_ItemSlotWidget::GetNumOfStacks() const
 {
 	FStorageLoc ItemLoc = SlotLoc.Get();
+	if (!InventoryPtr->Storage.Rows.IsValidIndex(ItemLoc.RowNum)|| !InventoryPtr->Storage.Rows[ItemLoc.RowNum].Columns.IsValidIndex(ItemLoc.ColNum))
+	{
+		return("");
+	}
 	if (InventoryPtr->Storage.Rows[ItemLoc.RowNum].Columns[ItemLoc.ColNum].Index < 0)
 	{
 		return("");
@@ -146,6 +158,10 @@ FString SPSE_LYFE_ItemSlotWidget::GetNumOfStacks() const
 const FSlateBrush* SPSE_LYFE_ItemSlotWidget::GetItemIconImg() const
 {
 	FStorageLoc ItemLoc = SlotLoc.Get();
+	if (!InventoryPtr->Storage.Rows.IsValidIndex(ItemLoc.RowNum) || !InventoryPtr->Storage.Rows[ItemLoc.RowNum].Columns.IsValidIndex(ItemLoc.ColNum))
+	{
+		return(&InventoryPtr->DisabledSlotImg);
+	}
 	if (InventoryPtr->Storage.Rows[ItemLoc.RowNum].Columns[ItemLoc.ColNum].Index < 0)
 	{
 		return(&InventoryPtr->DisabledSlotImg);

@@ -137,6 +137,38 @@ struct FStorageArray
 		return ReferenceArray[Index];
 	}
 
+	const bool IsValidIndex(FStorageLoc ItemLocation) const
+	{
+		if (Rows.IsValidIndex(ItemLocation.RowNum) && Rows[ItemLocation.RowNum].Columns.IsValidIndex(ItemLocation.ColNum))
+		{
+			const int16 Index = Rows[ItemLocation.RowNum].Columns[ItemLocation.ColNum].Index;
+			if (Index == -1)
+			{
+				return true;
+			}
+			TArray<FItemStruct>& ReferenceArray = *StorageBasePtr;
+			if (ReferenceArray.IsValidIndex(Index))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	const bool HasValidItem(FStorageLoc ItemLocation) const
+	{
+		if (Rows.IsValidIndex(ItemLocation.RowNum) && Rows[ItemLocation.RowNum].Columns.IsValidIndex(ItemLocation.ColNum))
+		{
+			const int16 Index = Rows[ItemLocation.RowNum].Columns[ItemLocation.ColNum].Index;
+			TArray<FItemStruct>& ReferenceArray = *StorageBasePtr;
+			if (ReferenceArray.IsValidIndex(Index))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	const FStorageLoc GetStorageLocFromIndex(uint16 Index)
 	{
 		if (Index < StorageBasePtr->Num())

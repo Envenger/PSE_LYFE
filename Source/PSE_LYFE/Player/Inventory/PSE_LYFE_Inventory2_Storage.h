@@ -27,7 +27,7 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-	UPROPERTY(Replicated, Repretry)
+	UPROPERTY(ReplicatedUsing = OnRep_ClientResetBagSize, Repretry)
 	TArray<FItemStruct> StorageBase;
 
 	/** This stores the item structures pointers */
@@ -37,18 +37,16 @@ public:
 //////////////////////////////////////////////////
 
 	/** Row, Col size of the storage */
-	uint32 StorageSize;
+	uint16 StorageSize;
 
-	void SetStorageBagSize(const uint32 BagSize);
+	void SetStorageBagSize(const int16 BagSize);
 
 	void TestFunction();
 
-	void ResetStorageSize(const uint32 NewBagSize);
+	void ResetStorageSize(const int16 NewBagSize);
 
-	UFUNCTION(client, reliable)
-	void ClientResetBagSize(const uint32 NewBagSize);
-
-	void ClientResetBagSize_Implementation(const uint32 NewBagSize);
+	UFUNCTION()
+	void OnRep_ClientResetBagSize();
 
 	FStorageLoc StorageDisplaySize;
 

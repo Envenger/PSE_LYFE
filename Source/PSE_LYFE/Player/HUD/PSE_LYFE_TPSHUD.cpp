@@ -215,6 +215,7 @@ void APSE_LYFE_TPSHUD::CloseStorageSlot()
 	if (StorageUI.IsValid())
 	{
 		InventoryHorizontalBox.Get()->RemoveSlot(StorageUI.ToSharedRef());
+		StorageUI = nullptr;
 	}
 }
 

@@ -70,7 +70,7 @@ FReply SPSE_LYFE_ItemSlotWidget::OnItemDoubleClicked(const FGeometry& MyGeometry
 FReply SPSE_LYFE_ItemSlotWidget::OnItemPressed(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
 	FStorageLoc ItemLoc = SlotLoc.Get();
-	if (!InventoryPtr->Storage.Rows.IsValidIndex(ItemLoc.RowNum) || !InventoryPtr->Storage.Rows[ItemLoc.RowNum].Columns.IsValidIndex(ItemLoc.ColNum))
+	if (!InventoryPtr->Storage.IsValidIndex(ItemLoc))
 	{
 		return FReply::Handled();
 	}
@@ -101,7 +101,7 @@ FReply SPSE_LYFE_ItemSlotWidget::OnItemPressed(const FGeometry& MyGeometry, cons
 FReply SPSE_LYFE_ItemSlotWidget::OnItemReleased(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
 	FStorageLoc ItemLoc = SlotLoc.Get();
-	if (!InventoryPtr->Storage.Rows.IsValidIndex(ItemLoc.RowNum) || !InventoryPtr->Storage.Rows[ItemLoc.RowNum].Columns.IsValidIndex(ItemLoc.ColNum))
+	if (!InventoryPtr->Storage.IsValidIndex(ItemLoc))
 	{
 		return FReply::Handled();
 	}
@@ -130,7 +130,7 @@ FReply SPSE_LYFE_ItemSlotWidget::OnItemReleased(const FGeometry& MyGeometry, con
 FString SPSE_LYFE_ItemSlotWidget::GetNumOfStacks() const
 {
 	FStorageLoc ItemLoc = SlotLoc.Get();
-	if (!InventoryPtr->Storage.Rows.IsValidIndex(ItemLoc.RowNum)|| !InventoryPtr->Storage.Rows[ItemLoc.RowNum].Columns.IsValidIndex(ItemLoc.ColNum))
+	if (!InventoryPtr->Storage.IsValidIndex(ItemLoc))
 	{
 		return("");
 	}
@@ -158,7 +158,7 @@ FString SPSE_LYFE_ItemSlotWidget::GetNumOfStacks() const
 const FSlateBrush* SPSE_LYFE_ItemSlotWidget::GetItemIconImg() const
 {
 	FStorageLoc ItemLoc = SlotLoc.Get();
-	if (!InventoryPtr->Storage.Rows.IsValidIndex(ItemLoc.RowNum) || !InventoryPtr->Storage.Rows[ItemLoc.RowNum].Columns.IsValidIndex(ItemLoc.ColNum))
+	if (!InventoryPtr->Storage.IsValidIndex(ItemLoc))
 	{
 		return(&InventoryPtr->DisabledSlotImg);
 	}

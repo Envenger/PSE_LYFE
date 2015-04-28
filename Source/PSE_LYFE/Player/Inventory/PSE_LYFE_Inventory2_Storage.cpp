@@ -13,7 +13,7 @@ APSE_LYFE_Inventory2_Storage::APSE_LYFE_Inventory2_Storage()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	StorageSize = 14;//Initializing default bag size
+	StorageSize = 71;//Initializing default bag size
 
 	InventoryWidth = 500;
 	InventoryIconSize = 65;
@@ -26,7 +26,7 @@ void APSE_LYFE_Inventory2_Storage::PostInitializeComponents()
 	SetStorageBagSize(StorageSize);
 }
 
-void APSE_LYFE_Inventory2_Storage::SetStorageBagSize(const uint32 StorageSize)
+void APSE_LYFE_Inventory2_Storage::SetStorageBagSize(const int16 StorageSize)
 {
 	int32 NoOfRows = FMath::CeilToInt((float)StorageSize / 5);
 	if (NoOfRows < 5)
@@ -38,169 +38,96 @@ void APSE_LYFE_Inventory2_Storage::SetStorageBagSize(const uint32 StorageSize)
 	Storage.InitializeArray(StorageBase, StorageSize);
 }
 
-void APSE_LYFE_Inventory2_Storage::ResetStorageSize(const uint32 NewStorageSize)
+void APSE_LYFE_Inventory2_Storage::ResetStorageSize(const int16 NewStorageSize)
 {
-	
-	ClientResetBagSize(NewStorageSize);
-	int32 NoOfRows = FMath::CeilToInt((float)NewStorageSize / 5);
+	int16 NoOfRows = FMath::CeilToInt((float)NewStorageSize / 5);
 	if (NoOfRows < 5)
 	{
 		NoOfRows = 5;
 	}
 	FStorageLoc NewStorageDisplaySize = FStorageLoc(NoOfRows, 5);
-
+	GEngine->AddOnScreenDebugMessage(-1, 15, FColor::Blue, "New size = " + FString::FromInt(NewStorageSize) + " old size " + FString::FromInt(StorageBase.Num()));
 	if (NewStorageSize < StorageSize)
 	{
-		uint8 ElementsToRemove = StorageSize - NewStorageSize;
+		int16 ElementsToRemove = StorageSize - NewStorageSize;
 		StorageBase.RemoveAt(NewStorageSize, ElementsToRemove);
-		uint8 NoOfRowsToRemove = StorageDisplaySize.RowNum - NewStorageDisplaySize.RowNum;
-		uint8 NoOfUnusedSlots = (NoOfRows * 5) - NewStorageSize;
-		if (NoOfRowsToRemove > 0)
-		{
-			Storage.Rows.RemoveAt(NewStorageDisplaySize.RowNum, NoOfRowsToRemove);
-		}
-		if (NoOfUnusedSlots > 0)
-		{
-			for (int8 i = (Storage.Rows.Num() - 1); i >= 0; i--)
-			{
-				for (int8 j = (Storage.Rows[i].Columns.Num() - 1); j >= 0; j--)
-				{
-					if (NoOfUnusedSlots > 0)
-					{
-						Storage.Rows[i].Columns[j].Index = -1;
-						NoOfUnusedSlots--;
-					}
-					else
-					{
-						break;
-					}
-				}
-			}
-		}
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Green, "working Server");
-		uint8 ElementsToAdd = NewStorageSize - StorageSize;
-		uint8 NoOfRowsToAdd = NewStorageDisplaySize.RowNum - StorageDisplaySize.RowNum;
-		uint8 NoOfUnusedSlots = (NoOfRows * 5) - NewStorageSize;
-		if (NoOfRowsToAdd > 0)
-		{
-			for (uint8 i = 0; i < NoOfRowsToAdd; i++)
-			{
-				Storage.AddNewRow();
-			}
-		}
+		int16 ElementsToAdd = NewStorageSize - StorageSize;
 		FItemStruct TempStruct;
 		TempStruct.ItemClass = nullptr;
-		for (int8 i = (Storage.Rows.Num() - 1); i >= 0; i--)
+		for (int16 i = ElementsToAdd; i > 0; i--)
 		{
-			for (int8 j = (Storage.Rows[i].Columns.Num() - 1); j >= 0; j--)
+			StorageBase.Add(TempStruct);
+		}
+	}
+	FStorageArray TempStorageArray;
+	TempStorageArray.StorageBasePtr = &StorageBase;
+	TempStorageArray.AddUninitialized(NewStorageDisplaySize.RowNum, 5);
+	uint16 SlotsAssigned = 0;
+	for (int8 i = 0; i < TempStorageArray.Rows.Num(); i++)
+	{
+		for (int8 j = 0; j < 5; j++)
+		{
+			if (SlotsAssigned < NewStorageSize)
 			{
-				if (NoOfUnusedSlots > 0)
-				{
-					Storage.Rows[i].Columns[j].Index = -1;
-					NoOfUnusedSlots--;
-				}
-				else if (ElementsToAdd > 0)
-				{
-					StorageBase.Add(TempStruct);
-					Storage.Rows[i].Columns[j].Index = (StorageBase.Num() - 1);
-					ElementsToAdd--;
-				}
-				else
-				{
-					break;
-				}
+				TempStorageArray.Rows[i].Columns[j].Index = SlotsAssigned;
+				SlotsAssigned++;
+			}
+			else
+			{
+				TempStorageArray.Rows[i].Columns[j].Index = -1;
 			}
 		}
 	}
+	Storage = TempStorageArray;
 	StorageSize = NewStorageSize;
 	StorageDisplaySize = NewStorageDisplaySize;
+	GEngine->AddOnScreenDebugMessage(-1, 15, FColor::Blue, "Server end new = " + FString::FromInt(StorageBase.Num()));
 }
 
-void APSE_LYFE_Inventory2_Storage::ClientResetBagSize_Implementation(const uint32 NewStorageSize)
+void APSE_LYFE_Inventory2_Storage::OnRep_ClientResetBagSize()
 {
-	
+
+	if (StorageBase.Num() == StorageSize)
+	{
+		return;
+	}
 	if (CharacterHUD->bIsInventoryOpen)
 	{
 		CharacterHUD->CloseStorageSlot();
 	}
-	int32 NoOfRows = FMath::CeilToInt((float)NewStorageSize / 5);
+	int16 NewStorageSize = StorageBase.Num();
+	
+	int16 NoOfRows = FMath::CeilToInt((float)NewStorageSize / 5);
 	if (NoOfRows < 5)
 	{
 		NoOfRows = 5;
 	}
 	FStorageLoc NewStorageDisplaySize = FStorageLoc(NoOfRows, 5);
+	GEngine->AddOnScreenDebugMessage(-1, 15, FColor::Blue, "New size = " + FString::FromInt(NewStorageSize) + " old size " + FString::FromInt(StorageBase.Num()));
 
-	if (NewStorageSize < StorageSize)
+	FStorageArray TempStorageArray;
+	TempStorageArray.StorageBasePtr = &StorageBase;
+	TempStorageArray.AddUninitialized(NewStorageDisplaySize.RowNum, 5);
+	uint16 SlotsAssigned = 0;
+	for (int8 i = 0; i < TempStorageArray.Rows.Num(); i++)
 	{
-		uint8 NoOfRowsToRemove = StorageDisplaySize.RowNum - NewStorageDisplaySize.RowNum;
-		uint8 NoOfUnusedSlots = (NoOfRows * 5) - NewStorageSize;
-		if (NoOfRowsToRemove > 0)
+		for (int8 j = 0; j < 5; j++)
 		{
-			Storage.Rows.RemoveAt(NewStorageDisplaySize.RowNum, NoOfRowsToRemove);
-		}
-		if (NoOfUnusedSlots > 0)
-		{
-			for (int8 i = (Storage.Rows.Num() - 1); i >= 0; i--)
+			if (SlotsAssigned < NewStorageSize)
 			{
-				for (int8 j = (Storage.Rows[i].Columns.Num() - 1); j >= 0; j--)
-				{
-					if (NoOfUnusedSlots > 0)
-					{
-						Storage.Rows[i].Columns[j].Index = -1;
-						NoOfUnusedSlots--;
-					}
-					else
-					{
-						break;
-					}
-				}
+				TempStorageArray.Rows[i].Columns[j].Index = SlotsAssigned;
+				SlotsAssigned++;
+			}
+			else
+			{
+				TempStorageArray.Rows[i].Columns[j].Index = -1;
 			}
 		}
 	}
-	else
-	{
-		uint8 ElementsToAdd = NewStorageSize - StorageSize;
-		uint8 NoOfRowsToAdd = NewStorageDisplaySize.RowNum - StorageDisplaySize.RowNum;
-		uint8 NoOfUnusedSlots = (NoOfRows * 5) - NewStorageSize;
-		if (NoOfRowsToAdd > 0)
-		{
-			for (uint8 i = 0; i < NoOfRowsToAdd; i++)
-			{
-				Storage.AddNewRow();
-			}
-		}
-		bool AddProxyElements = false;
-		if (StorageBase.Num() != NewStorageSize)
-		{
-			AddProxyElements = true;
-		}
-		FItemStruct TempStruct;
-		TempStruct.ItemClass = nullptr;
-		for (int8 i = (Storage.Rows.Num() - 1); i >= 0; i--)
-		{
-			for (int8 j = (Storage.Rows[i].Columns.Num() - 1); j >= 0; j--)
-			{
-				if (NoOfUnusedSlots > 0)
-				{
-					Storage.Rows[i].Columns[j].Index = -1;
-					NoOfUnusedSlots--;
-				}
-				else if (ElementsToAdd > 0)
-				{
-					StorageBase.Add(TempStruct);
-					Storage.Rows[i].Columns[j].Index = (StorageBase.Num() - 1);
-					ElementsToAdd--;
-				}
-				else
-				{
-					break;
-				}
-			}
-		}
-	}
+	Storage = TempStorageArray;
 	StorageSize = NewStorageSize;
 	StorageDisplaySize = NewStorageDisplaySize;
 	if (CharacterHUD->bIsInventoryOpen)
@@ -208,20 +135,107 @@ void APSE_LYFE_Inventory2_Storage::ClientResetBagSize_Implementation(const uint3
 		CharacterHUD->CreateStorageSlot();
 	}
 }
-
+/*
+{
+	if (NewStorageSize < StorageSize)
+	{
+		int16 NoOfRowsToRemove = StorageDisplaySize.RowNum - NewStorageDisplaySize.RowNum;
+		int16 NoOfUnusedSlots = (NoOfRows * 5) - NewStorageSize;
+		if (NoOfRowsToRemove > 0)0
+		{
+			Storage.Rows.RemoveAt(NewStorageDisplaySize.RowNum, NoOfRowsToRemove);
+		}
+		if (NoOfUnusedSlots > 0)
+		{
+			for (int16 i = (Storage.Rows.Num() - 1); i >= 0; i--)
+			{
+				for (int16 j = (Storage.Rows[i].Columns.Num() - 1); j >= 0; j--)
+				{
+					if (NoOfUnusedSlots > 0)
+					{
+						Storage.Rows[i].Columns[j].Index = -1;
+						NoOfUnusedSlots--;
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		int16 ElementsToAdd = NewStorageSize - StorageSize;
+		int16 NoOfRowsToAdd = NewStorageDisplaySize.RowNum - StorageDisplaySize.RowNum;
+		int16 NoOfUnusedSlots = (NoOfRows * 5) - NewStorageSize;
+		if (NoOfRowsToAdd > 0)
+		{
+			for (uint8 i = 0; i < NoOfRowsToAdd; i++)
+			{
+				Storage.AddNewRow();
+				uint8 RowIndex = Storage.Rows.Num() - 1;
+				for (uint8 i = 0; i < 5; i++)
+				{
+					Storage.Rows[RowIndex].AddNewColumn();
+				}
+			}
+		}
+		for (int16 i = (Storage.Rows.Num() - 1); i >= 0; i--)
+		{
+			for (int16 j = (Storage.Rows[i].Columns.Num() - 1); j >= 0; j--)
+			{
+				if (NoOfUnusedSlots > 0)
+				{
+					Storage.Rows[i].Columns[j].Index = -1;
+					NoOfUnusedSlots--;
+				}
+				else if (ElementsToAdd > 0)
+				{
+					Storage.Rows[i].Columns[j].Index = (StorageBase.Num() - ElementsToAdd);
+					ElementsToAdd--;
+				}
+				else
+				{
+					break;
+				}
+			}
+		}
+	}
+	int32 counter = 0;
+	for (int16 i = 0; i < Storage.Rows.Num(); i++)
+	{
+		for (int16 j = 0; j < 5; j++)
+		{
+			if (Storage.Rows[i].Columns[j].Index != -1)
+			{
+				counter++;
+			}
+		}
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 15, FColor::Cyan, "Client end desired size = " + FString::FromInt(StorageBase.Num()) + " current size = "
+		+ FString::FromInt(counter));
+	StorageSize = NewStorageSize;
+	StorageDisplaySize = NewStorageDisplaySize;
+}*/
 void APSE_LYFE_Inventory2_Storage::BeginPlay()
 {
 	Super::BeginPlay();
 	FTimerHandle TestHandle;
-	GetWorldTimerManager().SetTimer(TestHandle, this, &APSE_LYFE_Inventory2_Storage::TestFunction, 5, false);
+	GetWorldTimerManager().SetTimer(TestHandle, this, &APSE_LYFE_Inventory2_Storage::TestFunction, 3, true);
 }
 
 void APSE_LYFE_Inventory2_Storage::TestFunction()
 {
 	if (Role == ROLE_Authority)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Green, "works");
-		ResetStorageSize(21);
+		uint8 InventorySize = FMath::RandRange(1, 100);
+		GEngine->AddOnScreenDebugMessage(-1, 15, FColor::Green, "New size = " + FString::FromInt(InventorySize) + " old size " + FString::FromInt(StorageBase.Num()));
+		if (InventorySize != StorageSize)
+		{
+			ResetStorageSize(InventorySize);
+		}
+		//ResetStorageSize(32);
 	}
 }
 
@@ -230,13 +244,17 @@ void APSE_LYFE_Inventory2_Storage::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	for (uint8 i = 0; i < TotalItemsArray.ItemArray.Num(); i++)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds, FColor::Blue, TotalItemsArray.ItemArray[i].ItemClass->GetName() + " " +
-			FString::FromInt(TotalItemsArray.ItemArray[i].TotalStacks));
+	//	GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds, FColor::Blue, TotalItemsArray.ItemArray[i].ItemClass->GetName() + " " +
+		//	FString::FromInt(TotalItemsArray.ItemArray[i].TotalStacks));
 	}
 }
 
 void APSE_LYFE_Inventory2_Storage::StorageSlotLeftClick(const FStorageLoc ItemLoc)
 {
+	if (!bIsCursorFunctional || !Storage.HasValidItem(ItemLoc))
+	{
+		return;
+	}
 	Server_StorageSlotLeftClick(ItemLoc);
 }
 
@@ -247,7 +265,7 @@ bool APSE_LYFE_Inventory2_Storage::Server_StorageSlotLeftClick_Validate(const FS
 
 void APSE_LYFE_Inventory2_Storage::Server_StorageSlotLeftClick_Implementation(const FStorageLoc ItemLoc)
 {
-	if (!bIsCursorFunctional)
+	if (!bIsCursorFunctional || !Storage.HasValidItem(ItemLoc))
 	{
 		return;
 	}
@@ -296,6 +314,10 @@ void APSE_LYFE_Inventory2_Storage::Server_StorageSlotLeftClick_Implementation(co
 
 void APSE_LYFE_Inventory2_Storage::StorageSlotRightClick(const FStorageLoc ItemLoc)
 {
+	if (!bIsCursorFunctional || !Storage.HasValidItem(ItemLoc))
+	{
+		return;
+	}
 	Server_StorageSlotRightClick(ItemLoc);
 }
 
@@ -306,7 +328,11 @@ bool APSE_LYFE_Inventory2_Storage::Server_StorageSlotRightClick_Validate(const F
 
 void APSE_LYFE_Inventory2_Storage::Server_StorageSlotRightClick_Implementation(const FStorageLoc ItemLoc)
 {
-	if (!bIsCursorFunctional || Storage.GetItem(ItemLoc).ItemClass == nullptr)
+	if (!bIsCursorFunctional || !Storage.HasValidItem(ItemLoc))
+	{
+		return;
+	}
+	if (Storage.GetItem(ItemLoc).ItemClass == nullptr)
 	{
 		ResetItemLastLocation();
 		return;
@@ -393,7 +419,6 @@ void APSE_LYFE_Inventory2_Storage::ThrowItems(const FStorageLoc ItemLoc, const i
 
 void APSE_LYFE_Inventory2_Storage::DeleteItems(const FStorageLoc ItemLoc, const int32 Stacks)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::FromInt(Stacks));
 	const APSE_LYFE_BaseInventoryItem* DeletingItemType = Storage.GetItem(ItemLoc).GetDefaultItem();
 	if (DeletingItemType->ItemType == EItemType::StackableItem || DeletingItemType->ItemType == EItemType::StackableUsableItem)
 	{
@@ -486,7 +511,7 @@ const bool APSE_LYFE_Inventory2_Storage::AddItem(FItemStruct &ItemStruct, const 
 		{
 			if (ItemLoc.RowNum > (StorageDisplaySize.RowNum - 1) && ItemLoc.ColNum > (StorageDisplaySize.ColNum - 1)) //Is Location within bounds
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "OutOfBounds-- " + FString::FromInt(ItemLoc.RowNum) + " "
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "OutOfBounds-- " + FString::FromInt(ItemLoc.RowNum) + " "
 					+ FString::FromInt(ItemLoc.ColNum));
 				return false;
 			}
@@ -512,7 +537,7 @@ const bool APSE_LYFE_Inventory2_Storage::AddItem(FItemStruct &ItemStruct, const 
 					}
 					else
 					{
-						GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "Class No compatible");
+						GEngine->AddOnScreenDebugMessage(-1, 15, FColor::Red, "Class No compatible");
 					}
 				}
 				else // Location empty
@@ -556,7 +581,7 @@ const bool APSE_LYFE_Inventory2_Storage::AddItem(FItemStruct &ItemStruct, const 
 		{
 			if (ItemLoc.RowNum > (StorageDisplaySize.RowNum - 1) && ItemLoc.ColNum > (StorageDisplaySize.ColNum - 1)) //Is Location within bounds
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "OutOfBounds-- " + FString::FromInt(ItemLoc.RowNum) + " "
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "OutOfBounds-- " + FString::FromInt(ItemLoc.RowNum) + " "
 					+ FString::FromInt(ItemLoc.ColNum));
 				return false;
 			}
@@ -578,7 +603,6 @@ const bool APSE_LYFE_Inventory2_Storage::AddItem(FItemStruct &ItemStruct, const 
 void APSE_LYFE_Inventory2_Storage::ItemAdded(const TSubclassOf<class APSE_LYFE_BaseInventoryItem> ItemClass, const uint8 Stacks)
 {
 	int16 ItemLocation = TotalItemsArray.GetItemClassLocation(ItemClass);
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::FromInt(ItemLocation));
 	if (ItemLocation >= 0)
 	{
 		uint16 TotalStacks = TotalItemsArray.ItemArray[ItemLocation].TotalStacks;
@@ -604,7 +628,6 @@ void APSE_LYFE_Inventory2_Storage::ItemAdded(const TSubclassOf<class APSE_LYFE_B
 					APSE_LYFE_ReloadableWeapon* ReloadableWeapon = Cast<APSE_LYFE_ReloadableWeapon>(Weapons[i]);
 					if (ReloadableWeapon->AmmoClass == ItemClass)
 					{
-						GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Green, "Works");
 						TotalItemsArray.ItemArray[TotalItemsArray.ItemArray.Num() - 1].AddPointerValue(&ReloadableWeapon->NoOfClips);
 					}
 					else
@@ -619,8 +642,6 @@ void APSE_LYFE_Inventory2_Storage::ItemAdded(const TSubclassOf<class APSE_LYFE_B
 						{
 							String2 = ItemClass->GetName();
 						}
-						GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, String1 +
-								" vs " + String2);
 					}
 				}
 			}

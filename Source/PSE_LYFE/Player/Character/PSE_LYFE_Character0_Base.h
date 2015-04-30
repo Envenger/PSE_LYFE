@@ -3,12 +3,106 @@
 #pragma once
 
 #include "GameFramework/Character.h"
+#include "Items/Equipments/PSE_LYFE_BaseBootsItem.h"
+#include "Items/Equipments/PSE_LYFE_BaseBottomItem.h"
+#include "Items/Equipments/PSE_LYFE_BaseGlovesItem.h"
+#include "Items/Equipments/PSE_LYFE_BaseTopItem.h"
 #include "PSE_LYFE_Character0_Base.generated.h"
+
+USTRUCT()
+struct FCharacterBodyComponent
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Hair)
+	USkeletalMesh* HairMesh;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Hair)
+	UMaterial* HairMaterial;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Top)
+	UMaterial* BodyMaterial;
+
+	bool IsValidComponent()
+	{
+		if (HairMesh && HairMaterial && BodyMaterial)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	FCharacterBodyComponent()
+	{}
+};
 
 UCLASS()
 class PSE_LYFE_API APSE_LYFE_Character0_Base : public ACharacter
 {
 	GENERATED_BODY()
+
+public:
+
+	// Sets default values for this character's properties
+	APSE_LYFE_Character0_Base(const FObjectInitializer& ObjectInitializer);
+
+	virtual void PostInitializeComponents() override;
+
+private:
+
+	UPROPERTY()
+	class USkeletalMeshComponent* Hair;
+
+	UPROPERTY()
+	class USkeletalMeshComponent* Top;
+
+	UPROPERTY()
+	class USkeletalMeshComponent* Bottom;
+
+	UPROPERTY()
+	class USkeletalMeshComponent* Boots;
+
+	bool InitializeCharacterSkeletalComponents();
+
+public:
+
+///////////////////////////////////////////////////////
+// Default Equipments
+
+	UPROPERTY(EditDefaultsOnly, Category = DefaultCharacter)
+	FCharacterBodyComponent DefaultBodyStruct;
+
+	UPROPERTY(EditDefaultsOnly, Category = DefaultCharacter)
+	FCharacterTopComponent DefaultTopStruct;
+
+	UPROPERTY(EditDefaultsOnly, Category = DefaultCharacter)
+	FCharacterGlovesComponent DefaultGlovesStruct;
+
+	UPROPERTY(EditDefaultsOnly, Category = DefaultCharacter)
+	FCharacterBootsComponent DefaultBootsStruct;
+
+	UPROPERTY(EditDefaultsOnly, Category = DefaultCharacter)
+	FCharacterBottomComponent DefaultBottomStruct;
+
+///////////////////////////////////////////////////////
+// Current Equipments
+
+	UPROPERTY(EditDefaultsOnly, Category = CurrentCharacter)
+	FCharacterBodyComponent CurrentBodyStruct;
+
+	UPROPERTY(EditDefaultsOnly, Category = CurrentCharacter)
+	FCharacterTopComponent CurrentTopStruct;
+
+	UPROPERTY(EditDefaultsOnly, Category = CurrentCharacter)
+	FCharacterGlovesComponent CurrentGlovesStruct;
+
+	UPROPERTY(EditDefaultsOnly, Category = CurrentCharacter)
+	FCharacterBootsComponent CurrentBootsStruct;
+
+	UPROPERTY(EditDefaultsOnly, Category = CurrentCharacter)
+	FCharacterBottomComponent CurrentBottomStruct;
+
+
 
 private:
 
@@ -21,10 +115,6 @@ private:
 	class UCameraComponent* FollowCamera;
 
 public:
-	// Sets default values for this character's properties
-	APSE_LYFE_Character0_Base(const FObjectInitializer& ObjectInitializer);
-
-	virtual void PostInitializeComponents() override;
 
 	void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
@@ -43,7 +133,7 @@ private:
 
 public:
 
-	/** 0 for nonaim and 1 for aimed */
+	/** 0 for non aim and 1 for aimed */
 	float CameraAimCoeffcient;
 
 	bool bIsTryingCameraAim;

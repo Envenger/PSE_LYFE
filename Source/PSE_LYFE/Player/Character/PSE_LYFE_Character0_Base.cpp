@@ -10,6 +10,8 @@ APSE_LYFE_Character0_Base::APSE_LYFE_Character0_Base(const FObjectInitializer& O
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	InitializeCharacterSkeletalComponents();
+
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -35,6 +37,83 @@ APSE_LYFE_Character0_Base::APSE_LYFE_Character0_Base(const FObjectInitializer& O
 	CameraAimCoeffcient = 0;
 	CameraAimingTime = 0.25;
 	bIsTryingCameraAim = false;
+}
+
+bool APSE_LYFE_Character0_Base::InitializeCharacterSkeletalComponents()
+{
+	if (!DefaultBodyStruct.IsValidComponent() || !DefaultBootsStruct.IsValidComponent() || !DefaultBottomStruct.IsValidComponent()
+		|| !DefaultGlovesStruct.IsValidComponent() || !DefaultTopStruct.IsValidComponent())
+	{
+		return false;
+	}
+
+	Top = GetMesh();// We don't use get GetMesh()
+	Top->SetSkeletalMesh(DefaultTopStruct.TopMesh);
+	Top->SetMaterial(0, DefaultBodyStruct.BodyMaterial);
+	Top->SetMaterial(1, DefaultGlovesStruct.GloveMaterial);
+	Top->SetMaterial(2, DefaultTopStruct.TopMaterial);
+
+	Hair = CreateOptionalDefaultSubobject<USkeletalMeshComponent>("HairComponent");
+	if (Hair)
+	{
+		Hair->AlwaysLoadOnClient = true;
+		Hair->AlwaysLoadOnServer = true;
+		Hair->bOwnerNoSee = false;
+		Hair->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPose;
+		Hair->bCastDynamicShadow = true;
+		Hair->PrimaryComponentTick.TickGroup = TG_PrePhysics;
+		Hair->bChartDistanceFactor = true;
+		Hair->bGenerateOverlapEvents = false;
+
+		Hair->SetSkeletalMesh(DefaultBodyStruct.HairMesh);
+		Hair->SetMaterial(0, DefaultBodyStruct.HairMaterial);
+
+		// GetMesh() acts as the head, as well as the parent for both animation and attachment.
+		Hair->AttachParent = GetMesh();
+		Hair->SetMasterPoseComponent(GetMesh());
+	}
+
+	Bottom = CreateOptionalDefaultSubobject<USkeletalMeshComponent>("BottomComponent");
+	if (Bottom)
+	{
+		Bottom->AlwaysLoadOnClient = true;
+		Bottom->AlwaysLoadOnServer = true;
+		Bottom->bOwnerNoSee = false;
+		Bottom->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPose;
+		Bottom->bCastDynamicShadow = true;
+		Bottom->PrimaryComponentTick.TickGroup = TG_PrePhysics;
+		Bottom->bChartDistanceFactor = true;
+		Bottom->bGenerateOverlapEvents = false;
+
+		Bottom->SetSkeletalMesh(DefaultBottomStruct.BottomMesh);
+		Bottom->SetMaterial(0, DefaultBottomStruct.BottomMaterial);
+
+		// GetMesh() acts as the head, as well as the parent for both animation and attachment.
+		Bottom->AttachParent = GetMesh();
+		Bottom->SetMasterPoseComponent(GetMesh());
+	}
+
+	Boots = CreateOptionalDefaultSubobject<USkeletalMeshComponent>("BootsComponent");
+	if (Boots)
+	{
+		Boots->AlwaysLoadOnClient = true;
+		Boots->AlwaysLoadOnServer = true;
+		Boots->bOwnerNoSee = false;
+		Boots->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPose;
+		Boots->bCastDynamicShadow = true;
+		Boots->PrimaryComponentTick.TickGroup = TG_PrePhysics;
+		Boots->bChartDistanceFactor = true;
+		Boots->bGenerateOverlapEvents = false;
+
+		Boots->SetSkeletalMesh(DefaultBootsStruct.BootsMesh);
+		Boots->SetMaterial(0, DefaultBootsStruct.BootsMaterial);
+
+		// GetMesh() acts as the head, as well as the parent for both animation and attachment.
+		Boots->AttachParent = GetMesh();
+		Boots->SetMasterPoseComponent(GetMesh());
+	}
+
+	return true;
 }
 
 void APSE_LYFE_Character0_Base::PostInitializeComponents()

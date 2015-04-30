@@ -222,7 +222,7 @@ void APSE_LYFE_Inventory2_Storage::BeginPlay()
 {
 	Super::BeginPlay();
 	FTimerHandle TestHandle;
-	GetWorldTimerManager().SetTimer(TestHandle, this, &APSE_LYFE_Inventory2_Storage::TestFunction, 3, true);
+//	GetWorldTimerManager().SetTimer(TestHandle, this, &APSE_LYFE_Inventory2_Storage::TestFunction, 3, true);
 }
 
 void APSE_LYFE_Inventory2_Storage::TestFunction()

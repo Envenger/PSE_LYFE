@@ -53,7 +53,7 @@ void APSE_LYFE_BaseWeapon::Tick(float DeltaSeconds)
 			if (Recoil.CurrentRecoil > 0)
 			{
 				float RecoilDec = FMath::Min(Recoil.CurrentRecoil, (Recoil.RecoilResetRate*DeltaSeconds));
-				Recoil.CurrentRecoil -= RecoilDec;
+				Recoil.CurrentRecoil -= RecoilDec;// Decrease recoil with time
 			}
 		}
 	}
@@ -103,7 +103,7 @@ void APSE_LYFE_BaseWeapon::StartUnEquip()
 void APSE_LYFE_BaseWeapon::ClientStartUnEquip_Implementation()
 {
 	CurrentState = EWeaponState::Passive;
-	// Unequpiing animation
+	// Un-equpiing animation
 }
 
 void APSE_LYFE_BaseWeapon::FinishUnEquip()
@@ -150,7 +150,7 @@ void APSE_LYFE_BaseWeapon::TestState(FColor Colour)
 	}
 	else if (CurrentState == EWeaponState::Equipping)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, Colour, "Equiping");
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, Colour, "Equipping");
 	}
 	else if (CurrentState == EWeaponState::Reloading)
 	{
@@ -163,9 +163,7 @@ void APSE_LYFE_BaseWeapon::AttachMeshToPawn()
 	if (MyPawn)
 	{
 		FName AttachPoint = FName(TEXT("WeaponSocket_Rifle"));
-		UStaticMeshComponent* UseWeaponMesh = Mesh3P;
 		USkeletalMeshComponent* UsePawnMesh = MyPawn->GetMesh();
-		//UseWeaponMesh->AttachTo(UsePawnMesh, AttachPoint);
 		AttachRootComponentTo(UsePawnMesh, AttachPoint, EAttachLocation::KeepRelativeOffset, false);
 	}
 }

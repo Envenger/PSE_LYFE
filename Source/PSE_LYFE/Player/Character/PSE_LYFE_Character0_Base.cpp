@@ -1,6 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PSE_LYFE.h"
+#include "Items/Equipments/PSE_LYFE_BaseBootsItem.h"
+#include "Items/Equipments/PSE_LYFE_BaseBottomItem.h"
+#include "Items/Equipments/PSE_LYFE_BaseGlovesItem.h"
+#include "Items/Equipments/PSE_LYFE_BaseTopItem.h"
 #include "PSE_LYFE_Character0_Base.h"
 
 
@@ -39,7 +43,7 @@ APSE_LYFE_Character0_Base::APSE_LYFE_Character0_Base(const FObjectInitializer& O
 	bIsTryingCameraAim = false;
 }
 
-bool APSE_LYFE_Character0_Base::InitializeCharacterSkeletalComponents()
+const bool APSE_LYFE_Character0_Base::InitializeCharacterSkeletalComponents()
 {
 	if (!DefaultBodyStruct.IsValidComponent() || !DefaultBootsStruct.IsValidComponent() || !DefaultBottomStruct.IsValidComponent()
 		|| !DefaultGlovesStruct.IsValidComponent() || !DefaultTopStruct.IsValidComponent())
@@ -48,6 +52,7 @@ bool APSE_LYFE_Character0_Base::InitializeCharacterSkeletalComponents()
 	}
 
 	Top = GetMesh();// We don't use get GetMesh()
+
 	Top->SetSkeletalMesh(DefaultTopStruct.TopMesh);
 	Top->SetMaterial(0, DefaultBodyStruct.BodyMaterial);
 	Top->SetMaterial(1, DefaultGlovesStruct.GloveMaterial);
@@ -113,6 +118,53 @@ bool APSE_LYFE_Character0_Base::InitializeCharacterSkeletalComponents()
 		Boots->SetMasterPoseComponent(GetMesh());
 	}
 
+	return true;
+}
+
+const bool APSE_LYFE_Character0_Base::EquipItem(const FItemStruct ItemStruct)
+{
+	const APSE_LYFE_BaseInventoryItem* DefaultItem = ItemStruct.GetDefaultItem();
+	if (DefaultItem->IsA(APSE_LYFE_BaseTopItem::StaticClass()))
+	{
+		const APSE_LYFE_BaseTopItem* TopItem = Cast<APSE_LYFE_BaseTopItem>(DefaultItem);
+		Top->SetSkeletalMesh(TopItem->TopStruct.TopMesh);
+		Top->SetMaterial(0, CurrentBodyStruct.BodyMaterial);
+		Top->SetMaterial(1, CurrentGlovesStruct.GloveMaterial);
+		Top->SetMaterial(2, TopItem->TopStruct.TopMaterial);
+		CurrentTopStruct.TopMaterial = TopItem->TopStruct.TopMaterial;
+		CurrentTopStruct.TopMesh = TopItem->TopStruct.TopMesh;
+	}
+	else if (DefaultItem->IsA(APSE_LYFE_BaseGlovesItem::StaticClass()))
+	{
+		const APSE_LYFE_BaseGlovesItem* GlovesItem = Cast<APSE_LYFE_BaseGlovesItem>(DefaultItem);
+		Top->SetMaterial(1, GlovesItem->GlovesStruct.GloveMaterial);
+		CurrentGlovesStruct.GloveMaterial = GlovesItem->GlovesStruct.GloveMaterial;
+	}
+	else if (DefaultItem->IsA(APSE_LYFE_BaseBottomItem::StaticClass()))
+	{
+		const APSE_LYFE_BaseBottomItem* BottomItem = Cast<APSE_LYFE_BaseBottomItem>(DefaultItem);
+		Bottom->SetSkeletalMesh(BottomItem->BottomStruct.BottomMesh);
+		Bottom->SetMaterial(0, BottomItem->BottomStruct.BottomMaterial);
+		CurrentBottomStruct.BottomMesh = BottomItem->BottomStruct.BottomMesh;
+		CurrentBottomStruct.BottomMaterial = BottomItem->BottomStruct.BottomMaterial;
+	}
+	else if (DefaultItem->IsA(APSE_LYFE_BaseBootsItem::StaticClass()))
+	{
+		const APSE_LYFE_BaseBootsItem* BootsItem = Cast<APSE_LYFE_BaseBootsItem>(DefaultItem);
+		Boots->SetSkeletalMesh(BootsItem->BootsStruct.BootsMesh);
+		Boots->SetMaterial(0, BootsItem->BootsStruct.BootsMaterial);
+		CurrentBootsStruct.BootsMesh = BootsItem->BootsStruct.BootsMesh;
+		CurrentBootsStruct.BootsMaterial = BootsItem->BootsStruct.BootsMaterial;
+	}
+	else
+	{
+		return false;
+	}
+	return true;
+}
+
+const bool APSE_LYFE_Character0_Base::UnEquipItem(EEquipmentSlotType EqipmentSlotType)
+{
 	return true;
 }
 

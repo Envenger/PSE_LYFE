@@ -21,13 +21,20 @@ public:
 
 	virtual void BeginPlay() override;
 
-	UPROPERTY(Replicated, Repretry)
+	UPROPERTY(ReplicatedUsing = OnRep_EquipmentChanged, Repretry)
 	TArray<FItemStruct> EquipmentStorage;
+
+	/** Function that gets replicated on all clients when a character equipment slot changes */
+	UFUNCTION()
+	void OnRep_EquipmentChanged();
+
+	/** Client version of the equipments that get updated through RepNotifies */
+	TArray<FItemStruct> ClientEquipmentStorage;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = EquipmentSlots)
 	TArray<EEquipmentSlotType> EquipmentSlots;
 
-	/** Takes the equipment storage and initazlizes the storage base */
+	/** Takes the equipment storage and initializes the storage base */
 	void InitializeStorage();
 
 	bool CheckSlotType(const uint8 EquipmentSlotLoc, const EEquipmentSlotType EquipmentSlotType) const;

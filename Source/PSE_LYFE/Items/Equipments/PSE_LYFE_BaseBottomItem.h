@@ -11,10 +11,12 @@ struct FCharacterBottomComponent
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Bottom)
-		USkeletalMesh* BottomMesh;
+	USkeletalMesh* BottomMesh;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Bottom)
-		UMaterial* BottomMaterial;
+	UMaterial* BottomMaterial;
+
+	bool bIsBodyIncluded;
 
 	bool IsValidComponent()
 	{
@@ -26,7 +28,9 @@ struct FCharacterBottomComponent
 	}
 
 	FCharacterBottomComponent()
-	{}
+	{
+		bIsBodyIncluded = true;
+	}
 };
 
 UCLASS()
@@ -40,6 +44,5 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Bottom)
 	FCharacterBottomComponent BottomStruct;
-	
-	
+
 };

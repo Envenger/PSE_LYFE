@@ -3,6 +3,7 @@
 #include "PSE_LYFE.h"
 #include "Items/PSE_LYFE_BaseInventoryItem.h"
 #include "Player/HUD/PSE_LYFE_TPSHUD.h"
+#include "Player/Character/PSE_LYFE_Character4_Weapon.h"
 #include "UnrealNetwork.h"
 #include "PSE_LYFE_Inventory3_Equipment.h"
 
@@ -13,16 +14,18 @@ APSE_LYFE_Inventory3_Equipment::APSE_LYFE_Inventory3_Equipment()
 	EquipmentSlots[1] = EEquipmentSlotType::Secondary;
 	EquipmentSlots[2] = EEquipmentSlotType::Melee;
 	EquipmentSlots[3] = EEquipmentSlotType::Backpack;
-	EquipmentSlots[4] = EEquipmentSlotType::Head;
-	EquipmentSlots[5] = EEquipmentSlotType::Chest;
-	EquipmentSlots[6] = EEquipmentSlotType::Legs;
-	EquipmentSlots[7] = EEquipmentSlotType::Boots;
+	EquipmentSlots[4] = EEquipmentSlotType::Top;
+	EquipmentSlots[5] = EEquipmentSlotType::Bottom;
+	EquipmentSlots[6] = EEquipmentSlotType::Boots;
+	EquipmentSlots[7] = EEquipmentSlotType::Gloves;
 
 	DisplayActorSpawnLocation = FVector(198.548828, 10404.232422, -16.971039);
 	DisplayActorSpawnRotation = FRotator(0, 145, 0);
 
 	bIsDisplayRotateActive = false;
 	RotationCoefficent = 5;
+
+
 }
 
 void APSE_LYFE_Inventory3_Equipment::PostInitializeComponents()
@@ -43,6 +46,10 @@ void APSE_LYFE_Inventory3_Equipment::InitializeStorage()
 	for (int32 i = 0; i < EquipmentSlots.Num(); i++)
 	{
 		EquipmentStorage.Add(DefaultItemStruct);
+		if (Role != ROLE_Authority)
+		{
+			ClientEquipmentStorage.Add(DefaultItemStruct);
+		}
 	}
 }
 
@@ -189,6 +196,26 @@ void APSE_LYFE_Inventory3_Equipment::ItemAdded(const uint8 EquipmentSlotLoc)
 void APSE_LYFE_Inventory3_Equipment::ItemRemoved(const uint8 EquipmentSlotLoc)
 {
 
+}
+
+void APSE_LYFE_Inventory3_Equipment::OnRep_EquipmentChanged()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "UPDAted on clients");
+	for (uint8 i = 0; i < EquipmentStorage.Num(); i++)
+	{
+		if (EquipmentStorage[i] != ClientEquipmentStorage[i])
+		{
+			if (EquipmentStorage[i].ItemClass != nullptr)
+			{
+				ClientEquipmentStorage[i] = EquipmentStorage[i];
+				OwningPawn->EquipItem(ClientEquipmentStorage[i]);
+			}
+			else
+			{
+				OwningPawn->UnEquipItem(EquipmentSlots[i]);
+			}
+		}
+	}
 }
 
 void APSE_LYFE_Inventory3_Equipment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const

@@ -36,6 +36,33 @@ struct FCharacterBodyComponent
 	{}
 };
 
+USTRUCT()
+struct FCharacterEquipmentStatus
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY()
+	bool bIsWearingTop;
+
+	UPROPERTY()
+	bool bIsWearingGloves;
+
+	UPROPERTY()
+	bool bIsWearingBottom;
+
+	UPROPERTY()
+	bool bIsWearingBoots;
+
+	FCharacterEquipmentStatus()
+	{
+		bIsWearingTop = false;
+		bIsWearingGloves = false;
+		bIsWearingBottom = false;
+		bIsWearingBoots = false;
+	}
+
+};
+
 UCLASS()
 class PSE_LYFE_API APSE_LYFE_Character0_Base : public ACharacter
 {
@@ -62,7 +89,7 @@ private:
 	UPROPERTY()
 	class USkeletalMeshComponent* Boots;
 
-	bool InitializeCharacterSkeletalComponents();
+	const bool InitializeCharacterSkeletalComponents();
 
 public:
 
@@ -87,6 +114,7 @@ public:
 ///////////////////////////////////////////////////////
 // Current Equipments
 
+
 	UPROPERTY(EditDefaultsOnly, Category = CurrentCharacter)
 	FCharacterBodyComponent CurrentBodyStruct;
 
@@ -101,8 +129,11 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = CurrentCharacter)
 	FCharacterBottomComponent CurrentBottomStruct;
+	
+	const bool EquipItem(const FItemStruct ItemStruct);
 
-
+	/** Also similar to wear default item */
+	const bool UnEquipItem(EEquipmentSlotType EqipmentSlotType);
 
 private:
 

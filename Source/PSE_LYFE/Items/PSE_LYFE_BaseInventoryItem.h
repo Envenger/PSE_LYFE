@@ -20,7 +20,7 @@ enum class EItemType : uint8
 	Nothing,
 };
 
-/** Sub class of equipable item */
+/** Sub class of equip-able item */
 UENUM(BlueprintType)
 enum class EEquipmentSlotType : uint8
 {
@@ -28,10 +28,10 @@ enum class EEquipmentSlotType : uint8
 	Secondary,
 	Melee,
 	Backpack,
-	Head,
-	Chest,
-	Legs,
+	Top,
+	Bottom,
 	Boots,
+	Gloves,
 	//
 	Nothing,
 };
@@ -88,6 +88,13 @@ struct FItemStruct
 		ItemClass = NewItemClass;
 	}
 
+	bool operator!=(const FItemStruct& I) const
+	{
+		return ItemClass != I.ItemClass || ItemProperties != I.ItemProperties;
+	}
+
+
+
 	FItemStruct()
 	{
 		ItemClass = nullptr;
@@ -107,23 +114,23 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = ItemProperties)
 	UStaticMeshComponent* ItemMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ItemProperties)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ItemProperties)
 	FSlateBrush ItemIcon;
 
-	/** Only For multiuse item */
-	UPROPERTY(EditAnywhere, Category = ItemProperties)
+	/** Only For multi use item */
+	UPROPERTY(EditDefaultsOnly, Category = ItemProperties)
 	int32 MaxUses;
 
 	int32 CurrentUses;
 
 	/** should be 1 for non stackable items */
-	UPROPERTY(EditAnywhere, Category = ItemProperties)
+	UPROPERTY(EditDefaultsOnly, Category = ItemProperties)
 	int32 MaxStacks;
 
-	UPROPERTY(EditAnywhere, Category = ItemProperties)
+	UPROPERTY(EditDefaultsOnly, Category = ItemProperties)
 	EItemType ItemType;
 
-	UPROPERTY(EditAnywhere, Category = ItemProperties)
+	UPROPERTY(EditDefaultsOnly, Category = ItemProperties)
 	EEquipmentSlotType EquipmentSlotType;
 
 	virtual void UseItem(APSE_LYFE_Character4_Weapon* UsingPawn) const;

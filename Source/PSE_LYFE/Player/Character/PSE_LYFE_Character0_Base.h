@@ -23,7 +23,7 @@ struct FCharacterBodyComponent
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Top)
 	UMaterial* BodyMaterial;
 
-	bool IsValidComponent()
+	const bool IsValidComponent()
 	{
 		if (HairMesh && HairMaterial && BodyMaterial)
 		{
@@ -115,19 +115,19 @@ public:
 // Current Equipments
 
 
-	UPROPERTY(EditDefaultsOnly, Category = CurrentCharacter)
+	UPROPERTY()
 	FCharacterBodyComponent CurrentBodyStruct;
 
-	UPROPERTY(EditDefaultsOnly, Category = CurrentCharacter)
+	UPROPERTY()
 	FCharacterTopComponent CurrentTopStruct;
 
-	UPROPERTY(EditDefaultsOnly, Category = CurrentCharacter)
+	UPROPERTY()
 	FCharacterGlovesComponent CurrentGlovesStruct;
 
-	UPROPERTY(EditDefaultsOnly, Category = CurrentCharacter)
+	UPROPERTY()
 	FCharacterBootsComponent CurrentBootsStruct;
 
-	UPROPERTY(EditDefaultsOnly, Category = CurrentCharacter)
+	UPROPERTY()
 	FCharacterBottomComponent CurrentBottomStruct;
 	
 	const bool EquipItem(const FItemStruct ItemStruct);

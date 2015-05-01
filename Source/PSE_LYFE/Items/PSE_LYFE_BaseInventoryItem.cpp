@@ -8,6 +8,7 @@
 APSE_LYFE_BaseInventoryItem::APSE_LYFE_BaseInventoryItem()
 {
 	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ItemMesh"));
+	ItemMesh->SetSimulatePhysics(true);
 	RootComponent = ItemMesh;
 	
 

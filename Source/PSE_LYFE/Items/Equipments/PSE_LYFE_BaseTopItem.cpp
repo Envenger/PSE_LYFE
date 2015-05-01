@@ -6,6 +6,7 @@
 
 APSE_LYFE_BaseTopItem::APSE_LYFE_BaseTopItem()
 {
-
+	ItemType = EItemType::EquipableItem;
+	EquipmentSlotType = EEquipmentSlotType::Top;
 }
 

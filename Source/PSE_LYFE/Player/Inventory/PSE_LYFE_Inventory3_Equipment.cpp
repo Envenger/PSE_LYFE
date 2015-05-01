@@ -200,7 +200,6 @@ void APSE_LYFE_Inventory3_Equipment::ItemRemoved(const uint8 EquipmentSlotLoc)
 
 void APSE_LYFE_Inventory3_Equipment::OnRep_EquipmentChanged()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "UPDAted on clients");
 	for (uint8 i = 0; i < EquipmentStorage.Num(); i++)
 	{
 		if (EquipmentStorage[i] != ClientEquipmentStorage[i])
@@ -212,6 +211,7 @@ void APSE_LYFE_Inventory3_Equipment::OnRep_EquipmentChanged()
 			}
 			else
 			{
+				ClientEquipmentStorage[i] = EquipmentStorage[i];
 				OwningPawn->UnEquipItem(EquipmentSlots[i]);
 			}
 		}
@@ -222,5 +222,5 @@ void APSE_LYFE_Inventory3_Equipment::GetLifetimeReplicatedProps(TArray< FLifetim
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(APSE_LYFE_Inventory3_Equipment, EquipmentStorage, COND_OwnerOnly);
+	DOREPLIFETIME(APSE_LYFE_Inventory3_Equipment, EquipmentStorage);
 }

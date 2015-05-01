@@ -5,7 +5,8 @@
 
 APSE_LYFE_BaseBootsItem::APSE_LYFE_BaseBootsItem()
 {
-
+	ItemType = EItemType::EquipableItem;
+	EquipmentSlotType = EEquipmentSlotType::Boots;
 }
 
 

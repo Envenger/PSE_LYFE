@@ -12,6 +12,7 @@ APSE_LYFE_Inventory0_Base::APSE_LYFE_Inventory0_Base()
 	bReplicates = true;
 	bNetUseOwnerRelevancy = true;
 
+
 }
 
 // Called when the game starts or when spawned

@@ -14,8 +14,6 @@ APSE_LYFE_Character0_Base::APSE_LYFE_Character0_Base(const FObjectInitializer& O
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	InitializeCharacterSkeletalComponents();
-
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -41,43 +39,10 @@ APSE_LYFE_Character0_Base::APSE_LYFE_Character0_Base(const FObjectInitializer& O
 	CameraAimCoeffcient = 0;
 	CameraAimingTime = 0.25;
 	bIsTryingCameraAim = false;
-}
-
-const bool APSE_LYFE_Character0_Base::InitializeCharacterSkeletalComponents()
-{
-	if (!DefaultBodyStruct.IsValidComponent() || !DefaultBootsStruct.IsValidComponent() || !DefaultBottomStruct.IsValidComponent()
-		|| !DefaultGlovesStruct.IsValidComponent() || !DefaultTopStruct.IsValidComponent())
-	{
-		return false;
-	}
 
 	Top = GetMesh();// We don't use get GetMesh()
-
-	Top->SetSkeletalMesh(DefaultTopStruct.TopMesh);
-	Top->SetMaterial(0, DefaultBodyStruct.BodyMaterial);
-	Top->SetMaterial(1, DefaultGlovesStruct.GloveMaterial);
-	Top->SetMaterial(2, DefaultTopStruct.TopMaterial);
-
-	Hair = CreateOptionalDefaultSubobject<USkeletalMeshComponent>("HairComponent");
-	if (Hair)
-	{
-		Hair->AlwaysLoadOnClient = true;
-		Hair->AlwaysLoadOnServer = true;
-		Hair->bOwnerNoSee = false;
-		Hair->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPose;
-		Hair->bCastDynamicShadow = true;
-		Hair->PrimaryComponentTick.TickGroup = TG_PrePhysics;
-		Hair->bChartDistanceFactor = true;
-		Hair->bGenerateOverlapEvents = false;
-
-		Hair->SetSkeletalMesh(DefaultBodyStruct.HairMesh);
-		Hair->SetMaterial(0, DefaultBodyStruct.HairMaterial);
-
-		// GetMesh() acts as the head, as well as the parent for both animation and attachment.
-		Hair->AttachParent = GetMesh();
-		Hair->SetMasterPoseComponent(GetMesh());
-	}
-
+	Top->AlwaysLoadOnClient = true;
+	Top->AlwaysLoadOnServer = true;
 	Bottom = CreateOptionalDefaultSubobject<USkeletalMeshComponent>("BottomComponent");
 	if (Bottom)
 	{
@@ -90,14 +55,29 @@ const bool APSE_LYFE_Character0_Base::InitializeCharacterSkeletalComponents()
 		Bottom->bChartDistanceFactor = true;
 		Bottom->bGenerateOverlapEvents = false;
 
-		Bottom->SetSkeletalMesh(DefaultBottomStruct.BottomMesh);
-		Bottom->SetMaterial(0, DefaultBottomStruct.BottomMaterial);
-
-		// GetMesh() acts as the head, as well as the parent for both animation and attachment.
-		Bottom->AttachParent = GetMesh();
-		Bottom->SetMasterPoseComponent(GetMesh());
+		// Top acts as the head, as well as the parent for both animation and attachment.
+		Bottom->AttachParent = Top;
+		Bottom->SetMasterPoseComponent(Top);
 	}
+	
+	
+	Hair = CreateOptionalDefaultSubobject<USkeletalMeshComponent>("HairComponent");
+	if (Hair)
+	{
+		Hair->AlwaysLoadOnClient = true;
+		Hair->AlwaysLoadOnServer = true;
+		Hair->bOwnerNoSee = false;
+		Hair->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPose;
+		Hair->bCastDynamicShadow = true;
+		Hair->PrimaryComponentTick.TickGroup = TG_PrePhysics;
+		Hair->bChartDistanceFactor = true;
+		Hair->bGenerateOverlapEvents = false;
 
+		// Top acts as the head, as well as the parent for both animation and attachment.
+		Hair->AttachParent = Top;
+		Hair->SetMasterPoseComponent(Top);
+	}
+	
 	Boots = CreateOptionalDefaultSubobject<USkeletalMeshComponent>("BootsComponent");
 	if (Boots)
 	{
@@ -110,13 +90,40 @@ const bool APSE_LYFE_Character0_Base::InitializeCharacterSkeletalComponents()
 		Boots->bChartDistanceFactor = true;
 		Boots->bGenerateOverlapEvents = false;
 
-		Boots->SetSkeletalMesh(DefaultBootsStruct.BootsMesh);
-		Boots->SetMaterial(0, DefaultBootsStruct.BootsMaterial);
-
-		// GetMesh() acts as the head, as well as the parent for both animation and attachment.
-		Boots->AttachParent = GetMesh();
-		Boots->SetMasterPoseComponent(GetMesh());
+		// Top acts as the head, as well as the parent for both animation and attachment.
+		Boots->AttachParent = Top;
+		Boots->SetMasterPoseComponent(Top);
 	}
+}
+
+const bool APSE_LYFE_Character0_Base::InitializeCharacterSkeletalComponents()
+{
+	/*
+	if (!DefaultBodyStruct.IsValidComponent() || !DefaultBootsStruct.IsValidComponent() || !DefaultBottomStruct.IsValidComponent()
+		|| !DefaultGlovesStruct.IsValidComponent() || !DefaultTopStruct.IsValidComponent())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15, FColor::Cyan, "Failed");
+		return false;
+	}*/
+	CurrentBodyStruct = DefaultBodyStruct;
+	CurrentBootsStruct = DefaultBootsStruct;
+	CurrentBottomStruct = DefaultBottomStruct;
+	CurrentGlovesStruct = DefaultGlovesStruct;
+	CurrentTopStruct = DefaultTopStruct;
+
+	Top->SetSkeletalMesh(CurrentTopStruct.TopMesh);
+	Top->SetMaterial(0, CurrentBodyStruct.BodyMaterial);
+	Top->SetMaterial(1, CurrentGlovesStruct.GloveMaterial);
+	Top->SetMaterial(2, CurrentTopStruct.TopMaterial);
+
+	Bottom->SetSkeletalMesh(CurrentBottomStruct.BottomMesh);
+	Bottom->SetMaterial(0, CurrentBottomStruct.BottomMaterial);
+	
+	Hair->SetSkeletalMesh(CurrentBodyStruct.HairMesh);
+	Hair->SetMaterial(0, CurrentBodyStruct.HairMaterial);
+
+	Boots->SetSkeletalMesh(CurrentBootsStruct.BootsMesh);
+	Boots->SetMaterial(0, CurrentBootsStruct.BootsMaterial);
 
 	return true;
 }
@@ -127,12 +134,16 @@ const bool APSE_LYFE_Character0_Base::EquipItem(const FItemStruct ItemStruct)
 	if (DefaultItem->IsA(APSE_LYFE_BaseTopItem::StaticClass()))
 	{
 		const APSE_LYFE_BaseTopItem* TopItem = Cast<APSE_LYFE_BaseTopItem>(DefaultItem);
-		Top->SetSkeletalMesh(TopItem->TopStruct.TopMesh);
-		Top->SetMaterial(0, CurrentBodyStruct.BodyMaterial);
-		Top->SetMaterial(1, CurrentGlovesStruct.GloveMaterial);
-		Top->SetMaterial(2, TopItem->TopStruct.TopMaterial);
-		CurrentTopStruct.TopMaterial = TopItem->TopStruct.TopMaterial;
-		CurrentTopStruct.TopMesh = TopItem->TopStruct.TopMesh;
+		if (GetMesh())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Blue, "Called");
+			GetMesh()->SetSkeletalMesh(TopItem->TopStruct.TopMesh);
+			GetMesh()->SetMaterial(0, CurrentBodyStruct.BodyMaterial);
+			GetMesh()->SetMaterial(1, CurrentGlovesStruct.GloveMaterial);
+			GetMesh()->SetMaterial(2, TopItem->TopStruct.TopMaterial);
+			CurrentTopStruct.TopMaterial = TopItem->TopStruct.TopMaterial;
+			CurrentTopStruct.TopMesh = TopItem->TopStruct.TopMesh;
+		}
 	}
 	else if (DefaultItem->IsA(APSE_LYFE_BaseGlovesItem::StaticClass()))
 	{
@@ -165,6 +176,33 @@ const bool APSE_LYFE_Character0_Base::EquipItem(const FItemStruct ItemStruct)
 
 const bool APSE_LYFE_Character0_Base::UnEquipItem(EEquipmentSlotType EqipmentSlotType)
 {
+	if (EqipmentSlotType == EEquipmentSlotType::Top)
+	{
+		CurrentTopStruct = DefaultTopStruct;
+		GetMesh()->SetSkeletalMesh(CurrentTopStruct.TopMesh);
+		GetMesh()->SetMaterial(2, CurrentTopStruct.TopMaterial);
+	}
+	else if (EqipmentSlotType == EEquipmentSlotType::Gloves)
+	{
+		CurrentGlovesStruct = DefaultGlovesStruct;
+		Top->SetMaterial(1, CurrentGlovesStruct.GloveMaterial);
+	}
+	else if (EqipmentSlotType == EEquipmentSlotType::Bottom)
+	{
+		CurrentBottomStruct = DefaultBottomStruct;
+		Bottom->SetSkeletalMesh(CurrentBottomStruct.BottomMesh);
+		Bottom->SetMaterial(0, CurrentBottomStruct.BottomMaterial);
+	}
+	else if (EqipmentSlotType == EEquipmentSlotType::Boots)
+	{
+		CurrentBootsStruct = DefaultBootsStruct;
+		Boots->SetSkeletalMesh(CurrentBootsStruct.BootsMesh);
+		Boots->SetMaterial(0, CurrentBootsStruct.BootsMaterial);
+	}
+	else
+	{
+		return true;
+	}
 	return true;
 }
 
@@ -178,6 +216,8 @@ void APSE_LYFE_Character0_Base::PostInitializeComponents()
 	AimCameraRotation = CameraAimLocation->RelativeRotation;
 
 	UpdateCamera(NonAimCameraLocation, NonAimCameraRotation);
+
+	InitializeCharacterSkeletalComponents();
 }
 
 void APSE_LYFE_Character0_Base::SetupPlayerInputComponent(class UInputComponent* InputComponent)

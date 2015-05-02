@@ -32,5 +32,5 @@ void APSE_LYFE_Inventory0_Base::GetLifetimeReplicatedProps(TArray< FLifetimeProp
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(APSE_LYFE_Inventory0_Base, OwningPawn, COND_OwnerOnly);
+	DOREPLIFETIME(APSE_LYFE_Inventory0_Base, OwningPawn);
 }

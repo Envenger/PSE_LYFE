@@ -39,6 +39,8 @@ public:
 
 	bool CheckSlotType(const uint8 EquipmentSlotLoc, const EEquipmentSlotType EquipmentSlotType) const;
 
+	const bool AddBackPack(FItemStruct &NewBackPackItemStruct);
+
 	/** Item slot type needs to be checked before adding item or it wont work. Replaces the  */
 	void AddInventoryEquipment(FItemStruct &NewItem, const uint8 EquipmentSlotLoc);
 

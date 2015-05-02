@@ -36,14 +36,21 @@ public:
 
 //////////////////////////////////////////////////
 
+	/** Defualt Storage size without any bags */
+	uint16 DefaultStorageSize;
+
 	/** Row, Col size of the storage */
-	uint16 StorageSize;
+	uint16 BagSize;
+
+	const uint16 GetTotalStorageSize() const;
 
 	void SetStorageBagSize(const int16 BagSize);
 
 	void TestFunction();
 
 	void ResetStorageSize(const int16 NewBagSize);
+
+	const int16 GetLowestItemIndex() const;
 
 	UFUNCTION()
 	void OnRep_ClientResetBagSize();

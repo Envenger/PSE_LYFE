@@ -5,7 +5,8 @@
 
 APSE_LYFE_BaseGlovesItem::APSE_LYFE_BaseGlovesItem()
 {
-
+	ItemType = EItemType::EquipableItem;
+	EquipmentSlotType = EEquipmentSlotType::Gloves;
 }
 
 

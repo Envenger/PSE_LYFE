@@ -17,7 +17,7 @@ public:
 
 	APSE_LYFE_BaseBackPackItem();
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly, Category = BagSize)
 	uint8 BackpackSize;
 	
 	

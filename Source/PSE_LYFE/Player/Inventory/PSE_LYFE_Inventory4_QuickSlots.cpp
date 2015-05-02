@@ -36,7 +36,7 @@ const FStorageLoc APSE_LYFE_Inventory4_QuickSlots::FindFirstItemOfType(const TSu
 				return FStorageLoc(i, j);
 			}
 			NoOfStorageSlots += 1;
-			if (NoOfStorageSlots == StorageSize)
+			if (NoOfStorageSlots == GetTotalStorageSize())
 			{
 				return FStorageLoc(-1, -1);
 			}

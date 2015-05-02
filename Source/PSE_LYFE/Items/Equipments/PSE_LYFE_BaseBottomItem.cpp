@@ -5,7 +5,8 @@
 
 APSE_LYFE_BaseBottomItem::APSE_LYFE_BaseBottomItem()
 {
-
+	ItemType = EItemType::EquipableItem;
+	EquipmentSlotType = EEquipmentSlotType::Bottom;
 }
 
 

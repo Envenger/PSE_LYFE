@@ -6,6 +6,8 @@
 
 APSE_LYFE_BaseBackPackItem::APSE_LYFE_BaseBackPackItem()
 {
-	BackpackSize = 7;
+	ItemType = EItemType::EquipableItem;
+	EquipmentSlotType = EEquipmentSlotType::Backpack;
+	BackpackSize = 0;
 }
 

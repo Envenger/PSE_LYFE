@@ -55,8 +55,7 @@ void APSE_LYFE_Inventory2_Storage::ResetStorageSize(const int16 NewBagSize)
 		NoOfRows = 5;
 	}
 	FStorageLoc NewStorageDisplaySize = FStorageLoc(NoOfRows, 5);
-	GEngine->AddOnScreenDebugMessage(-1, 15, FColor::Blue, "New size = " + FString::FromInt(NewTotalStorageSize) + " old size " + FString::FromInt(StorageBase.Num()));
-	if (NewTotalStorageSize < OldTotalStorageSize)
+		if (NewTotalStorageSize < OldTotalStorageSize)
 	{
 		int16 ElementsToRemove = OldTotalStorageSize - NewTotalStorageSize;
 		StorageBase.RemoveAt(NewTotalStorageSize, ElementsToRemove);
@@ -93,7 +92,6 @@ void APSE_LYFE_Inventory2_Storage::ResetStorageSize(const int16 NewBagSize)
 	Storage = TempStorageArray;
 	BagSize = NewBagSize;
 	StorageDisplaySize = NewStorageDisplaySize;
-	GEngine->AddOnScreenDebugMessage(-1, 15, FColor::Blue, "Server end new = " + FString::FromInt(StorageBase.Num()));
 }
 
 const int16 APSE_LYFE_Inventory2_Storage::GetLowestItemIndex() const
@@ -127,7 +125,6 @@ void APSE_LYFE_Inventory2_Storage::OnRep_ClientResetBagSize()
 		NoOfRows = 5;
 	}
 	FStorageLoc NewStorageDisplaySize = FStorageLoc(NoOfRows, 5);
-	GEngine->AddOnScreenDebugMessage(-1, 15, FColor::Blue, "New size = " + FString::FromInt(NewStorageSize) + " old size " + FString::FromInt(StorageBase.Num()));
 
 	FStorageArray TempStorageArray;
 	TempStorageArray.StorageBasePtr = &StorageBase;
@@ -169,7 +166,6 @@ void APSE_LYFE_Inventory2_Storage::TestFunction()
 	if (Role == ROLE_Authority)
 	{
 		uint8 NewBagSize = FMath::RandRange(0, 20);
-		GEngine->AddOnScreenDebugMessage(-1, 15, FColor::Green, "New size = " + FString::FromInt(NewBagSize) + " old size " + FString::FromInt(BagSize));
 		if (NewBagSize != BagSize)
 		{
 			ResetStorageSize(NewBagSize);
@@ -181,7 +177,6 @@ void APSE_LYFE_Inventory2_Storage::TestFunction()
 void APSE_LYFE_Inventory2_Storage::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds, FColor::Blue, "Last stored location = " + FString::FromInt(GetLowestItemIndex()));
 }
 
 void APSE_LYFE_Inventory2_Storage::StorageSlotLeftClick(const FStorageLoc ItemLoc)

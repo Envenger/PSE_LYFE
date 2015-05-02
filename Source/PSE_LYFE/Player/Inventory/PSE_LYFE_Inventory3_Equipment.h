@@ -41,6 +41,8 @@ public:
 
 	const bool AddBackPack(FItemStruct &NewBackPackItemStruct);
 
+	const bool RemoveBackPack();
+
 	/** Item slot type needs to be checked before adding item or it wont work. Replaces the  */
 	void AddInventoryEquipment(FItemStruct &NewItem, const uint8 EquipmentSlotLoc);
 

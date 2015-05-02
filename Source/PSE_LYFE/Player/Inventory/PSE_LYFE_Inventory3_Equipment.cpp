@@ -99,39 +99,17 @@ void APSE_LYFE_Inventory3_Equipment::RemoveInventoryEquipment(const uint8 Equipm
 void APSE_LYFE_Inventory3_Equipment::EquipItem(const FStorageLoc ItemLoc)// Replace by switch case for better efficiency and cleaner code
 {
 	const APSE_LYFE_BaseInventoryItem* BaseItem = Storage.GetItem(ItemLoc).GetDefaultItem();
+
 	for (uint8 i = 0; i < EquipmentSlots.Num(); i++)
 	{
 		if (CheckSlotType(i, BaseItem->EquipmentSlotType))
 		{
 			if (EquipmentSlots[i] == EEquipmentSlotType::Backpack)
 			{
-				if (BaseItem->IsA(APSE_LYFE_BaseBackPackItem::StaticClass()))
-				{
-					const APSE_LYFE_BaseBackPackItem* NewBackPack = Cast<APSE_LYFE_BaseBackPackItem>(BaseItem);
-					uint16 NewBackPackSize = NewBackPack->BackpackSize;
-					if (EquipmentStorage[i].ItemClass == nullptr)
-					{
-						ResetStorageSize(NewBackPackSize);
-						AddInventoryEquipment(Storage.GetItem(ItemLoc), i);
-					}
-					else
-					{
-						if (GetLowestItemIndex() < NewBackPackSize + DefaultStorageSize)
-						{
-							ResetStorageSize(NewBackPackSize);
-							AddInventoryEquipment(Storage.GetItem(ItemLoc), i);
-						}
-						else
-						{
-							GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "item drop error");
-							// Items may drop
-						}
-					}
-				}
+				AddBackPack(Storage.GetItem(ItemLoc));
 			}
 			else
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Blue, "found");
 				AddInventoryEquipment(Storage.GetItem(ItemLoc), i);
 				break;
 			}
@@ -157,19 +135,7 @@ void APSE_LYFE_Inventory3_Equipment::Server_EquipmentSlotLeftClick_Implementatio
 		{
 			if (EquipmentSlots[SlotLoc] == EEquipmentSlotType::Backpack)
 			{
-				if (EquipmentStorage[SlotLoc].GetDefaultItem()->IsA(APSE_LYFE_BaseBackPackItem::StaticClass()))
-				{
-					if (GetLowestItemIndex() < DefaultStorageSize)
-					{
-						ResetStorageSize(0);
-						AddItemToCursor(EquipmentStorage[SlotLoc], SlotLoc);
-					}
-					else
-					{
-						GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "item drop error");
-						// Items may drop
-					}
-				}
+				RemoveBackPack();
 			}
 			else
 			{
@@ -186,34 +152,18 @@ void APSE_LYFE_Inventory3_Equipment::Server_EquipmentSlotLeftClick_Implementatio
 			{
 				if (EquipmentSlots[SlotLoc] == EEquipmentSlotType::Backpack)
 				{
-					if (DefaultCursorItem->IsA(APSE_LYFE_BaseBackPackItem::StaticClass()))
-					{
-						const APSE_LYFE_BaseBackPackItem* NewBackPack = Cast<APSE_LYFE_BaseBackPackItem>(DefaultCursorItem);
-						uint16 NewBackPackSize = NewBackPack->BackpackSize;
-						ResetStorageSize(NewBackPackSize);
-					}
+					AddBackPack(CursorItem);
 				}
-				AddInventoryEquipment(CursorItem, SlotLoc);
+				else
+				{
+					AddInventoryEquipment(CursorItem, SlotLoc);
+				}
 			}
 			else
 			{
 				if (EquipmentSlots[SlotLoc] == EEquipmentSlotType::Backpack)
 				{
-					if (DefaultCursorItem->IsA(APSE_LYFE_BaseBackPackItem::StaticClass()))
-					{
-						const APSE_LYFE_BaseBackPackItem* NewBackPack = Cast<APSE_LYFE_BaseBackPackItem>(DefaultCursorItem);
-						uint16 NewBackPackSize = NewBackPack->BackpackSize;
-						if (GetLowestItemIndex() < NewBackPackSize + DefaultStorageSize)
-						{
-							ResetStorageSize(NewBackPackSize);
-							AddInventoryEquipment(CursorItem, SlotLoc);
-						}
-						else
-						{
-							GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "item drop error");
-							// Items may drop
-						}
-					}
+					AddBackPack(CursorItem);
 				}
 				else
 				{
@@ -235,7 +185,7 @@ const bool APSE_LYFE_Inventory3_Equipment::AddBackPack(FItemStruct &NewBackPackI
 	if (EquipmentStorage[3].ItemClass == nullptr)
 	{
 		ResetStorageSize(NewBackPackSize);
-		AddInventoryEquipment(CursorItem, 3);
+		AddInventoryEquipment(NewBackPackItemStruct, 3);
 	}
 	else
 	{
@@ -244,7 +194,31 @@ const bool APSE_LYFE_Inventory3_Equipment::AddBackPack(FItemStruct &NewBackPackI
 			ResetStorageSize(NewBackPackSize);
 			AddInventoryEquipment(NewBackPackItemStruct, 3);
 		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "item drop error");
+			// Items may drop
+		}
 	}
+	return true;
+}
+
+const bool APSE_LYFE_Inventory3_Equipment::RemoveBackPack()
+{
+	if (EquipmentStorage[3].GetDefaultItem()->IsA(APSE_LYFE_BaseBackPackItem::StaticClass()))
+	{
+		if (GetLowestItemIndex() < DefaultStorageSize)
+		{
+			ResetStorageSize(0);
+			AddItemToCursor(EquipmentStorage[3], 3);
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "item drop error");
+			return false;
+		}
+	}
+	return true;
 }
 
 void APSE_LYFE_Inventory3_Equipment::EquipmentSlotRightClick(const uint8 SlotLoc)

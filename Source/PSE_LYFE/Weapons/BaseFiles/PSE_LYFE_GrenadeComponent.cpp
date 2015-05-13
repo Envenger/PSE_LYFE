@@ -14,12 +14,6 @@ UPSE_LYFE_GrenadeComponent::UPSE_LYFE_GrenadeComponent(const FObjectInitializer&
 	ThrowStartTimer = 0.767;
 	ThrowEndTimer = 0.206;
 	CurrentGrenadeState = EGrenadeState::Null;
-
-	MaxForwardThrowVelocity = 550;
-	MaxUpThrowVelocity = 400;
-
-	MinForwardThrowVelocity = 300;
-	MinUpThrowVelocity = 120;
 }
 
 void UPSE_LYFE_GrenadeComponent::OnRep_GrenadeAnimation()
@@ -28,15 +22,14 @@ void UPSE_LYFE_GrenadeComponent::OnRep_GrenadeAnimation()
 	
 	if (CurrentGrenadeState == EGrenadeState::ThrowStart)
 	{
-		Character->PlayAnimMontage(GrenadeStartAnimation);
-	}
-	else if (CurrentGrenadeState == EGrenadeState::ThrowLoop)
-	{
-		Character->PlayAnimMontage(GrenadeLoopAnimation);
+		Character->PlayAnimMontage(GrenadeMontage, 1, "GrenadeThrowStart");
+		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, "start");
 	}
 	else if (CurrentGrenadeState == EGrenadeState::ThrowEnd)
 	{
-		Character->PlayAnimMontage(GrenadeEndAnimation);
+		//GrenadeEndAnimation->section
+		Character->PlayAnimMontage(GrenadeMontage, 1, "GrenadeThrowEnd");
+		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, "End");
 	}
 }
 
@@ -46,7 +39,7 @@ void UPSE_LYFE_GrenadeComponent::OnRep_GrenadeAnimation()
 // Grenade
 
 
-void UPSE_LYFE_GrenadeComponent::ClientThrowGrenadeStart()
+void UPSE_LYFE_GrenadeComponent::ThrowGrenadeStart()
 {
 	if (GetOwner()->IsA(APSE_LYFE_Character4_Weapon::StaticClass()))
 	{
@@ -70,6 +63,7 @@ void UPSE_LYFE_GrenadeComponent::ServerThrowGrenadeStart_Implementation()
 	if (CurrentGrenadeState == EGrenadeState::Null)
 	{
 		APSE_LYFE_Character4_Weapon* Character = Cast<APSE_LYFE_Character4_Weapon>(GetOwner());
+		Character->PlayAnimMontage(GrenadeMontage, 1, "GrenadeThrowStart");
 		CurrentGrenadeState = EGrenadeState::ThrowStart;
 		Character->GetWorldTimerManager().SetTimer(GrenadeLoopTimerHandle, this, &UPSE_LYFE_GrenadeComponent::GrenadeLoopStart, ThrowStartTimer, false);
 	}
@@ -83,7 +77,7 @@ void UPSE_LYFE_GrenadeComponent::GrenadeLoopStart()
 	}
 }
 
-void UPSE_LYFE_GrenadeComponent::ClientThrowGrenadeFinish()
+void UPSE_LYFE_GrenadeComponent::ThrowGrenadeFinish()
 {
 	if (GetOwner()->IsA(APSE_LYFE_Character4_Weapon::StaticClass()))
 	{
@@ -100,42 +94,37 @@ bool UPSE_LYFE_GrenadeComponent::ServerThrowGrenadeFinish_Validate()
 void UPSE_LYFE_GrenadeComponent::ServerThrowGrenadeFinish_Implementation()
 {
 	APSE_LYFE_Character4_Weapon* Character = Cast<APSE_LYFE_Character4_Weapon>(GetOwner());
-	FTimerHandle UniqueHandle;
+	FTimerHandle GrenadeThrowHandle;
 	if (CurrentGrenadeState == EGrenadeState::ThrowStart)
 	{
 		float TimeRemaining = Character->GetWorldTimerManager().GetTimerElapsed(GrenadeLoopTimerHandle);
 		Character->GetWorldTimerManager().ClearTimer(GrenadeLoopTimerHandle);
 
 		float TimerComplitionRatio = TimeRemaining / ThrowStartTimer;
-		float UpForce = FMath::Lerp(MinUpThrowVelocity, MaxUpThrowVelocity, TimerComplitionRatio);
-		float ForwardForce = FMath::Lerp(MinForwardThrowVelocity, MaxForwardThrowVelocity, TimerComplitionRatio);
-		FTimerDelegate GrenadeSpawnDelegate = FTimerDelegate::CreateUObject(this, &UPSE_LYFE_GrenadeComponent::SpawnGrenade, ForwardForce, UpForce);
-		Character->GetWorldTimerManager().SetTimer(UniqueHandle, GrenadeSpawnDelegate, ThrowEndTimer, false);
+		
+		FTimerDelegate GrenadeSpawnDelegate = FTimerDelegate::CreateUObject(this, &UPSE_LYFE_GrenadeComponent::SpawnGrenade, TimerComplitionRatio);
+		Character->GetWorldTimerManager().SetTimer(GrenadeThrowHandle, GrenadeSpawnDelegate, 0.1, false);
 		GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Cyan, FString::SanitizeFloat(TimerComplitionRatio));
+		Character->PlayAnimMontage(GrenadeMontage, 1, "GrenadeThrowEnd");
 		CurrentGrenadeState = EGrenadeState::ThrowEnd;
 	}
 	else if (CurrentGrenadeState == EGrenadeState::ThrowLoop)
 	{
-		FTimerDelegate GrenadeSpawnDelegate = FTimerDelegate::CreateUObject(this, &UPSE_LYFE_GrenadeComponent::SpawnGrenade, MaxForwardThrowVelocity, MaxUpThrowVelocity);
-		Character->GetWorldTimerManager().SetTimer(UniqueHandle, GrenadeSpawnDelegate, ThrowEndTimer, false);
+		FTimerDelegate GrenadeSpawnDelegate = FTimerDelegate::CreateUObject(this, &UPSE_LYFE_GrenadeComponent::SpawnGrenade, 1.0f);
+		Character->GetWorldTimerManager().SetTimer(GrenadeThrowHandle, GrenadeSpawnDelegate, 0.05, false);
 		GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Cyan, "Full");
+		Character->PlayAnimMontage(GrenadeMontage, 1, "GrenadeThrowEnd");
 		CurrentGrenadeState = EGrenadeState::ThrowEnd;
 	}
 }
 
-void UPSE_LYFE_GrenadeComponent::SpawnGrenade(float ForwardForce, float VerticalForce)
+void UPSE_LYFE_GrenadeComponent::SpawnGrenade(float TimerComplitionRatio)
 {
 	APSE_LYFE_Character4_Weapon* Character = Cast<APSE_LYFE_Character4_Weapon>(GetOwner());
-	
-	float Direction = Character->ViewDirection.Rotation().Yaw;
-	FQuat ForceQuat = FRotator(0, Direction, 0).Quaternion();
-	FVector Force(ForwardForce, 0, VerticalForce);
-	Force = ForceQuat.RotateVector(Force);
-	Force *= 30;
-	FVector  SpawnLocation = Character->GetMesh()->GetSocketLocation("GrenadeLoc");
-	SpawnLocation += ForceQuat.RotateVector(FVector(45, 0, 15));
-	APSE_LYFE_BaseGrenade* Grenade = GetWorld()->SpawnActor<APSE_LYFE_BaseGrenade>(GrenadeClass, SpawnLocation, FRotator(0, 0, 0));
-	Grenade->GrenadeMesh->AddImpulse(Force);
+	FVector  SpawnLocation = Character->GetMesh()->GetSocketLocation("GrenadeSpawn");
+	FRotator SpawnRotation = FRotator(0, Character->GetBaseAimRotation().Yaw, 0);
+	APSE_LYFE_BaseGrenade* Grenade = GetWorld()->SpawnActor<APSE_LYFE_BaseGrenade>(GrenadeClass, SpawnLocation, SpawnRotation);
+	Grenade->ProjectileComp->Velocity *= FMath::Max(0.3f, TimerComplitionRatio);
 	CurrentGrenadeState = EGrenadeState::Null;
 }
 

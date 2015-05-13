@@ -274,7 +274,7 @@ void APSE_LYFE_Character4_Weapon::GrenadeThrowPressed()
 {
 	if (GrenadeComp)
 	{
-		GrenadeComp->ClientThrowGrenadeStart();
+		GrenadeComp->ThrowGrenadeStart();
 	}
 }
 
@@ -282,7 +282,7 @@ void APSE_LYFE_Character4_Weapon::GrenadeThrowReleased()
 {
 	if (GrenadeComp)
 	{
-		GrenadeComp->ClientThrowGrenadeFinish();
+		GrenadeComp->ThrowGrenadeFinish();
 	}
 }
 

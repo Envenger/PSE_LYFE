@@ -45,15 +45,7 @@ public:
 	
 	uint32 NoOfGrenades;
 
-	float MaxForwardThrowVelocity;
-
-	float MaxUpThrowVelocity;
-
-	float MinForwardThrowVelocity;
-
-	float MinUpThrowVelocity;
-
-	void ClientThrowGrenadeStart();
+	void ThrowGrenadeStart();
 
 	UFUNCTION(reliable, server, WithValidation)
 	void ServerThrowGrenadeStart();
@@ -62,27 +54,20 @@ public:
 	
 	void GrenadeLoopStart();
 	
-	void ClientThrowGrenadeFinish();
+	void ThrowGrenadeFinish();
 
 	UFUNCTION(reliable, server, WithValidation)
 	void ServerThrowGrenadeFinish();
 	bool ServerThrowGrenadeFinish_Validate();
 	void ServerThrowGrenadeFinish_Implementation();
 
-	void SpawnGrenade(float ForwardForce, float VerticalForce);
+	void SpawnGrenade(float TimerComplitionRatio);
 
 	UPROPERTY(EditDefaultsOnly, Category = GrenadeClass)
 	TSubclassOf<APSE_LYFE_BaseGrenade> GrenadeClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
-	UAnimMontage* GrenadeStartAnimation;
-
-	UPROPERTY(EditDefaultsOnly, Category = Animation)
-	UAnimMontage* GrenadeLoopAnimation;
-
-	UPROPERTY(EditDefaultsOnly, Category = Animation)
-	UAnimMontage* GrenadeEndAnimation;
-
+	UAnimMontage* GrenadeMontage;
 
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const;
 };

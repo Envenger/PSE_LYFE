@@ -282,7 +282,6 @@ struct FTotalItemStruct
 	}
 
 
-
 	FTotalItemStruct()
 	{
 

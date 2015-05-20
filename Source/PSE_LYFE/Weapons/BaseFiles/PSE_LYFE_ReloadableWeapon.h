@@ -26,7 +26,7 @@ public:
 
 	virtual void StartReload();
 
-	virtual void ClientEndReload();
+	virtual void EndReload();
 
 	UFUNCTION(reliable, server, WithValidation)
 	virtual void ServerStartReload();

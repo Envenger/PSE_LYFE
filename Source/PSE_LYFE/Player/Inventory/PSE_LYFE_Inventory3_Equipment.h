@@ -3,11 +3,10 @@
 #pragma once
 
 #include "Player/Inventory/PSE_LYFE_Inventory2_Storage.h"
+#include "Items/BackPack/PSE_LYFE_BackPackEquipment.h"
 #include "PSE_LYFE_Inventory3_Equipment.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class PSE_LYFE_API APSE_LYFE_Inventory3_Equipment : public APSE_LYFE_Inventory2_Storage
 {

@@ -5,6 +5,7 @@
 #include "Items/Equipments/PSE_LYFE_BaseBottomItem.h"
 #include "Items/Equipments/PSE_LYFE_BaseGlovesItem.h"
 #include "Items/Equipments/PSE_LYFE_BaseTopItem.h"
+#include "Items/BackPack/PSE_LYFE_BaseBackPackItem.h"
 #include "PSE_LYFE_Character0_Base.h"
 
 
@@ -94,17 +95,25 @@ APSE_LYFE_Character0_Base::APSE_LYFE_Character0_Base(const FObjectInitializer& O
 		Boots->AttachParent = Top;
 		Boots->SetMasterPoseComponent(Top);
 	}
+
+	BackPack = CreateOptionalDefaultSubobject<UStaticMeshComponent>("BackPack");
+	if (BackPack)
+	{
+		BackPack->AlwaysLoadOnClient = true;
+		BackPack->AlwaysLoadOnServer = true;
+		BackPack->bOwnerNoSee = false;
+		BackPack->bCastDynamicShadow = true;
+		BackPack->PrimaryComponentTick.TickGroup = TG_PrePhysics;
+		BackPack->bGenerateOverlapEvents = false;
+		BackPack->SetVisibility(false);
+
+		BackPack->AttachTo(GetMesh(), BackPackSocketName);
+	}
 }
 
 const bool APSE_LYFE_Character0_Base::InitializeCharacterSkeletalComponents()
 {
-	/*
-	if (!DefaultBodyStruct.IsValidComponent() || !DefaultBootsStruct.IsValidComponent() || !DefaultBottomStruct.IsValidComponent()
-		|| !DefaultGlovesStruct.IsValidComponent() || !DefaultTopStruct.IsValidComponent())
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15, FColor::Cyan, "Failed");
-		return false;
-	}*/
+
 	CurrentBodyStruct = DefaultBodyStruct;
 	CurrentBootsStruct = DefaultBootsStruct;
 	CurrentBottomStruct = DefaultBottomStruct;
@@ -134,16 +143,13 @@ const bool APSE_LYFE_Character0_Base::EquipItem(const FItemStruct ItemStruct)
 	if (DefaultItem->IsA(APSE_LYFE_BaseTopItem::StaticClass()))
 	{
 		const APSE_LYFE_BaseTopItem* TopItem = Cast<APSE_LYFE_BaseTopItem>(DefaultItem);
-		if (GetMesh())
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Blue, "Called");
-			GetMesh()->SetSkeletalMesh(TopItem->TopStruct.TopMesh);
-			GetMesh()->SetMaterial(0, CurrentBodyStruct.BodyMaterial);
-			GetMesh()->SetMaterial(1, CurrentGlovesStruct.GloveMaterial);
-			GetMesh()->SetMaterial(2, TopItem->TopStruct.TopMaterial);
-			CurrentTopStruct.TopMaterial = TopItem->TopStruct.TopMaterial;
-			CurrentTopStruct.TopMesh = TopItem->TopStruct.TopMesh;
-		}
+		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Blue, "Called");
+		GetMesh()->SetSkeletalMesh(TopItem->TopStruct.TopMesh);
+		GetMesh()->SetMaterial(0, CurrentBodyStruct.BodyMaterial);
+		GetMesh()->SetMaterial(1, CurrentGlovesStruct.GloveMaterial);
+		GetMesh()->SetMaterial(2, TopItem->TopStruct.TopMaterial);
+		CurrentTopStruct.TopMaterial = TopItem->TopStruct.TopMaterial;
+		CurrentTopStruct.TopMesh = TopItem->TopStruct.TopMesh;
 	}
 	else if (DefaultItem->IsA(APSE_LYFE_BaseGlovesItem::StaticClass()))
 	{
@@ -166,6 +172,15 @@ const bool APSE_LYFE_Character0_Base::EquipItem(const FItemStruct ItemStruct)
 		Boots->SetMaterial(0, BootsItem->BootsStruct.BootsMaterial);
 		CurrentBootsStruct.BootsMesh = BootsItem->BootsStruct.BootsMesh;
 		CurrentBootsStruct.BootsMaterial = BootsItem->BootsStruct.BootsMaterial;
+	}
+	else if (DefaultItem->IsA(APSE_LYFE_BaseBackPackItem::StaticClass()))
+	{
+		const APSE_LYFE_BaseBackPackItem* BackPackItem = Cast<APSE_LYFE_BaseBackPackItem>(DefaultItem);
+		if (!BackPack->IsVisible())
+		{
+			BackPack->SetVisibility(true);
+		}
+		BackPack->SetStaticMesh(BackPackItem->ItemMesh->StaticMesh);
 	}
 	else
 	{
@@ -198,6 +213,10 @@ const bool APSE_LYFE_Character0_Base::UnEquipItem(EEquipmentSlotType EqipmentSlo
 		CurrentBootsStruct = DefaultBootsStruct;
 		Boots->SetSkeletalMesh(CurrentBootsStruct.BootsMesh);
 		Boots->SetMaterial(0, CurrentBootsStruct.BootsMaterial);
+	}
+	else if (EqipmentSlotType == EEquipmentSlotType::Backpack)
+	{
+		BackPack->SetVisibility(false);
 	}
 	else
 	{

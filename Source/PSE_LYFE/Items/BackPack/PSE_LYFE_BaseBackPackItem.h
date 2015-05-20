@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Items/PSE_LYFE_BaseInventoryItem.h"
+#include "PSE_LYFE_BackPackEquipment.h"
 #include "PSE_LYFE_BaseBackPackItem.generated.h"
 
 /**
@@ -19,6 +20,4 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = BagSize)
 	uint8 BackpackSize;
-	
-	
 };

@@ -60,6 +60,8 @@ public:
 
 	virtual void BeginPlay() override;
 
+	virtual void Tick(float DeltaTime) override;
+
 	void SetupPlayerInputComponent(class UInputComponent* InputComponent);
 
 	virtual void LeftClickPressed();
@@ -106,7 +108,7 @@ public:
 	UPROPERTY(Transient, Replicated)
 	APSE_LYFE_BaseWeapon* LastUsedWeapon;
 
-	APSE_LYFE_BaseWeapon* GetCurrentWeapon();
+	APSE_LYFE_BaseWeapon* GetCurrentWeapon() const;
 
 	APSE_LYFE_BaseWeapon* GetWeaponWithIndex(uint8 Index) const;
 
@@ -120,6 +122,21 @@ public:
 
 	/** Equips a new weapon. Change the index before calling this(Dont call this directly) */
 	void EquipWeapon(uint8 NewWeaponIndex);
+
+	
+
+////////////////////////////////////////////////////
+//Hand Ik
+
+	FVector LeftHandWeaponAttachmentLocation();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AnimBP)
+	bool AnimBP_bIKLeftHand;
+
+	void SetWeaponIKDetection(const bool bIKDetection);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AnimBP)
+	FVector AnimBP_HandAttachmentLocation;
 
 ////////////////////////////////////////////////////
 //Grenade

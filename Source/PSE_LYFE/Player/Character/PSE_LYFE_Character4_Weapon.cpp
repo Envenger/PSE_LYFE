@@ -15,6 +15,8 @@ APSE_LYFE_Character4_Weapon::APSE_LYFE_Character4_Weapon()
 {
 	GrenadeComp = CreateDefaultSubobject<UPSE_LYFE_GrenadeComponent>(TEXT("GrenadeComponent"));
 	GrenadeComp->SetIsReplicated(true);
+
+	AnimBP_bIKLeftHand = true;
 }
 
 void APSE_LYFE_Character4_Weapon::SetupPlayerInputComponent(class UInputComponent* InputComponent)
@@ -42,6 +44,16 @@ void APSE_LYFE_Character4_Weapon::BeginPlay()
 	}
 }
 
+void APSE_LYFE_Character4_Weapon::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (AnimBP_bIKLeftHand)
+	{
+		AnimBP_HandAttachmentLocation = LeftHandWeaponAttachmentLocation();
+	}
+
+}
 
 void APSE_LYFE_Character4_Weapon::SpawnDefaultWeapon()
 {
@@ -131,33 +143,17 @@ bool APSE_LYFE_Character4_Weapon::CanFire()
 
 void APSE_LYFE_Character4_Weapon::ChangeWeaponTo(uint8 NewWeaponIndex)
 {
-	if (CurrentWeaponIndex != NewWeaponIndex && (GetWeaponWithIndex(NewWeaponIndex) != nullptr) && CharacterHUD->bIsInventoryOpen == false)
+	if (CurrentWeaponIndex != NewWeaponIndex && GetWeaponWithIndex(NewWeaponIndex) != nullptr)
 	{
-		if (CurrentWeaponIndex != 0)
+		if (GetCurrentWeapon())
 		{
-			if (GetCurrentWeapon()->IsA(APSE_LYFE_AutoRWeapon::StaticClass()))
+			if (GetCurrentWeapon()->CurrentState == EWeaponState::Firing)
 			{
-				APSE_LYFE_AutoRWeapon* TempWeapon = Cast<APSE_LYFE_AutoRWeapon>(GetCurrentWeapon());
-				if (TempWeapon->CurrentState == EWeaponState::Firing)
-				{
-					TempWeapon->StopFire();
-				}
-				else if (TempWeapon->CurrentState == EWeaponState::Reloading)
-				{
-					TempWeapon->CancelReload();
-				}
+				StopWeaponFire();
 			}
-			else if (GetCurrentWeapon()->IsA(APSE_LYFE_SemiAutoRWeapon::StaticClass()))
+			else if (GetCurrentWeapon()->CurrentState == EWeaponState::Reloading)
 			{
-				APSE_LYFE_SemiAutoRWeapon* TempWeapon = Cast<APSE_LYFE_SemiAutoRWeapon>(GetCurrentWeapon());
-				if (TempWeapon->CurrentState == EWeaponState::Firing)
-				{
-					TempWeapon->StopFire();
-				}
-				else if (TempWeapon->CurrentState == EWeaponState::Reloading)
-				{
-					TempWeapon->CancelReload();
-				}
+				CancleWeaponReload();
 			}
 		}
 		ServerChangeWeaponTo(NewWeaponIndex);
@@ -230,7 +226,7 @@ void APSE_LYFE_Character4_Weapon::LeftClickReleased()
 }
 
 
-APSE_LYFE_BaseWeapon* APSE_LYFE_Character4_Weapon::GetCurrentWeapon()
+APSE_LYFE_BaseWeapon* APSE_LYFE_Character4_Weapon::GetCurrentWeapon() const
 {
 	if (CurrentWeaponIndex == 1)
 	{
@@ -300,11 +296,27 @@ const TArray<APSE_LYFE_BaseWeapon*> APSE_LYFE_Character4_Weapon::GetAllWeapons()
 	return Weapons;
 }
 
+FVector APSE_LYFE_Character4_Weapon::LeftHandWeaponAttachmentLocation()
+{
+	if (GetCurrentWeapon())
+	{
+		FVector WorldWeaponLocation = GetCurrentWeapon()->Mesh3P->GetSocketLocation("LeftHandAttachmentLocation");
+		return GetMesh()->ComponentToWorld.InverseTransformPosition(WorldWeaponLocation);
+	}
+
+	return FVector(0, 0, 0);
+}
+
+void APSE_LYFE_Character4_Weapon::SetWeaponIKDetection(const bool bIKDetection)
+{
+	AnimBP_bIKLeftHand = bIKDetection;
+}
+
 void APSE_LYFE_Character4_Weapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(APSE_LYFE_Character4_Weapon, CurrentWeaponIndex, COND_OwnerOnly);
-	DOREPLIFETIME_CONDITION(APSE_LYFE_Character4_Weapon, CurrentArmedWeapons, COND_OwnerOnly);
+	DOREPLIFETIME(APSE_LYFE_Character4_Weapon, CurrentWeaponIndex);
+	DOREPLIFETIME(APSE_LYFE_Character4_Weapon, CurrentArmedWeapons);
 }
 

@@ -66,7 +66,7 @@ public:
 
 private:
 	
-	/** pointer storing the game slate Ui */
+	/** pointer storing the game slate UI */
 	TSharedPtr<class SPSE_LYFE_PlayerUIWidget> MainPlayerUI;
 
 	/** A Horizontal box containing the center menu widgets */

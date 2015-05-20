@@ -29,17 +29,19 @@ void APSE_LYFE_ReloadableWeapon::StartReload()
 	if (CurrentState == EWeaponState::Idle)
 	{
 		CurrentState = EWeaponState::Reloading;
-		GetWorldTimerManager().SetTimer(ClientReloadTimeHandler, this, &APSE_LYFE_ReloadableWeapon::ClientEndReload, ReloadingTime, false);
+		GetWorldTimerManager().SetTimer(ClientReloadTimeHandler, this, &APSE_LYFE_ReloadableWeapon::EndReload, ReloadingTime, false);
 		PlayWeaponAnimation(ReloadingAnimation);
 		ServerStartReload();
 	}
+	MyPawn->SetWeaponIKDetection(false);
 }
 
 
-void APSE_LYFE_ReloadableWeapon::ClientEndReload()
+void APSE_LYFE_ReloadableWeapon::EndReload()
 {
 	CurrentState = EWeaponState::Idle;
 	StopWeaponAnimation(ReloadingAnimation);
+	MyPawn->SetWeaponIKDetection(true);
 }
 
 bool APSE_LYFE_ReloadableWeapon::ServerStartReload_Validate()
@@ -88,6 +90,7 @@ void APSE_LYFE_ReloadableWeapon::CancelReload()
 	GetWorldTimerManager().ClearTimer(ClientReloadTimeHandler);
 	StopWeaponAnimation(ReloadingAnimation);
 	ServerCancelReload();
+	MyPawn->SetWeaponIKDetection(true);
 }
 
 bool APSE_LYFE_ReloadableWeapon::ServerCancelReload_Validate()

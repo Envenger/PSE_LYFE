@@ -7,6 +7,7 @@
 #include "Items/Equipments/PSE_LYFE_BaseBottomItem.h"
 #include "Items/Equipments/PSE_LYFE_BaseGlovesItem.h"
 #include "Items/Equipments/PSE_LYFE_BaseTopItem.h"
+#include "Items/BackPack/PSE_LYFE_BackPackEquipment.h"
 #include "PSE_LYFE_Character0_Base.generated.h"
 
 USTRUCT()
@@ -77,21 +78,26 @@ public:
 
 private:
 
-	UPROPERTY()
+	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class USkeletalMeshComponent* Hair;
 
-	UPROPERTY()
+	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class USkeletalMeshComponent* Top;
 
-	UPROPERTY()
+	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class USkeletalMeshComponent* Bottom;
 
-	UPROPERTY()
+	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class USkeletalMeshComponent* Boots;
+
+	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* BackPack;
 
 	const bool InitializeCharacterSkeletalComponents();
 
 public:
+
+	const FName BackPackSocketName = "BackPackSocket";
 
 ///////////////////////////////////////////////////////
 // Default Equipments

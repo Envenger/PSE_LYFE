@@ -52,7 +52,6 @@ void APSE_LYFE_Character3_Survival::Tick(float DeltaSeconds)
 			float StaminaIncrease = FMath::Min((MaxStamina - CurrentStamina), (StaminaRegenRate * DeltaSeconds));
 			CurrentStamina += StaminaIncrease;
 			CurrentStaminaRep = FMath::RoundToInt(CurrentStamina);
-
 		}
 	}
 }

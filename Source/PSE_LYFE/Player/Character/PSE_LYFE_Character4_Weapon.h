@@ -82,12 +82,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Weapon)
 	FWeaponInventory DefaultInventory;
 
-	UPROPERTY(ReplicatedUsing = OnRep_ArmedWeaponsChange)
+	UPROPERTY(ReplicatedUsing = OnRep_ArmedWeapons)
 	TArray<APSE_LYFE_BaseWeapon*> CurrentArmedWeapons;
 
 	/** If the player goes network irrelevant and weapon is changed when it again becomes relevant, OnRepArmedWeaponChange won work */
 	UFUNCTION()
-	void OnRep_ArmedWeaponsChange();
+	void OnRep_ArmedWeapons();
 
 	/** Keeps a copy of the server weapons used for OnReArmedWeaponChange function */
 	UPROPERTY()
@@ -98,11 +98,11 @@ protected:
 	APSE_LYFE_BaseWeapon* TemporaryWeapon;
 
 	/** Index of the armed weapon 0 = primary, 1 = secondary, 2 = melee */
-	UPROPERTY(ReplicatedUsing = OnRep_CurrentWeaponChange)
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentWeaponIndex)
 	int8 CurrentWeaponIndex;
 
 	UFUNCTION()
-	void OnRep_CurrentWeaponChange();
+	void OnRep_CurrentWeaponIndex();
 
 	UPROPERTY(Transient)
 	APSE_LYFE_BaseWeapon* OwnerLastUsedWeapon;

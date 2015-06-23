@@ -79,21 +79,18 @@ void APSE_LYFE_Character4_Weapon::Tick(float DeltaTime)
 
 void APSE_LYFE_Character4_Weapon::SpawnDefaultWeapon()
 {
-	if (Role == ROLE_Authority)
-	{
-		TArray<TSubclassOf<APSE_LYFE_BaseWeapon>> DefaultWeaponsArray;
-		DefaultWeaponsArray.Add(DefaultInventory.PrimaryWeapon);
-		DefaultWeaponsArray.Add(DefaultInventory.SecondaryWeapon);
-		DefaultWeaponsArray.Add(DefaultInventory.MeleeWeapon);
-
-		for (int8 i = 0; i <= 2; i++)
+		if (DefaultInventory.PrimaryWeapon)
 		{
-			if (DefaultWeaponsArray[i])
-			{
-				SpawnWeapon(DefaultWeaponsArray[i], i);
-			}
+			SpawnWeapon(DefaultInventory.PrimaryWeapon, 0);
 		}
-	}
+		if (DefaultInventory.PrimaryWeapon)
+		{
+			SpawnWeapon(DefaultInventory.SecondaryWeapon, 1);
+		}
+		if (DefaultInventory.PrimaryWeapon)
+		{
+			SpawnWeapon(DefaultInventory.MeleeWeapon, 2);
+		}
 }
 
 bool APSE_LYFE_Character4_Weapon::SpawnWeapon(TSubclassOf<APSE_LYFE_BaseWeapon> WeaponClass, int8 WeaponSlotIndex)
@@ -150,7 +147,7 @@ void APSE_LYFE_Character4_Weapon::ReplaceRemoveCurrentWeapon()
 	bIsWeaponChanging = false;
 }
 
-void APSE_LYFE_Character4_Weapon::OnRep_CurrentWeaponChange()// Just used for animation 
+void APSE_LYFE_Character4_Weapon::OnRep_CurrentWeaponIndex()// Just used for animation 
 {
 	for (int8 i = 0; i <= 2; i++)
 	{
@@ -168,7 +165,7 @@ void APSE_LYFE_Character4_Weapon::OnRep_CurrentWeaponChange()// Just used for an
 	}
 }
 
-void APSE_LYFE_Character4_Weapon::OnRep_ArmedWeaponsChange()
+void APSE_LYFE_Character4_Weapon::OnRep_ArmedWeapons()
 {
 	for (int8 i = 0; i < CurrentArmedWeapons.Num(); i++)
 	{
@@ -265,14 +262,7 @@ void APSE_LYFE_Character4_Weapon::FinishEquipAnimation()
 
 void APSE_LYFE_Character4_Weapon::PlayerAddWeapon(TSubclassOf<class APSE_LYFE_BaseWeapon> WeaponClass, const uint8 WeaponSlot)
 {
-	if (CurrentWeaponIndex == WeaponSlot && GetCurrentWeapon())
-	{
-		SpawnWeapon(WeaponClass, WeaponSlot);
-	}
-	else
-	{
-		SpawnWeapon(WeaponClass, WeaponSlot);
-	}
+	SpawnWeapon(WeaponClass, WeaponSlot);
 }
 
 void APSE_LYFE_Character4_Weapon::PlayerRemoveWeapon(const int8 WeaponSlot)

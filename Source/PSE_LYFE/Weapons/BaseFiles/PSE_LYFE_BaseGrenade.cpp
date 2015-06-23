@@ -17,7 +17,7 @@ APSE_LYFE_BaseGrenade::APSE_LYFE_BaseGrenade()
 	ProjectileComp->SetIsReplicated(true);
 	ProjectileComp->InitialSpeed = 1500;
 	ProjectileComp->BounceVelocityStopSimulatingThreshold = 15;
-	//ProjectileComp->velo
+
 	bReplicateMovement = true;
 	bReplicates = true;
 

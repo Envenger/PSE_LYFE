@@ -6,6 +6,7 @@
 #include "Items/Equipments/PSE_LYFE_BaseGlovesItem.h"
 #include "Items/Equipments/PSE_LYFE_BaseTopItem.h"
 #include "Items/BackPack/PSE_LYFE_BaseBackPackItem.h"
+#include "Player/PSE_LYFE_AnimInstance.h"
 #include "PSE_LYFE_Character0_Base.h"
 
 
@@ -109,6 +110,7 @@ APSE_LYFE_Character0_Base::APSE_LYFE_Character0_Base(const FObjectInitializer& O
 
 		BackPack->AttachTo(GetMesh(), BackPackSocketName);
 	}
+
 }
 
 const bool APSE_LYFE_Character0_Base::InitializeCharacterSkeletalComponents()
@@ -143,7 +145,6 @@ const bool APSE_LYFE_Character0_Base::EquipItem(const FItemStruct ItemStruct)
 	if (DefaultItem->IsA(APSE_LYFE_BaseTopItem::StaticClass()))
 	{
 		const APSE_LYFE_BaseTopItem* TopItem = Cast<APSE_LYFE_BaseTopItem>(DefaultItem);
-		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Blue, "Called");
 		GetMesh()->SetSkeletalMesh(TopItem->TopStruct.TopMesh);
 		GetMesh()->SetMaterial(0, CurrentBodyStruct.BodyMaterial);
 		GetMesh()->SetMaterial(1, CurrentGlovesStruct.GloveMaterial);
@@ -180,7 +181,7 @@ const bool APSE_LYFE_Character0_Base::EquipItem(const FItemStruct ItemStruct)
 		{
 			BackPack->SetVisibility(true);
 		}
-		BackPack->SetStaticMesh(BackPackItem->ItemMesh->StaticMesh);
+		BackPack->SetStaticMesh(BackPackItem->GetItemMesh()->StaticMesh);
 	}
 	else
 	{
@@ -229,6 +230,11 @@ void APSE_LYFE_Character0_Base::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
+	if (GetMesh()->GetAnimInstance() && GetMesh()->GetAnimInstance()->IsA(UPSE_LYFE_AnimInstance::StaticClass()))
+	{
+		CoverAnimInstance = Cast<UPSE_LYFE_AnimInstance>(GetMesh()->GetAnimInstance());
+	}
+
 	NonAimCameraLocation = CameraNonAimLocation->RelativeLocation;
 	NonAimCameraRotation = CameraNonAimLocation->RelativeRotation;
 	AimCameraLocation = CameraAimLocation->RelativeLocation;
@@ -251,19 +257,41 @@ void APSE_LYFE_Character0_Base::SetupPlayerInputComponent(class UInputComponent*
 void APSE_LYFE_Character0_Base::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
-
-	CalculateCameraAim(DeltaTime);
+	if (IsLocallyControlled())
+	{
+		CalculateCameraFinal(DeltaTime);
+	}
 }
 
-void APSE_LYFE_Character0_Base::CalculateCameraAim(const float DeltaSeconds)
+void APSE_LYFE_Character0_Base::CalculateCameraFinal(const float DeltaTime)
 {
-	float NewCameraAimCoeffcient = CameraAimCoeffcient;
+	float NewCameraAimCoeffcient = CalculateCameraAimCoeffcient(DeltaTime);
+	if (NewCameraAimCoeffcient != CameraAimCoeffcient)
+	{
+		CameraAimCoeffcient = NewCameraAimCoeffcient;
+		FVector NewCameraLocation(FVector::ZeroVector);
+		FRotator NewCameraRotation(FRotator::ZeroRotator);
+		float NewFieldOfView = 0;
+
+		CalculateCameraAimAttributes(DeltaTime, NewCameraLocation, NewCameraRotation, NewFieldOfView);
+
+		UpdateCamera(NewCameraLocation, NewCameraRotation);
+		GetFollowCamera()->FieldOfView = NewFieldOfView;
+	}
+}
+
+const float APSE_LYFE_Character0_Base::CalculateCameraAimCoeffcient(const float DeltaSeconds) const
+{
 	if (bIsTryingCameraAim == true)
 	{
 		if (CameraAimCoeffcient < 1)
 		{
 			float DeltaIncrement = 1 / CameraAimingTime * DeltaSeconds;
-			NewCameraAimCoeffcient = FMath::Min((NewCameraAimCoeffcient + DeltaIncrement), 1.0f);
+			return FMath::Min((CameraAimCoeffcient + DeltaIncrement), 1.0f);
+		}
+		else
+		{
+			return 1;
 		}
 	}
 	else
@@ -271,35 +299,32 @@ void APSE_LYFE_Character0_Base::CalculateCameraAim(const float DeltaSeconds)
 		if (CameraAimCoeffcient > 0)
 		{
 			float DeltaIncrement = 1 / CameraAimingTime * DeltaSeconds;
-			NewCameraAimCoeffcient = FMath::Max((NewCameraAimCoeffcient - DeltaIncrement), 0.0f);
+			return FMath::Max((CameraAimCoeffcient - DeltaIncrement), 0.0f);
+		}
+		else
+		{
+			return 0;
 		}
 	}
+}
 
-	bool bDidAimDecrease = false;
-	float NewCrouchHeightDifference = 0;
-	if (CameraAimCoeffcient != NewCameraAimCoeffcient)
-	{
-		CameraAimCoeffcient = NewCameraAimCoeffcient;
-		FVector DeltaLocation;
-		DeltaLocation.X = FMath::Lerp(NonAimCameraLocation.X, AimCameraLocation.X, CameraAimCoeffcient);
-		DeltaLocation.Y = FMath::Lerp(NonAimCameraLocation.Y, AimCameraLocation.Y, CameraAimCoeffcient);
-		DeltaLocation.Z = FMath::Lerp(NonAimCameraLocation.Z, AimCameraLocation.Z, CameraAimCoeffcient);
-
-		const FRotator DeltaRotation = FMath::Lerp(NonAimCameraRotation, AimCameraRotation, CameraAimCoeffcient);
-
-		UpdateCamera(DeltaLocation, DeltaRotation);
-
-		GetFollowCamera()->FieldOfView = FMath::Lerp(90, 75, CameraAimCoeffcient);
-	}
+void APSE_LYFE_Character0_Base::CalculateCameraAimAttributes(const float DeltaSeconds, FVector &NewCameraLocation, FRotator &NewCameraRotation, float & NewFieldOfView) const
+{
+	NewCameraLocation = FMath::Lerp(NonAimCameraLocation, AimCameraLocation, CameraAimCoeffcient);
+	NewCameraRotation = FMath::Lerp(NonAimCameraRotation, AimCameraRotation, CameraAimCoeffcient);
+	NewFieldOfView = FMath::Lerp(90, 75, CameraAimCoeffcient);
 }
 
 void APSE_LYFE_Character0_Base::UpdateCamera(const FVector CameraLocation, const FRotator CameraRotation)
 {
+	UpdatedCameraLocation = CameraLocation;
+	UpdatedCameraRotation = CameraRotation;
+
 	GetCameraBoom()->TargetArmLength = -CameraLocation.X;
 	GetCameraBoom()->SetRelativeLocation(FVector(0, 0, CameraLocation.Z));
 	GetCameraBoom()->SocketOffset = FVector(0, CameraLocation.Y, 0);// CameraLocation.Z);
 
-	GetFollowCamera()->RelativeRotation = CameraRotation;
+	GetFollowCamera()->SetRelativeRotation(CameraRotation);
 }
 
 void APSE_LYFE_Character0_Base::RightClickPressed()

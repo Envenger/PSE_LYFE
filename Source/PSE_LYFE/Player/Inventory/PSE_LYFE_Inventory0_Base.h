@@ -9,6 +9,16 @@ class APSE_LYFE_Character4_Weapon;
 
 class APSE_LYFE_TPSHUD;
 
+namespace EInventoryState
+{
+	enum Type
+	{
+		StorageOpen,
+		InventoryOpen,
+		Close,
+	};
+}
+
 UCLASS()
 class PSE_LYFE_API APSE_LYFE_Inventory0_Base : public AActor
 {
@@ -28,6 +38,8 @@ public:
 	APSE_LYFE_Character4_Weapon* OwningPawn;
 
 	APSE_LYFE_TPSHUD* CharacterHUD;
+
+	EInventoryState::Type InventoryState;
 
 ///////////////////////////////////////////////
 

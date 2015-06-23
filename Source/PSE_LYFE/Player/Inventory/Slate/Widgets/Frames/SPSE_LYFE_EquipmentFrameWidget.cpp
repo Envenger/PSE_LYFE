@@ -34,7 +34,7 @@ void SPSE_LYFE_EquipmentFrameWidget::Construct(const FArguments& InArgs)
 		[
 			SNew(SBox)
 			.WidthOverride(InventoryPtr->InventoryWidth)
-			.HeightOverride((InventoryPtr->InventoryWidth)*1.35)
+			.HeightOverride((InventoryPtr->InventoryWidth)*1.375)
 			[
 				SNew(SBorder)
 				.VAlign(VAlign_Fill)

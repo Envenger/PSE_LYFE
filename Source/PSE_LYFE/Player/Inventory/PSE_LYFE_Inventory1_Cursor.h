@@ -4,13 +4,15 @@
 
 #include "Player/Inventory/PSE_LYFE_Inventory0_Base.h"
 #include "PSE_LYFE_InventoryStructures.h"
+#include "Storage/PSE_LYFE_BaseStorage.h"
 #include "PSE_LYFE_Inventory1_Cursor.generated.h"
 
 UENUM(BlueprintType)
-enum class ELastClickedStorageType : uint8
+enum class EStorageType : uint8
 {
-	StorageSlot,
+	BackPackSlot,
 	EquipmentSlot,
+	StorageSlot,
 	//
 	Nothing,
 };
@@ -33,19 +35,19 @@ public:
 	UPROPERTY(replicated, Repretry)
 	FItemStruct CursorItem;
 
-	void AddItemToCursor(FItemStruct& StoredItem, FStorageLoc StoredLoc);
+	void AddItemToCursor(FItemStruct& StoredItem, FStorageLoc StoredLoc, EStorageType StorageType);// = EStorageType::BackPackSlot);
 
-	void AddItemToCursor(FItemStruct& StoredItem, uint8 EquipmentSlotLoc);
+	void AddItemToCursor(FItemStruct& StoredItem, uint8 EquipmentSlotLoc, EStorageType StorageType);// = EStorageType::EquipmentSlot);
 
-	void AddItemToCursorAlt(FItemStruct& StoredItem, FStorageLoc StoredLoc);
+	void AddItemToCursorAlt(FItemStruct& StoredItem, FStorageLoc StoredLoc, EStorageType StorageType);
 
-	void CursorSwap(FItemStruct& StoredItem, FStorageLoc StoredLoc);
+	void CursorSwap(FItemStruct& StoredItem, FStorageLoc StoredLoc, EStorageType StorageType); // = EStorageType::BackPackSlot);
 
 	/** Item picked for storage slot */
-	void ItemPicked(AActor* StoragePtr, FStorageLoc StoredLoc);
+	void ItemPicked(FStorageLoc StoredLoc, EStorageType StorageType);// = EStorageType::BackPackSlot);
 
 	/** Item picked for equipment slot */
-	void ItemPicked(AActor* StoragePtr, uint8 EquipmentSlotLoc);
+	void ItemPicked(uint8 EquipmentSlotLoc);
 
 	//void ItemPicked(AInventoryStorage* StoragePtr, EquipmentLoc uint8);
 
@@ -67,7 +69,7 @@ public:
 	/** Lost stored location incase item was from an equipment slot */
 	uint8 LastStoredEquipmentLoc;
 
-	ELastClickedStorageType LastStoragePtrType;
+	EStorageType LastStoragePtrType;
 
 	void AltPressed();
 

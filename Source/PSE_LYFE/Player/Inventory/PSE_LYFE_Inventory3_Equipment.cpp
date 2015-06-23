@@ -5,6 +5,7 @@
 #include "Player/HUD/PSE_LYFE_TPSHUD.h"
 #include "Player/Character/PSE_LYFE_Character4_Weapon.h"
 #include "Items/BackPack/PSE_LYFE_BaseBackPackItem.h"
+#include "Items/Weapon/PSE_LYFE_BaseWeaponItem.h"
 #include "UnrealNetwork.h"
 #include "PSE_LYFE_Inventory3_Equipment.h"
 
@@ -66,13 +67,39 @@ bool APSE_LYFE_Inventory3_Equipment::CheckSlotType(const uint8 EquipmentSlotLoc,
 	return false;
 }
 
+const bool APSE_LYFE_Inventory3_Equipment::ProcessAddInventoryEquipment(FItemStruct &NewItem, const uint8 EquipmentSlotLoc)
+{
+	if (EquipmentSlots[EquipmentSlotLoc] == EEquipmentSlotType::Backpack)
+	{
+		return AddBackPack(NewItem);
+	}
+	else if (EquipmentSlotLoc == 0 || EquipmentSlotLoc == 1 || EquipmentSlotLoc == 2)
+	{
+		return AddWeapon(NewItem, EquipmentSlotLoc);
+	}
+	return true;
+}
+
+const bool APSE_LYFE_Inventory3_Equipment::ProcessRemoveInventoryEquipment(const uint8 EquipmentSlotLoc)
+{
+	if (EquipmentSlots[EquipmentSlotLoc] == EEquipmentSlotType::Backpack)
+	{
+		return RemoveBackPack();
+	}
+	else if (EquipmentSlotLoc == 0 || EquipmentSlotLoc == 1 || EquipmentSlotLoc == 2)//weapons
+	{
+		return RemoveWeapon(EquipmentSlotLoc);
+	}
+	return true;
+}
+
 void APSE_LYFE_Inventory3_Equipment::AddInventoryEquipment(FItemStruct &NewItem, const uint8 EquipmentSlotLoc)
 {
 	const APSE_LYFE_BaseInventoryItem* GetDefault = NewItem.GetDefaultItem();
 	if (EquipmentStorage[EquipmentSlotLoc].ItemClass == nullptr)
 	{
 		EquipmentStorage[EquipmentSlotLoc] = NewItem;
-		ItemAdded(EquipmentSlotLoc);
+		EquipmentItemAdded(EquipmentSlotLoc);
 
 		NewItem.EmptyItem();
 	}
@@ -82,7 +109,7 @@ void APSE_LYFE_Inventory3_Equipment::AddInventoryEquipment(FItemStruct &NewItem,
 		RemoveInventoryEquipment(EquipmentSlotLoc);
 
 		EquipmentStorage[EquipmentSlotLoc] = NewItem;
-		ItemAdded(EquipmentSlotLoc);
+		EquipmentItemAdded(EquipmentSlotLoc);
 		NewItem = RemovedItem;
 	}
 }
@@ -91,26 +118,23 @@ void APSE_LYFE_Inventory3_Equipment::RemoveInventoryEquipment(const uint8 Equipm
 {
 	if (EquipmentStorage[EquipmentSlotLoc].ItemClass != nullptr)
 	{
-		ItemRemoved(EquipmentSlotLoc);
+		EquipmentItemRemoved(EquipmentSlotLoc);
 		EquipmentStorage[EquipmentSlotLoc].EmptyItem();
 	}
 }
 
 void APSE_LYFE_Inventory3_Equipment::EquipItem(const FStorageLoc ItemLoc)// Replace by switch case for better efficiency and cleaner code
 {
-	const APSE_LYFE_BaseInventoryItem* BaseItem = Storage.GetItem(ItemLoc).GetDefaultItem();
+	const APSE_LYFE_BaseInventoryItem* BaseItem = BackPack.GetItem(ItemLoc).GetDefaultItem();
 
 	for (uint8 i = 0; i < EquipmentSlots.Num(); i++)
 	{
 		if (CheckSlotType(i, BaseItem->EquipmentSlotType))
 		{
-			if (EquipmentSlots[i] == EEquipmentSlotType::Backpack)
+			if (ProcessAddInventoryEquipment(BackPack.GetItem(ItemLoc), i))
 			{
-				AddBackPack(Storage.GetItem(ItemLoc));
-			}
-			else
-			{
-				AddInventoryEquipment(Storage.GetItem(ItemLoc), i);
+				ItemRemoved(BackPack.GetItem(ItemLoc).ItemClass);// Item removed from the storage
+				AddInventoryEquipment(BackPack.GetItem(ItemLoc), i);
 				break;
 			}
 		}
@@ -133,13 +157,9 @@ void APSE_LYFE_Inventory3_Equipment::Server_EquipmentSlotLeftClick_Implementatio
 	{
 		if (EquipmentStorage[SlotLoc].ItemClass != nullptr)
 		{
-			if (EquipmentSlots[SlotLoc] == EEquipmentSlotType::Backpack)
+			if (ProcessRemoveInventoryEquipment(SlotLoc))
 			{
-				RemoveBackPack();
-			}
-			else
-			{
-				AddItemToCursor(EquipmentStorage[SlotLoc], SlotLoc);
+				AddItemToCursor(EquipmentStorage[SlotLoc], SlotLoc, EStorageType::EquipmentSlot);
 			}
 		}
 	}
@@ -148,27 +168,9 @@ void APSE_LYFE_Inventory3_Equipment::Server_EquipmentSlotLeftClick_Implementatio
 		const APSE_LYFE_BaseInventoryItem* DefaultCursorItem = CursorItem.GetDefaultItem();
 		if (CheckSlotType(SlotLoc, DefaultCursorItem->EquipmentSlotType))
 		{
-			if (EquipmentStorage[SlotLoc].ItemClass == nullptr)
+			if (ProcessAddInventoryEquipment(CursorItem, SlotLoc))
 			{
-				if (EquipmentSlots[SlotLoc] == EEquipmentSlotType::Backpack)
-				{
-					AddBackPack(CursorItem);
-				}
-				else
-				{
-					AddInventoryEquipment(CursorItem, SlotLoc);
-				}
-			}
-			else
-			{
-				if (EquipmentSlots[SlotLoc] == EEquipmentSlotType::Backpack)
-				{
-					AddBackPack(CursorItem);
-				}
-				else
-				{
-					AddInventoryEquipment(CursorItem, SlotLoc);
-				}
+				AddInventoryEquipment(CursorItem, SlotLoc);
 			}
 		}
 	}
@@ -176,41 +178,40 @@ void APSE_LYFE_Inventory3_Equipment::Server_EquipmentSlotLeftClick_Implementatio
 
 const bool APSE_LYFE_Inventory3_Equipment::AddBackPack(FItemStruct &NewBackPackItemStruct)
 {
-	if (!NewBackPackItemStruct.GetDefaultItem()->IsA(APSE_LYFE_BaseBackPackItem::StaticClass()))
+	if (NewBackPackItemStruct.GetDefaultItem()->IsA(APSE_LYFE_BaseBackPackItem::StaticClass()))
 	{
-		return false;
-	}
-	const APSE_LYFE_BaseBackPackItem* NewBackPack = Cast<APSE_LYFE_BaseBackPackItem>(NewBackPackItemStruct.GetDefaultItem());
-	uint16 NewBackPackSize = NewBackPack->BackpackSize;
-	if (EquipmentStorage[3].ItemClass == nullptr)
-	{
-		ResetStorageSize(NewBackPackSize);
-		AddInventoryEquipment(NewBackPackItemStruct, 3);
-	}
-	else
-	{
-		if (GetLowestItemIndex() < NewBackPackSize + DefaultStorageSize)
+		const APSE_LYFE_BaseBackPackItem* NewBackPack = Cast<APSE_LYFE_BaseBackPackItem>(NewBackPackItemStruct.GetDefaultItem());
+		uint16 NewBackPackSize = NewBackPack->BackpackSize;
+		if (EquipmentStorage[3].ItemClass == nullptr)
 		{
-			ResetStorageSize(NewBackPackSize);
-			AddInventoryEquipment(NewBackPackItemStruct, 3);
+			ResetBackPackSize(NewBackPackSize);
+			return true;
 		}
 		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "item drop error");
-			// Items may drop
+			if (GetLowestItemIndex() < NewBackPackSize + DefaultBagPackSize)
+			{
+				ResetBackPackSize(NewBackPackSize);
+				return true;
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "item drop error");// Items wil; drop
+				return false;
+			}
 		}
 	}
-	return true;
+	return false;
 }
 
 const bool APSE_LYFE_Inventory3_Equipment::RemoveBackPack()
 {
 	if (EquipmentStorage[3].GetDefaultItem()->IsA(APSE_LYFE_BaseBackPackItem::StaticClass()))
 	{
-		if (GetLowestItemIndex() < DefaultStorageSize)
+		if (GetLowestItemIndex() < DefaultBagPackSize)
 		{
-			ResetStorageSize(0);
-			AddItemToCursor(EquipmentStorage[3], 3);
+			ResetBackPackSize(0);
+			return true;
 		}
 		else
 		{
@@ -218,7 +219,44 @@ const bool APSE_LYFE_Inventory3_Equipment::RemoveBackPack()
 			return false;
 		}
 	}
-	return true;
+	return false;
+}
+
+const bool APSE_LYFE_Inventory3_Equipment::AddWeapon(FItemStruct &WeaponItem, const uint8 EquipmentSlotLoc)
+{
+	if (!OwningPawn->bIsWeaponChanging)
+	{
+		if (EquipmentStorage[EquipmentSlotLoc].ItemClass == nullptr)
+		{
+			const APSE_LYFE_BaseInventoryItem* DefaultItem = WeaponItem.GetDefaultItem();
+			if (DefaultItem->IsA(APSE_LYFE_BaseWeaponItem::StaticClass()))
+			{
+				const APSE_LYFE_BaseWeaponItem* WeaponClass = Cast<APSE_LYFE_BaseWeaponItem>(DefaultItem);
+				OwningPawn->PlayerAddWeapon(WeaponClass->PlayerWeaponClass, EquipmentSlotLoc);
+			}
+		}
+		else
+		{
+			const APSE_LYFE_BaseInventoryItem* DefaultItem = WeaponItem.GetDefaultItem();
+			if (DefaultItem->IsA(APSE_LYFE_BaseWeaponItem::StaticClass()))
+			{
+				const APSE_LYFE_BaseWeaponItem* WeaponClass = Cast<APSE_LYFE_BaseWeaponItem>(DefaultItem);
+				OwningPawn->PlayerAddWeapon(WeaponClass->PlayerWeaponClass, EquipmentSlotLoc);
+			}
+		}
+		return true;
+	}
+	return false;
+}
+
+const bool APSE_LYFE_Inventory3_Equipment::RemoveWeapon(const uint8 EquipmentSlotLoc)
+{
+	if (!OwningPawn->bIsWeaponChanging)
+	{
+		OwningPawn->PlayerRemoveWeapon(EquipmentSlotLoc);
+		return true;
+	}
+	return false;
 }
 
 void APSE_LYFE_Inventory3_Equipment::EquipmentSlotRightClick(const uint8 SlotLoc)
@@ -264,12 +302,12 @@ void APSE_LYFE_Inventory3_Equipment::RotateDisplayActor(float ScreenChange)
 	}
 }
 
-void APSE_LYFE_Inventory3_Equipment::ItemAdded(const uint8 EquipmentSlotLoc)
+void APSE_LYFE_Inventory3_Equipment::EquipmentItemAdded(const uint8 EquipmentSlotLoc)
 {
 
 }
 
-void APSE_LYFE_Inventory3_Equipment::ItemRemoved(const uint8 EquipmentSlotLoc)
+void APSE_LYFE_Inventory3_Equipment::EquipmentItemRemoved(const uint8 EquipmentSlotLoc)
 {
 
 }

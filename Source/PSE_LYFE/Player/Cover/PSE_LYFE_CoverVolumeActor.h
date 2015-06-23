@@ -19,5 +19,11 @@ public:
 
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	UBoxComponent* TriggerVolume;
+
+	/** Actor Overlap start */
+	virtual void ReceiveActorBeginOverlap(AActor* OtherActor) override;
+
+	/** Actor Overlap end */
+	virtual void ReceiveActorEndOverlap(AActor* OtherActor) override;
 	
 };

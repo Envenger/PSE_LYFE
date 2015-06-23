@@ -127,6 +127,6 @@ const FSlateBrush* SPSE_LYFE_QuickUseSlotWidget::GetItemIcon() const
 	else
 	{
 		const APSE_LYFE_BaseInventoryItem* BaseItem = InventoryPtr->QuickSlots[QuickSlotIndex.Get()]->GetDefaultObject<APSE_LYFE_BaseInventoryItem>();
-		return(&BaseItem->ItemIcon);
+		return(BaseItem->GetItemIcon());
 	}
 }

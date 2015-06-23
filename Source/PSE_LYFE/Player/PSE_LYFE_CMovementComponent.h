@@ -14,8 +14,12 @@ class PSE_LYFE_API UPSE_LYFE_CMovementComponent : public UCharacterMovementCompo
 	GENERATED_BODY()
 
 public:
+
 	UPROPERTY(Category = "Character Movement", EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0", UIMin = "0"))
 	float MaxWalkSpeedSprint;
+
+	UPROPERTY(Category = "Character Movement", EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0", UIMin = "0"))
+	float MaxWalkSpeedHighCover;
 
 private:
 

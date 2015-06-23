@@ -24,6 +24,7 @@ public:
 
 	APSE_LYFE_Character1_Movement(const FObjectInitializer& ObjectInitializer);
 	
+
 	void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
 	// Called every frame
@@ -79,6 +80,9 @@ public:
 	UPROPERTY(VisibleAnywhere, replicated, BlueprintReadOnly, Category = AnimBP)
 	float AnimBP_CrouchStandAlpha;
 
+	/** Only used in client side to update value of camera crouch */
+	float CameraCrouchStandAlpha;
+
 	void StartCrouch();
 
 	UFUNCTION(Server, Reliable, WithValidation)
@@ -98,16 +102,15 @@ public:
 	/** DUration taken from stand to crouch */
 	float CrouchingDuration;
 
-	void CalculateCrouch(const float DeltaSeconds);
+	const float CalculateCrouch(const float DeltaSeconds);
 
-	void CalculateCameraAim(const float DeltaSeconds) override;
+	virtual void CalculateCameraFinal(const float DeltaTime) override;
+
+	const float CalculateCrouchCameraDecHeight() const;
 
 	/** Height decrease if the camera when crouching */
 	UPROPERTY(Category = Crouch, EditDefaultsOnly)
-	float CrouchHeightDecrease;
-
-	/** A value of crouch stored by the camera to do camera height calculations */
-	float CameraCrouchAlpha;
+	float MaxCrouchHeightDecrease;
 
 	/** A value of crouch stored by the camera to do camera height calculations */
 	float CurrentCrouchDecreasedHeight;
@@ -140,22 +143,22 @@ public:
 	void ServerSetAimOffset_Implementation(float NewAimOffset);
 
 	/** Called for forwards/backward input */
-	void MoveForward(float Value);
+	virtual void MoveForward(float Value);
 
 	/** Called for side to side input */
-	void MoveRight(float Value);
+	virtual void MoveRight(float Value);
 
 	/**
 	* Called via input to turn at a given rate.
 	* @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	*/
-	void TurnAtRate(float Rate);
+	virtual void TurnAtRate(float Rate);
 
 	/**
 	* Called via input to turn look up/down at a given rate.
 	* @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	*/
-	void LookUpAtRate(float Rate);
+	virtual void LookUpAtRate(float Rate);
 
 	///////////////////////////////////////////////////////////////////
 };

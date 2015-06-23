@@ -27,16 +27,16 @@ void APSE_LYFE_Inventory4_QuickSlots::InitializeQuickSlots()
 const FStorageLoc APSE_LYFE_Inventory4_QuickSlots::FindFirstItemOfType(const TSubclassOf<class APSE_LYFE_BaseInventoryItem> ItemClass)
 {
 	uint32 NoOfStorageSlots = 0;
-	for (int32 i = 0; i < Storage.Rows.Num(); i++)
+	for (int32 i = 0; i < BackPack.Rows.Num(); i++)
 	{
-		for (int32 j = 0; j < Storage.Rows[i].Columns.Num(); j++)
+		for (int32 j = 0; j < BackPack.Rows[i].Columns.Num(); j++)
 		{
-			if (ItemClass == Storage.GetItem(FStorageLoc(i, j)).ItemClass)
+			if (ItemClass == BackPack.GetItem(FStorageLoc(i, j)).ItemClass)
 			{
 				return FStorageLoc(i, j);
 			}
 			NoOfStorageSlots += 1;
-			if (NoOfStorageSlots == GetTotalStorageSize())
+			if (NoOfStorageSlots == GetTotalBackPackSize())
 			{
 				return FStorageLoc(-1, -1);
 			}
@@ -48,13 +48,13 @@ const FStorageLoc APSE_LYFE_Inventory4_QuickSlots::FindFirstItemOfType(const TSu
 const uint32 APSE_LYFE_Inventory4_QuickSlots::FindTotalItemsOfType(const TSubclassOf<class APSE_LYFE_BaseInventoryItem> ItemClass)
 {
 	uint32 NoOfStacks = 0;
-	for (uint16 i = 0; i < StorageBase.Num(); i++)
+	for (uint16 i = 0; i < BackPackBase.Num(); i++)
 	{
-		if (ItemClass == StorageBase[i].ItemClass)
+		if (ItemClass == BackPackBase[i].ItemClass)
 		{
-			if (StorageBase[i].ItemProperties.IsValidIndex(0))
+			if (BackPackBase[i].ItemProperties.IsValidIndex(0))
 			{
-				NoOfStacks += StorageBase[i].ItemProperties[0];
+				NoOfStacks += BackPackBase[i].ItemProperties[0];
 			}
 			else
 			{
@@ -70,7 +70,7 @@ void APSE_LYFE_Inventory4_QuickSlots::QuickSlotLeftClick(const uint8 SlotLoc)
 	if (CursorItem.ItemClass != nullptr)
 	{
 		const APSE_LYFE_BaseInventoryItem* DefualtItem = CursorItem.GetDefaultItem();
-		if (DefualtItem->ItemType == EItemType::UsableItem || DefualtItem->ItemType == EItemType::StackableUsableItem)
+		if (DefualtItem->GetItemType() == EItemType::UsableItem || DefualtItem->GetItemType() == EItemType::StackableUsableItem)
 		{
 			QuickSlots[SlotLoc] = CursorItem.ItemClass;
 			Server_QuickSlotLeftClick(SlotLoc);
@@ -96,7 +96,7 @@ void APSE_LYFE_Inventory4_QuickSlots::Server_QuickSlotLeftClick_Implementation(c
 	if(CursorItem.ItemClass != nullptr)
 	{
 		const APSE_LYFE_BaseInventoryItem* DefualtItem = CursorItem.GetDefaultItem();
-		if (DefualtItem->ItemType == EItemType::UsableItem || DefualtItem->ItemType == EItemType::StackableUsableItem)
+		if (DefualtItem->GetItemType() == EItemType::UsableItem || DefualtItem->GetItemType() == EItemType::StackableUsableItem)
 		{
 			QuickSlots[SlotLoc] = CursorItem.ItemClass;
 			ResetItemLastLocation();

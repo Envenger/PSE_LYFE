@@ -108,6 +108,6 @@ const FSlateBrush* SPSE_LYFE_EquipSlotWidget::GetItemIcon() const
 	else
 	{
 		const APSE_LYFE_BaseInventoryItem* BaseItem = InventoryPtr->EquipmentStorage[ItemIndex].GetDefaultItem();
-		return(&BaseItem->ItemIcon);
+		return(BaseItem->GetItemIcon());
 	}
 }

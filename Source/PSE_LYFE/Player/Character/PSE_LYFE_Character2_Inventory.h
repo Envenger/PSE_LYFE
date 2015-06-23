@@ -4,7 +4,7 @@
 
 #include "Player/Character/PSE_LYFE_Character1_Movement.h"
 #include "Player/HUD/PSE_LYFE_TPSHUD.h"
-#include "Player/Inventory/PSE_LYFE_Inventory4_QuickSlots.h"
+#include "Player/Inventory/PSE_LYFE_Inventory5_ExterStorage.h"
 #include "PSE_LYFE_Character2_Inventory.generated.h"
 
 
@@ -23,19 +23,24 @@ public:
 	TSubclassOf<APSE_LYFE_Inventory4_QuickSlots> InventoryClass;
 
 	UPROPERTY(ReplicatedUsing = OnRep_InventoryInitialize, Transient)
-	class APSE_LYFE_Inventory4_QuickSlots* InventoryPtr;
+	class APSE_LYFE_Inventory5_ExterStorage* InventoryPtr;
 
 	UFUNCTION()
 	void OnRep_InventoryInitialize();
 
 	void HUDStorageOwnerLink();
 
-	void PickInventoryItem();
+	void UseItem();
 
 	UFUNCTION(reliable, server, WithValidation)
 	void Server_PickInventoryItem();
 	bool Server_PickInventoryItem_Validate();
 	void Server_PickInventoryItem_Implementation();
+
+	UFUNCTION(reliable, server, WithValidation)
+	void Server_OpenStorage();
+	bool Server_OpenStorage_Validate();
+	void Server_OpenStorage_Implementation();
 
 	void UseInventory();
 

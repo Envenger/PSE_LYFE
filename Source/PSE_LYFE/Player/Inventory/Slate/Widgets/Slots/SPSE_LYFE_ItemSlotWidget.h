@@ -1,11 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-#include "Player/Inventory/PSE_LYFE_Inventory4_QuickSlots.h"
+#include "Player/Inventory/PSE_LYFE_Inventory5_ExterStorage.h"
 
 #pragma once
 
-/**
- * 
- */
 class PSE_LYFE_API SPSE_LYFE_ItemSlotWidget : public SCompoundWidget
 {
 public:
@@ -13,7 +10,7 @@ public:
 		:_InventoryPtr()
 		, _SlotLoc(FStorageLoc(-1, -1))
 	{}
-	SLATE_ARGUMENT(TWeakObjectPtr<class APSE_LYFE_Inventory4_QuickSlots>, InventoryPtr)
+	SLATE_ARGUMENT(TWeakObjectPtr<class APSE_LYFE_Inventory5_ExterStorage>, InventoryPtr)
 	SLATE_ATTRIBUTE(FStorageLoc, SlotLoc)
 
 	SLATE_END_ARGS()
@@ -47,5 +44,5 @@ private:
 
 	TAttribute<FText> Stacks;
 
-	TWeakObjectPtr<class APSE_LYFE_Inventory4_QuickSlots> InventoryPtr;
+	TWeakObjectPtr<class APSE_LYFE_Inventory5_ExterStorage> InventoryPtr;
 };

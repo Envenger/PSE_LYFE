@@ -28,45 +28,39 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	UPROPERTY(ReplicatedUsing = OnRep_ClientResetBagSize, Repretry)
-	TArray<FItemStruct> StorageBase;
+	TArray<FItemStruct> BackPackBase;
 
 	/** This stores the item structures pointers */
 	UPROPERTY()
-	FStorageArray Storage;
+	FStorageArray BackPack;
 
 //////////////////////////////////////////////////
 
-	/** Defualt Storage size without any bags */
-	uint16 DefaultStorageSize;
+	/** Default Storage size without any bags */
+	uint16 DefaultBagPackSize;
 
 	/** Row, Col size of the storage */
-	uint16 BagSize;
+	uint16 BackPackSize;
 
-	const uint16 GetTotalStorageSize() const;
+	const uint16 GetTotalBackPackSize() const;
 
-	void SetStorageBagSize(const int16 BagSize);
+	void SetBackPackSize();
 
 	void TestFunction();
 
-	void ResetStorageSize(const int16 NewBagSize);
+	void ResetBackPackSize(const int16 NewBagSize);
 
 	const int16 GetLowestItemIndex() const;
 
 	UFUNCTION()
 	void OnRep_ClientResetBagSize();
 
-	FStorageLoc StorageDisplaySize;
-
-	/** Used for changing position of 2 items in inventory but also can be used to move item(other is empty) */
-	void SwapItems(const FStorageLoc Loc1, const FStorageLoc Loc2);
+	FStorageLoc BackPackDisplaySize;
 
 	/** Finds the nearest empty item slot returns -1, -1 if now slot is empty */
 	const FStorageLoc FindFirstEmptySlot();
 
 	const FStorageLoc FindFirstFreeSlot(const TSubclassOf<class APSE_LYFE_BaseInventoryItem> ItemClass);
-
-	/** Deletes item from the storage. Stack < 0 means delete all items of that slot */
-	void ThrowItems(const FStorageLoc ItemLoc, const int32 Stacks = -1);
 
 	/** Deletes item from the storage. Stack < 0 means delete all items of that slot */
 	void DeleteItems(const FStorageLoc ItemLoc, const int32 Stacks = -1);
@@ -77,25 +71,22 @@ public:
 /////////////////////////////////////////
 // Clicks //
 
-	void StorageSlotLeftClick(const FStorageLoc ItemLoc);
-
+	void BackPackSlotLeftClick(const FStorageLoc ItemLoc);
 
 	UFUNCTION(reliable, server, WithValidation)
-	void Server_StorageSlotLeftClick(const FStorageLoc ItemLoc);
-	bool Server_StorageSlotLeftClick_Validate(const FStorageLoc ItemLoc);
-	void Server_StorageSlotLeftClick_Implementation(const FStorageLoc ItemLoc);
-
+	void Server_BackPackSlotLeftClick(const FStorageLoc ItemLoc);
+	bool Server_BackPackSlotLeftClick_Validate(const FStorageLoc ItemLoc);
+	void Server_BackPackSlotLeftClick_Implementation(const FStorageLoc ItemLoc);
 	
-	void StorageSlotRightClick(const FStorageLoc ItemLoc);
+	void BackPackSlotRightClick(const FStorageLoc ItemLoc);
 
 	UFUNCTION(reliable, server, WithValidation)
-	void Server_StorageSlotRightClick(const FStorageLoc ItemLoc);
-	bool Server_StorageSlotRightClick_Validate(const FStorageLoc ItemLoc);
-	void Server_StorageSlotRightClick_Implementation(const FStorageLoc ItemLoc);
-
+	void Server_BackPackSlotRightClick(const FStorageLoc ItemLoc);
+	bool Server_BackPackSlotRightClick_Validate(const FStorageLoc ItemLoc);
+	void Server_BackPackSlotRightClick_Implementation(const FStorageLoc ItemLoc);
 
 	/** No server function needed as this is called form the right click */
-	virtual void EquipItem(const FStorageLoc ItemLoc);
+	virtual void EquipItem(const FStorageLoc ItemLoc){};
 
 //////////////////////////////////////////////
 // On Item events //
@@ -104,10 +95,25 @@ public:
 
 	void ItemRemoved(const TSubclassOf<class APSE_LYFE_BaseInventoryItem> ItemClass, const uint8 Stacks = 1);
 
+	void WeaponMagazineAdded(const TSubclassOf<class APSE_LYFE_BaseInventoryItem> ItemClass);
+
+
 //////////////////////////////////////////////
 // Total No Of Items //
 
 	FTotalItemStruct TotalItemsArray;
+
+	const float CalculateWeight(const TSubclassOf<class APSE_LYFE_BaseInventoryItem> ItemClass, const uint8 Stacks = 1) const;
+
+	UPROPERTY(replicated)
+	float TotalItemsWeight;
+
+	/** Only Present on client side calculated via the on rep function */
+	uint16 NoOfSlotsUsed;
+
+	const float GetNoOfUsedSlots() const;
+
+	void CloseInventory();
 
 	uint16 Int1;
 	uint16 Int2;

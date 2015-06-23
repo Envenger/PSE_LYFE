@@ -45,7 +45,7 @@ FString SPSE_LYFE_CursorSlotWidget::GetNumOfStacks() const
 		return("");
 	}
 	const APSE_LYFE_BaseInventoryItem* BaseItem = InventoryPtr->CursorItem.GetDefaultItem();
-	if (BaseItem->ItemType == EItemType::StackableItem || BaseItem->ItemType == EItemType::StackableUsableItem)
+	if (BaseItem->GetItemType() == EItemType::StackableItem || BaseItem->GetItemType() == EItemType::StackableUsableItem)
 	{
 		const int32 CurrentStacks = InventoryPtr->CursorItem.ItemProperties[0];
 		if (CurrentStacks > 1)
@@ -66,7 +66,7 @@ const FSlateBrush* SPSE_LYFE_CursorSlotWidget::GetItemIcon() const
 	else
 	{
 		const APSE_LYFE_BaseInventoryItem* BaseItem = InventoryPtr->CursorItem.GetDefaultItem();
-		return(&BaseItem->ItemIcon);
+		return BaseItem->GetItemIcon();
 	}
 }
 

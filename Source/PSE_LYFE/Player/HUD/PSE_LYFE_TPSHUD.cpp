@@ -3,20 +3,18 @@
 #include "PSE_LYFE.h"
 #include "Player/Character/PSE_LYFE_Character4_Weapon.h"
 #include "Engine/Canvas.h"
-#include "Weapons/BaseFiles/PSE_LYFE_ReloadableWeapon.h"
 #include "Player/HUD/Slate/Widget/SPSE_LYFE_PlayerUIWidget.h"
 #include "Player/Inventory/Slate/Widgets/Frames/SPSE_LYFE_EquipmentFrameWidget.h"
-#include "Player/Inventory/Slate/Widgets/Frames/SPSE_LYFE_StorageFrameWidget.h"
+#include "Player/Inventory/Slate/Widgets/Frames/SPSE_LYFE_BackPackFrameWidget.h"
+#include "Player/Inventory/Slate/Widgets/Frames/SPSE_LYFE_StorgeFrameWidget.h"
 #include "Player/Inventory/Slate/Widgets/Frames/SPSE_LYFE_QuickUseFrameWidget.h"
 #include "Player/Inventory/Slate/Widgets/Slots/SPSE_LYFE_CursorSlotWidget.h"
 #include "TextureResource.h"
 #include "CanvasItem.h"
-
 #include "PSE_LYFE_TPSHUD.h"
 
 APSE_LYFE_TPSHUD::APSE_LYFE_TPSHUD(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	bIsInventoryOpen = false;
 	bIsMousePosLocked = false;
 	// Set the crosshair texture
 }
@@ -50,7 +48,7 @@ bool APSE_LYFE_TPSHUD::CreateUI()
 		FInputModeGameOnly GameMode;
 		GetOwningPlayerController()->SetInputMode(GameMode);
 
-		GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Creation scuccess");
+		GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Creation success");
 		return true;
 	}
 	return false;
@@ -74,22 +72,24 @@ void APSE_LYFE_TPSHUD::DrawHUD()
 		{
 			OwningCharacter->ServerSetAim(Origin, Direction);
 		}
-		if (OwningCharacter->GetCurrentWeapon())
+		/*if (OwningCharacter->GetCurrentWeapon())
+		(
 			if (OwningCharacter->GetCurrentWeapon()->IsA(APSE_LYFE_ReloadableWeapon::StaticClass()))
-			{
-			APSE_LYFE_ReloadableWeapon* Weapon = Cast<APSE_LYFE_ReloadableWeapon>(OwningCharacter->GetCurrentWeapon());
-
-			int32 CurrentAmmo = Weapon->CurrentAmmo;
-			int32 NoOfClips = Weapon->NoOfClips;
-
-			FCanvasTextItem NewText(
-				FVector2D(10, (Canvas->SizeY - 40)),
-				FText::FromString(FString::FromInt(CurrentAmmo) + "/" + FString::FromInt(NoOfClips)),
-				UE4Font,
-				FColor::Black
-				);
-			Canvas->DrawItem(NewText);
-			}
+					{
+						APSE_LYFE_ReloadableWeapon* Weapon = Cast<APSE_LYFE_ReloadableWeapon>(OwningCharacter->GetCurrentWeapon());
+			
+						int32 CurrentAmmo = Weapon->CurrentAmmo;
+						int32 NoOfClips = Weapon->NoOfClips;
+			
+						FCanvasTextItem NewText(
+							FVector2D(10, (Canvas->SizeY - 40)),
+							FText::FromString(FString::FromInt(CurrentAmmo) + "/" + FString::FromInt(NoOfClips)),
+							UE4Font,
+							FColor::Black
+							);
+						Canvas->DrawItem(NewText);
+						})
+			*/
 
 		int8 CurrentStamina = OwningCharacter->GetCurrentStaminaDisplay();
 		int8 MaxStamina = OwningCharacter->MaxStamina;
@@ -108,22 +108,22 @@ void APSE_LYFE_TPSHUD::DrawHUD()
 		}
 	}
 
-	// Draw very simple crosshair
+	// Draw very simple cross hair
 
 	// offset by half the texture's dimensions so that the center of the texture aligns with the center of the Canvas
 	const FVector2D CrosshairDrawPosition((Center.X - (CrosshairTex->GetSurfaceWidth() * 0.5)),
 		(Center.Y - (CrosshairTex->GetSurfaceHeight() * 0.5f)));
 
-	// draw the crosshair
+	// draw the cross hair
 	FCanvasTileItem TileItem(CrosshairDrawPosition, CrosshairTex->Resource, FLinearColor::White);
 	TileItem.BlendMode = SE_BLEND_Translucent;
 	Canvas->DrawItem(TileItem);
 
 }
 
-void APSE_LYFE_TPSHUD::CreateInventory()
+bool APSE_LYFE_TPSHUD::CreateInventoryUI()
 {
-	if (Viewport && InventoryPtr && MainPlayerUI.IsValid() && bIsInventoryOpen == false)
+	if (Viewport && InventoryPtr && MainPlayerUI.IsValid())
 	{
 		MainPlayerUI.Get()->SetVisibility(EVisibility::Visible);
 
@@ -148,7 +148,7 @@ void APSE_LYFE_TPSHUD::CreateInventory()
 		.HAlign(HAlign_Fill)
 		.Padding(FMargin(5))
 		[
-			SAssignNew(StorageUI, SPSE_LYFE_StorageFrameWidget)
+			SAssignNew(BackPackUI, SPSE_LYFE_BackPackFrameWidget)
 			.InventoryPtr(InventoryPtr)
 		];
 
@@ -167,55 +167,130 @@ void APSE_LYFE_TPSHUD::CreateInventory()
 
 		GetOwningPlayerController()->bShowMouseCursor = true;
 
-		bIsInventoryOpen = true;
+		return true;
 	}
+	return false;
 }
 
-void APSE_LYFE_TPSHUD::CloseInventory()
+
+
+void APSE_LYFE_TPSHUD::CloseInventoryUI()
 {
-	if (bIsInventoryOpen == true)
+	if (MainPlayerUI.IsValid())
 	{
-		if (MainPlayerUI.IsValid())
-		{
-			MainPlayerUI.Get()->InventoryOverlay.Get()->RemoveSlot(1);
-			MainPlayerUI.Get()->SetVisibility(EVisibility::HitTestInvisible);
-		}
-		if (CursorItemUIContainer.IsValid())
-		{
-			Viewport->RemoveViewportWidgetContent(CursorItemUIContainer.ToSharedRef());
-		}
-		if (InventoryPtr->bIsDisplayRotateActive == true)
-		{
-			InventoryPtr->EndDisplayActorRotate();
-		}
-		FInputModeGameOnly GameMode;
-		GetOwningPlayerController()->SetInputMode(GameMode);
-
-		GetOwningPlayerController()->bShowMouseCursor = false;
-
-		FSlateApplication::Get().SetAllUserFocusToGameViewport();
-		bIsInventoryOpen = false;
+		MainPlayerUI.Get()->InventoryOverlay.Get()->RemoveSlot(1);
+		MainPlayerUI.Get()->SetVisibility(EVisibility::HitTestInvisible);
 	}
+	if (CursorItemUIContainer.IsValid())
+	{
+		Viewport->RemoveViewportWidgetContent(CursorItemUIContainer.ToSharedRef());
+	}
+	if (InventoryPtr->bIsDisplayRotateActive == true)
+	{
+		InventoryPtr->EndDisplayActorRotate();
+	}
+	FInputModeGameOnly GameMode;
+	GetOwningPlayerController()->SetInputMode(GameMode);
+
+	GetOwningPlayerController()->bShowMouseCursor = false;
+
+	FSlateApplication::Get().SetAllUserFocusToGameViewport();
+	InventoryPtr->InventoryState = EInventoryState::Close;
 }
 
-void APSE_LYFE_TPSHUD::CreateStorageSlot()
+bool APSE_LYFE_TPSHUD::CreateStorageUI()
+{
+	if (Viewport && InventoryPtr && MainPlayerUI.IsValid())
+	{
+		MainPlayerUI.Get()->SetVisibility(EVisibility::Visible);
+
+		MainPlayerUI.Get()->InventoryOverlay.Get()->AddSlot(1)
+			.VAlign(VAlign_Center)
+			.HAlign(HAlign_Center)
+			[
+				SAssignNew(InventoryHorizontalBox, SHorizontalBox)
+			];
+
+		InventoryHorizontalBox.Get()->AddSlot()
+			.VAlign(VAlign_Fill)
+			.HAlign(HAlign_Fill)
+			.Padding(FMargin(5))
+			[
+				SAssignNew(StorageUI, SPSE_LYFE_StorgeFrameWidget)
+				.InventoryPtr(InventoryPtr)
+				.ExternalStoragePtr(InventoryPtr->OpenedStorage)
+			];
+
+		InventoryHorizontalBox.Get()->AddSlot()
+			.VAlign(VAlign_Fill)
+			.HAlign(HAlign_Fill)
+			.Padding(FMargin(5))
+			[
+				SAssignNew(BackPackUI, SPSE_LYFE_BackPackFrameWidget)
+				.InventoryPtr(InventoryPtr)
+			];
+
+		SAssignNew(CursorItemUI, SPSE_LYFE_CursorSlotWidget)
+			.InventoryPtr(InventoryPtr);
+
+		Viewport->AddViewportWidgetContent(
+			SAssignNew(CursorItemUIContainer, SWeakWidget)
+			.PossiblyNullContent(CursorItemUI.ToSharedRef()));
+
+		CursorItemUI.Get()->SetVisibility(EVisibility::HitTestInvisible);
+
+		FInputModeUIOnly Mode;
+		Mode.SetWidgetToFocus(MainPlayerUI);
+		GetOwningPlayerController()->SetInputMode(Mode);
+
+		GetOwningPlayerController()->bShowMouseCursor = true;
+
+		return true;
+	}
+	return false;
+}
+
+void APSE_LYFE_TPSHUD::CloseStorageUI()
+{
+	if (MainPlayerUI.IsValid())
+	{
+		MainPlayerUI.Get()->InventoryOverlay.Get()->RemoveSlot(1);
+		MainPlayerUI.Get()->SetVisibility(EVisibility::HitTestInvisible);
+	}
+	if (CursorItemUIContainer.IsValid())
+	{
+		Viewport->RemoveViewportWidgetContent(CursorItemUIContainer.ToSharedRef());
+	}
+	if (InventoryPtr->bIsDisplayRotateActive == true)
+	{
+		InventoryPtr->EndDisplayActorRotate();
+	}
+	FInputModeGameOnly GameMode;
+	GetOwningPlayerController()->SetInputMode(GameMode);
+
+	GetOwningPlayerController()->bShowMouseCursor = false;
+
+	FSlateApplication::Get().SetAllUserFocusToGameViewport();
+}
+
+void APSE_LYFE_TPSHUD::CreateTempBackPackSlot()
 {
 	InventoryHorizontalBox.Get()->AddSlot()
 		.VAlign(VAlign_Fill)
 		.HAlign(HAlign_Fill)
 		.Padding(FMargin(5))
 		[
-			SAssignNew(StorageUI, SPSE_LYFE_StorageFrameWidget)
+			SAssignNew(BackPackUI, SPSE_LYFE_BackPackFrameWidget)
 			.InventoryPtr(InventoryPtr)
 		];
 }
 
-void APSE_LYFE_TPSHUD::CloseStorageSlot()
+void APSE_LYFE_TPSHUD::CloseTempBackPackSlot()
 {
-	if (StorageUI.IsValid())
+	if (BackPackUI.IsValid())
 	{
-		InventoryHorizontalBox.Get()->RemoveSlot(StorageUI.ToSharedRef());
-		StorageUI = nullptr;
+		InventoryHorizontalBox.Get()->RemoveSlot(BackPackUI.ToSharedRef());
+		BackPackUI = nullptr;
 	}
 }
 

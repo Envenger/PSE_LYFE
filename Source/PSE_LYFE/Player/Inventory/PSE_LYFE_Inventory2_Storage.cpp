@@ -3,52 +3,57 @@
 #include "PSE_LYFE.h"
 #include "Items/PSE_LYFE_BaseInventoryItem.h"
 #include "Items/Ammo/PSE_LYFE_BaseWeaponMagazine.h"
-#include "Weapons/BaseFiles/PSE_LYFE_ReloadableWeapon.h"
+#include "PSE_LYFE_Inventory5_ExterStorage.h"
 #include "Player/Character/PSE_LYFE_Character4_Weapon.h"
 #include "Player/HUD/PSE_LYFE_TPSHUD.h"
 #include "UnrealNetwork.h"
 #include "PSE_LYFE_Inventory2_Storage.h"
-
+//#include "Weapons/BaseFiles/PSE_LYFE_ReloadableWeapon.h"
 APSE_LYFE_Inventory2_Storage::APSE_LYFE_Inventory2_Storage()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	DefaultStorageSize = 5;
-	BagSize = 0;//Initializing default bag size
+	DefaultBagPackSize = 5;
+	BackPackSize = 0;//Initializing default bag size
 
 	InventoryWidth = 500;
 	InventoryIconSize = 65;
+
+	TotalItemsWeight = 0;
 }
+
+
+
 
 void APSE_LYFE_Inventory2_Storage::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	SetStorageBagSize(BagSize);
+	SetBackPackSize();
 }
 
-const uint16 APSE_LYFE_Inventory2_Storage::GetTotalStorageSize() const
+const uint16 APSE_LYFE_Inventory2_Storage::GetTotalBackPackSize() const
 {
-	return DefaultStorageSize + BagSize;
+	return DefaultBagPackSize + BackPackSize;
 }
 
-void APSE_LYFE_Inventory2_Storage::SetStorageBagSize(const int16 BagSize)
+void APSE_LYFE_Inventory2_Storage::SetBackPackSize()
 {
-	uint16 TotalStorageSize = GetTotalStorageSize();
+	uint16 TotalStorageSize = GetTotalBackPackSize();
 	int32 NoOfRows = FMath::CeilToInt((float)TotalStorageSize / 5);
 	if (NoOfRows < 5)
 	{
 		NoOfRows = 5;
 	}
-	StorageDisplaySize = FStorageLoc(NoOfRows, 5);
-	Storage.AddUninitialized(NoOfRows, 5);
-	Storage.InitializeArray(StorageBase, TotalStorageSize);
+	BackPackDisplaySize = FStorageLoc(NoOfRows, 5);
+	BackPack.AddUninitialized(NoOfRows, 5);
+	BackPack.InitializeArray(BackPackBase, TotalStorageSize);
 }
 
-void APSE_LYFE_Inventory2_Storage::ResetStorageSize(const int16 NewBagSize)
+void APSE_LYFE_Inventory2_Storage::ResetBackPackSize(const int16 NewBagSize)
 {
-	uint16 NewTotalStorageSize = NewBagSize + DefaultStorageSize;
-	uint16 OldTotalStorageSize = GetTotalStorageSize();
+	uint16 NewTotalStorageSize = NewBagSize + DefaultBagPackSize;
+	uint16 OldTotalStorageSize = GetTotalBackPackSize();
 	int16 NoOfRows = FMath::CeilToInt((float)NewTotalStorageSize / 5);
 	if (NoOfRows < 5)
 	{
@@ -58,7 +63,7 @@ void APSE_LYFE_Inventory2_Storage::ResetStorageSize(const int16 NewBagSize)
 		if (NewTotalStorageSize < OldTotalStorageSize)
 	{
 		int16 ElementsToRemove = OldTotalStorageSize - NewTotalStorageSize;
-		StorageBase.RemoveAt(NewTotalStorageSize, ElementsToRemove);
+		BackPackBase.RemoveAt(NewTotalStorageSize, ElementsToRemove);
 	}
 	else
 	{
@@ -67,11 +72,11 @@ void APSE_LYFE_Inventory2_Storage::ResetStorageSize(const int16 NewBagSize)
 		TempStruct.ItemClass = nullptr;
 		for (int16 i = ElementsToAdd; i > 0; i--)
 		{
-			StorageBase.Add(TempStruct);
+			BackPackBase.Add(TempStruct);
 		}
 	}
 	FStorageArray TempStorageArray;
-	TempStorageArray.StorageBasePtr = &StorageBase;
+	TempStorageArray.StorageBasePtr = &BackPackBase;
 	TempStorageArray.AddUninitialized(NewStorageDisplaySize.RowNum, 5);
 	uint16 SlotsAssigned = 0;
 	for (int8 i = 0; i < TempStorageArray.Rows.Num(); i++)
@@ -89,16 +94,16 @@ void APSE_LYFE_Inventory2_Storage::ResetStorageSize(const int16 NewBagSize)
 			}
 		}
 	}
-	Storage = TempStorageArray;
-	BagSize = NewBagSize;
-	StorageDisplaySize = NewStorageDisplaySize;
+	BackPack = TempStorageArray;
+	BackPackSize = NewBagSize;
+	BackPackDisplaySize = NewStorageDisplaySize;
 }
 
 const int16 APSE_LYFE_Inventory2_Storage::GetLowestItemIndex() const
 {
-	for (int16 i = (StorageBase.Num() - 1); i >= 0; i--)
+	for (int16 i = (BackPackBase.Num() - 1); i >= 0; i--)
 	{
-		if (StorageBase[i].ItemClass != nullptr)
+		if (BackPackBase[i].ItemClass != nullptr)
 		{
 			return i;
 		}
@@ -108,49 +113,48 @@ const int16 APSE_LYFE_Inventory2_Storage::GetLowestItemIndex() const
 
 void APSE_LYFE_Inventory2_Storage::OnRep_ClientResetBagSize()
 {
-
-	if (StorageBase.Num() == GetTotalStorageSize())
+	NoOfSlotsUsed = GetNoOfUsedSlots();
+	if (BackPackBase.Num() != GetTotalBackPackSize())
 	{
-		return;
-	}
-	if (CharacterHUD->bIsInventoryOpen)
-	{
-		CharacterHUD->CloseStorageSlot();
-	}
-	int16 NewStorageSize = StorageBase.Num();
-	
-	int16 NoOfRows = FMath::CeilToInt((float)NewStorageSize / 5);
-	if (NoOfRows < 5)
-	{
-		NoOfRows = 5;
-	}
-	FStorageLoc NewStorageDisplaySize = FStorageLoc(NoOfRows, 5);
-
-	FStorageArray TempStorageArray;
-	TempStorageArray.StorageBasePtr = &StorageBase;
-	TempStorageArray.AddUninitialized(NewStorageDisplaySize.RowNum, 5);
-	uint16 SlotsAssigned = 0;
-	for (int8 i = 0; i < TempStorageArray.Rows.Num(); i++)
-	{
-		for (int8 j = 0; j < 5; j++)
+		if (InventoryState == EInventoryState::InventoryOpen)
 		{
-			if (SlotsAssigned < NewStorageSize)
+			CharacterHUD->CloseTempBackPackSlot();
+		}
+		int16 NewStorageSize = BackPackBase.Num();
+
+		int16 NoOfRows = FMath::CeilToInt((float)NewStorageSize / 5);
+		if (NoOfRows < 5)
+		{
+			NoOfRows = 5;
+		}
+		FStorageLoc NewStorageDisplaySize = FStorageLoc(NoOfRows, 5);
+
+		FStorageArray TempStorageArray;
+		TempStorageArray.StorageBasePtr = &BackPackBase;
+		TempStorageArray.AddUninitialized(NewStorageDisplaySize.RowNum, 5);
+		uint16 SlotsAssigned = 0;
+		for (int8 i = 0; i < TempStorageArray.Rows.Num(); i++)
+		{
+			for (int8 j = 0; j < 5; j++)
 			{
-				TempStorageArray.Rows[i].Columns[j].Index = SlotsAssigned;
-				SlotsAssigned++;
-			}
-			else
-			{
-				TempStorageArray.Rows[i].Columns[j].Index = -1;
+				if (SlotsAssigned < NewStorageSize)
+				{
+					TempStorageArray.Rows[i].Columns[j].Index = SlotsAssigned;
+					SlotsAssigned++;
+				}
+				else
+				{
+					TempStorageArray.Rows[i].Columns[j].Index = -1;
+				}
 			}
 		}
-	}
-	Storage = TempStorageArray;
-	BagSize = NewStorageSize - DefaultStorageSize;
-	StorageDisplaySize = NewStorageDisplaySize;
-	if (CharacterHUD->bIsInventoryOpen)
-	{
-		CharacterHUD->CreateStorageSlot();
+		BackPack = TempStorageArray;
+		BackPackSize = NewStorageSize - DefaultBagPackSize;
+		BackPackDisplaySize = NewStorageDisplaySize;
+		if (InventoryState == EInventoryState::InventoryOpen)
+		{
+			CharacterHUD->CreateTempBackPackSlot();
+		}
 	}
 }
 
@@ -166,36 +170,36 @@ void APSE_LYFE_Inventory2_Storage::TestFunction()
 	if (Role == ROLE_Authority)
 	{
 		uint8 NewBagSize = FMath::RandRange(0, 20);
-		if (NewBagSize != BagSize)
+		if (NewBagSize != BackPackSize)
 		{
-			ResetStorageSize(NewBagSize);
+			ResetBackPackSize(NewBagSize);
 		}
-		//ResetStorageSize(32);
 	}
 }
 
 void APSE_LYFE_Inventory2_Storage::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+
 }
 
-void APSE_LYFE_Inventory2_Storage::StorageSlotLeftClick(const FStorageLoc ItemLoc)
+void APSE_LYFE_Inventory2_Storage::BackPackSlotLeftClick(const FStorageLoc ItemLoc)
 {
-	if (!bIsCursorFunctional || !Storage.HasValidItem(ItemLoc))
+	if (!bIsCursorFunctional || !BackPack.HasValidItem(ItemLoc))
 	{
 		return;
 	}
-	Server_StorageSlotLeftClick(ItemLoc);
+	Server_BackPackSlotLeftClick(ItemLoc);
 }
 
-bool APSE_LYFE_Inventory2_Storage::Server_StorageSlotLeftClick_Validate(const FStorageLoc ItemLoc)
+bool APSE_LYFE_Inventory2_Storage::Server_BackPackSlotLeftClick_Validate(const FStorageLoc ItemLoc)
 {
 	return true;
 }
 
-void APSE_LYFE_Inventory2_Storage::Server_StorageSlotLeftClick_Implementation(const FStorageLoc ItemLoc)
+void APSE_LYFE_Inventory2_Storage::Server_BackPackSlotLeftClick_Implementation(const FStorageLoc ItemLoc)
 {
-	if (!bIsCursorFunctional || !Storage.HasValidItem(ItemLoc))
+	if (!bIsCursorFunctional || !BackPack.HasValidItem(ItemLoc))
 	{
 		return;
 	}
@@ -203,92 +207,96 @@ void APSE_LYFE_Inventory2_Storage::Server_StorageSlotLeftClick_Implementation(co
 	{
 		if (CursorItem.ItemClass == nullptr)
 		{
-			if (Storage.GetItem(ItemLoc).ItemClass != nullptr)
+			if (BackPack.GetItem(ItemLoc).ItemClass != nullptr)
 			{
-				AddItemToCursor(Storage.GetItem(ItemLoc), ItemLoc);
+				AddItemToCursor(BackPack.GetItem(ItemLoc), ItemLoc, EStorageType::BackPackSlot);
 			}
 		}
 		else
 		{
-			if (Storage.GetItem(ItemLoc).ItemClass == nullptr)
+			if (BackPack.GetItem(ItemLoc).ItemClass == nullptr)
 			{
 				AddItem(CursorItem, ItemLoc);
 			}
-			else if (Storage.GetItem(ItemLoc).ItemClass == CursorItem.ItemClass)
+			else if (BackPack.GetItem(ItemLoc).ItemClass == CursorItem.ItemClass)
 			{
 				const APSE_LYFE_BaseInventoryItem* BaseItem = CursorItem.GetDefaultItem();
-				if (BaseItem->ItemType == EItemType::StackableItem || BaseItem->ItemType == EItemType::StackableUsableItem)
+				if (BaseItem->GetItemType() == EItemType::StackableItem || BaseItem->GetItemType() == EItemType::StackableUsableItem)
 				{
 					AddItem(CursorItem, ItemLoc);
 				}
-				else if (Storage.GetItem(ItemLoc).ItemProperties != CursorItem.ItemProperties)
+				else if (BackPack.GetItem(ItemLoc).ItemProperties != CursorItem.ItemProperties)
 				{
-					CursorSwap(Storage.GetItem(ItemLoc), ItemLoc);
+					CursorSwap(BackPack.GetItem(ItemLoc), ItemLoc, EStorageType::BackPackSlot);
 				}
 			}
 			else
 			{
-				CursorSwap(Storage.GetItem(ItemLoc), ItemLoc);
+				CursorSwap(BackPack.GetItem(ItemLoc), ItemLoc, EStorageType::BackPackSlot);
 			}
 		}
 	}
 	else
 	{
-		if (Storage.GetItem(ItemLoc).ItemClass != nullptr)
+		if (BackPack.GetItem(ItemLoc).ItemClass != nullptr)
 		{
-			AddItemToCursorAlt(Storage.GetItem(ItemLoc), ItemLoc);
+			AddItemToCursorAlt(BackPack.GetItem(ItemLoc), ItemLoc, EStorageType::BackPackSlot);
 		}
 	}
 	
 }
 
-void APSE_LYFE_Inventory2_Storage::StorageSlotRightClick(const FStorageLoc ItemLoc)
+void APSE_LYFE_Inventory2_Storage::BackPackSlotRightClick(const FStorageLoc ItemLoc)
 {
-	if (!bIsCursorFunctional || !Storage.HasValidItem(ItemLoc))
+	if (!bIsCursorFunctional || !BackPack.HasValidItem(ItemLoc))
 	{
 		return;
 	}
-	Server_StorageSlotRightClick(ItemLoc);
+	Server_BackPackSlotRightClick(ItemLoc);
 }
 
-bool APSE_LYFE_Inventory2_Storage::Server_StorageSlotRightClick_Validate(const FStorageLoc ItemLoc)
+bool APSE_LYFE_Inventory2_Storage::Server_BackPackSlotRightClick_Validate(const FStorageLoc ItemLoc)
 {
 	return true;
 }
 
-void APSE_LYFE_Inventory2_Storage::Server_StorageSlotRightClick_Implementation(const FStorageLoc ItemLoc)
+void APSE_LYFE_Inventory2_Storage::Server_BackPackSlotRightClick_Implementation(const FStorageLoc ItemLoc)
 {
-	if (!bIsCursorFunctional || !Storage.HasValidItem(ItemLoc))
+	if (bIsCursorFunctional && BackPack.HasValidItem(ItemLoc))
 	{
-		return;
-	}
-	if (Storage.GetItem(ItemLoc).ItemClass == nullptr)
-	{
-		ResetItemLastLocation();
-		return;
-	}
-	const APSE_LYFE_BaseInventoryItem* BaseItem = Storage.GetItem(ItemLoc).GetDefaultItem();
-	if (BaseItem->ItemType == EItemType::UsableItem || BaseItem->ItemType == EItemType::StackableUsableItem)
-	{
-		BaseItem->UseItem(OwningPawn);
-		DeleteItems(ItemLoc, 1); // Use Item
-	}
-	else if (BaseItem->ItemType == EItemType::EquipableItem)
-	{
-		EquipItem(ItemLoc);
+		APSE_LYFE_Inventory5_ExterStorage* ExternalStorage = Cast<APSE_LYFE_Inventory5_ExterStorage>(this);
+		if (ExternalStorage->OpenedStorage)// If Storage is open
+		{
+			ExternalStorage->AddItemStorage(BackPack.GetItem(ItemLoc));
+		}
+		else
+		{
+			if (BackPack.GetItem(ItemLoc).ItemClass == nullptr)
+			{
+				ResetItemLastLocation();
+				return;
+			}
+			const APSE_LYFE_BaseInventoryItem* BaseItem = BackPack.GetItem(ItemLoc).GetDefaultItem();
+			if (BaseItem->GetItemType() == EItemType::UsableItem || BaseItem->GetItemType() == EItemType::StackableUsableItem)
+			{
+				BaseItem->UseItem(OwningPawn);
+				DeleteItems(ItemLoc, 1); // Use Item
+			}
+			else if (BaseItem->GetItemType() == EItemType::EquipableItem)
+			{
+				EquipItem(ItemLoc);
+			}
+		}
 	}
 }
 
-void APSE_LYFE_Inventory2_Storage::EquipItem(const FStorageLoc ItemLoc)
-{	/* Should be overladed in the Inventory3 */}
-
 const FStorageLoc APSE_LYFE_Inventory2_Storage::FindFirstEmptySlot()
 {
-	for (uint16 i = 0; i < StorageBase.Num(); i++)
+	for (uint16 i = 0; i < BackPackBase.Num(); i++)
 	{
-		if (StorageBase[i].ItemClass == nullptr)
+		if (BackPackBase[i].ItemClass == nullptr)
 		{
-			return Storage.GetStorageLocFromIndex(i);
+			return BackPack.GetStorageLocFromIndex(i);
 		}
 	}
 	return FStorageLoc(-1, -1);
@@ -297,79 +305,50 @@ const FStorageLoc APSE_LYFE_Inventory2_Storage::FindFirstEmptySlot()
 const FStorageLoc APSE_LYFE_Inventory2_Storage::FindFirstFreeSlot(const TSubclassOf<class APSE_LYFE_BaseInventoryItem> ItemClass)
 {
 	const APSE_LYFE_BaseInventoryItem* BaseItem = ItemClass.GetDefaultObject();
-	if (BaseItem->ItemType != EItemType::StackableItem && BaseItem->ItemType != EItemType::StackableUsableItem)
+	if (BaseItem->GetItemType() != EItemType::StackableItem && BaseItem->GetItemType() != EItemType::StackableUsableItem)
 	{
 		return FindFirstEmptySlot();
 	}
-	for (uint16 i = 0; i < StorageBase.Num(); i++)
+	for (uint16 i = 0; i < BackPackBase.Num(); i++)
 	{
-		if (ItemClass == StorageBase[i].ItemClass)
+		if (ItemClass == BackPackBase[i].ItemClass)
 		{
-			const int32 MaxStacks = BaseItem->MaxStacks;
-			int32 CurrentStacks = StorageBase[i].ItemProperties[0];
+			const int32 MaxStacks = BaseItem->GetMaxStacks();
+			int32 CurrentStacks = BackPackBase[i].ItemProperties[0];
 			if (CurrentStacks < MaxStacks)
 			{
-				return Storage.GetStorageLocFromIndex(i);
+				return BackPack.GetStorageLocFromIndex(i);
 			}
 		}
 	}
 	return FStorageLoc(-1, -1);
 }
 
-void APSE_LYFE_Inventory2_Storage::SwapItems(const FStorageLoc Loc1, const FStorageLoc Loc2)// CUrrently not doing out of bound test(8 checks)
-{
-	FItemStruct TempItemStruct; //Temp values to use before moving.
-	TempItemStruct = Storage.GetItem(Loc1);
-	Storage.GetItem(Loc1) = Storage.GetItem(Loc2);
-	Storage.GetItem(Loc2) = TempItemStruct;
-}
-
-void APSE_LYFE_Inventory2_Storage::ThrowItems(const FStorageLoc ItemLoc, const int32 Stacks)
-{
-	if (Storage.GetItem(ItemLoc).ItemClass == nullptr)
-	{
-		return;
-	}/*
-	const APSE_LYFE_BaseInventoryItem* ThrownItemType = Storage.GetItem(ItemLoc).GetDefaultItem();
-	if (ThrownItemType->ItemType == EItemType::StackableItem || ThrownItemType->ItemType == EItemType::StackableUsableItem)
-	{
-		int32 &CurrentStacks = Storage.GetItem(ItemLoc).ItemProperties[0];
-		if (CurrentStacks - Stacks > 0 && Stacks > -1)// Items will remain even after deletions
-		{
-			ItemRemoved(Storage.GetItem(ItemLoc).ItemClass, Stacks);
-			CurrentStacks -= Stacks;
-		}
-		else // Item needs to be completely removed
-		{
-			ItemRemoved(Storage.GetItem(ItemLoc).ItemClass, Storage.GetItem(ItemLoc).ItemProperties[0]);
-			Storage.GetItem(ItemLoc).EmptyItem();
-		}
-	}*/
-}
 
 void APSE_LYFE_Inventory2_Storage::DeleteItems(const FStorageLoc ItemLoc, const int32 Stacks)
 {
-	const APSE_LYFE_BaseInventoryItem* DeletingItemType = Storage.GetItem(ItemLoc).GetDefaultItem();
-	if (DeletingItemType->ItemType == EItemType::StackableItem || DeletingItemType->ItemType == EItemType::StackableUsableItem)
+	const APSE_LYFE_BaseInventoryItem* DeletingItemType = BackPack.GetItem(ItemLoc).GetDefaultItem();
+	if (DeletingItemType->GetItemType() == EItemType::StackableItem || DeletingItemType->GetItemType() == EItemType::StackableUsableItem)
 	{
-		int32 &CurrentStacks = Storage.GetItem(ItemLoc).ItemProperties[0];
+		int32 &CurrentStacks = BackPack.GetItem(ItemLoc).ItemProperties[0];
 		if (CurrentStacks - Stacks > 0 && Stacks > -1)// Items will remain even after deletions
 		{
-			ItemRemoved(Storage.GetItem(ItemLoc).ItemClass, Stacks);
+			ItemRemoved(BackPack.GetItem(ItemLoc).ItemClass, Stacks);
 			CurrentStacks -= Stacks;
 		}
 		else // Item needs to be completely removed
 		{
-			ItemRemoved(Storage.GetItem(ItemLoc).ItemClass, Storage.GetItem(ItemLoc).ItemProperties[0]);
-			Storage.GetItem(ItemLoc).EmptyItem();
+			ItemRemoved(BackPack.GetItem(ItemLoc).ItemClass, BackPack.GetItem(ItemLoc).ItemProperties[0]);
+			BackPack.GetItem(ItemLoc).EmptyItem();
 		}
 	}
 	else if (Stacks != 0)
 	{
-		ItemRemoved(Storage.GetItem(ItemLoc).ItemClass);
-		Storage.GetItem(ItemLoc).EmptyItem();
+		ItemRemoved(BackPack.GetItem(ItemLoc).ItemClass);
+		BackPack.GetItem(ItemLoc).EmptyItem();
 	}
 }
+
 
 const bool APSE_LYFE_Inventory2_Storage::AddItem(FItemStruct &ItemStruct, const FStorageLoc ItemLoc)
 {
@@ -378,7 +357,7 @@ const bool APSE_LYFE_Inventory2_Storage::AddItem(FItemStruct &ItemStruct, const 
 		return false;
 	}
 	const APSE_LYFE_BaseInventoryItem* AddedItem = ItemStruct.GetDefaultItem();
-	if (AddedItem->ItemType == EItemType::StackableItem || AddedItem->ItemType == EItemType::StackableUsableItem)
+	if (AddedItem->GetItemType() == EItemType::StackableItem || AddedItem->GetItemType() == EItemType::StackableUsableItem)
 	{
 		if (ItemStruct.ItemProperties[0] <= 0)
 		{
@@ -389,8 +368,8 @@ const bool APSE_LYFE_Inventory2_Storage::AddItem(FItemStruct &ItemStruct, const 
 			const FStorageLoc FirstFreeItemLoc = FindFirstFreeSlot(ItemStruct.ItemClass);
 			if (FirstFreeItemLoc.RowNum > -1 && FirstFreeItemLoc.ColNum > -1) //Empty or existing items present
 			{
-				const int32 MaxStacks = AddedItem->MaxStacks;
-				int32 &StoredCurrentStacks = Storage.GetItem(FirstFreeItemLoc).ItemProperties[0];
+				const int32 MaxStacks = AddedItem->GetMaxStacks();
+				int32 &StoredCurrentStacks = BackPack.GetItem(FirstFreeItemLoc).ItemProperties[0];
 				int32 &AddedCurrentStacks = ItemStruct.ItemProperties[0];
 				const int32 ItemsToAdd = FMath::Min((MaxStacks - StoredCurrentStacks), AddedCurrentStacks);
 
@@ -417,12 +396,12 @@ const bool APSE_LYFE_Inventory2_Storage::AddItem(FItemStruct &ItemStruct, const 
 				}
 				else // Empty location found
 				{
-					const int32 MaxStacks = AddedItem->MaxStacks;
+					const int32 MaxStacks = AddedItem->GetMaxStacks();
 					int32 &AddedCurrentStacks = ItemStruct.ItemProperties[0];
 					const int32 ItemsToAdd = FMath::Min(MaxStacks, AddedCurrentStacks);
 
-					Storage.GetItem(FirstEmptyItemLoc) = ItemStruct;
-					Storage.GetItem(FirstEmptyItemLoc).ItemProperties[0] = ItemsToAdd;
+					BackPack.GetItem(FirstEmptyItemLoc) = ItemStruct;
+					BackPack.GetItem(FirstEmptyItemLoc).ItemProperties[0] = ItemsToAdd;
 					ItemAdded(ItemStruct.ItemClass, ItemsToAdd); // Items added
 
 					AddedCurrentStacks -= ItemsToAdd;
@@ -439,7 +418,7 @@ const bool APSE_LYFE_Inventory2_Storage::AddItem(FItemStruct &ItemStruct, const 
 		}
 		else // Location already given
 		{
-			if (ItemLoc.RowNum > (StorageDisplaySize.RowNum - 1) && ItemLoc.ColNum > (StorageDisplaySize.ColNum - 1)) //Is Location within bounds
+			if (ItemLoc.RowNum > (BackPackDisplaySize.RowNum - 1) && ItemLoc.ColNum > (BackPackDisplaySize.ColNum - 1)) //Is Location within bounds
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "OutOfBounds-- " + FString::FromInt(ItemLoc.RowNum) + " "
 					+ FString::FromInt(ItemLoc.ColNum));
@@ -447,12 +426,12 @@ const bool APSE_LYFE_Inventory2_Storage::AddItem(FItemStruct &ItemStruct, const 
 			}
 			else
 			{
-				if (Storage.GetItem(ItemLoc).ItemClass != nullptr) // Is Location empty (triggered when adding item by mouse)
+				if (BackPack.GetItem(ItemLoc).ItemClass != nullptr) // Is Location empty (triggered when adding item by mouse)
 				{
-					if (Storage.GetItem(ItemLoc).ItemClass == ItemStruct.ItemClass)
+					if (BackPack.GetItem(ItemLoc).ItemClass == ItemStruct.ItemClass)
 					{
-						const int32 MaxStacks = AddedItem->MaxStacks;
-						int32 &StoredCurrentStacks = Storage.GetItem(ItemLoc).ItemProperties[0];
+						const int32 MaxStacks = AddedItem->GetMaxStacks();
+						int32 &StoredCurrentStacks = BackPack.GetItem(ItemLoc).ItemProperties[0];
 						int32 &AddedCurrentStacks = ItemStruct.ItemProperties[0];
 						const int32 ItemsToAdd = FMath::Min((MaxStacks - StoredCurrentStacks), AddedCurrentStacks);
 
@@ -472,12 +451,12 @@ const bool APSE_LYFE_Inventory2_Storage::AddItem(FItemStruct &ItemStruct, const 
 				}
 				else // Location empty
 				{
-					const int32 MaxStacks = AddedItem->MaxStacks;
+					const int32 MaxStacks = AddedItem->GetMaxStacks();
 					int32 &AddedCurrentStacks = ItemStruct.ItemProperties[0];
 					const int32 ItemsToAdd = FMath::Min(MaxStacks, AddedCurrentStacks);
 
-					Storage.GetItem(ItemLoc) = ItemStruct;
-					Storage.GetItem(ItemLoc).ItemProperties[0] = ItemsToAdd;
+					BackPack.GetItem(ItemLoc) = ItemStruct;
+					BackPack.GetItem(ItemLoc).ItemProperties[0] = ItemsToAdd;
 					ItemAdded(ItemStruct.ItemClass, ItemsToAdd); // Items added
 
 					AddedCurrentStacks -= ItemsToAdd;
@@ -501,7 +480,7 @@ const bool APSE_LYFE_Inventory2_Storage::AddItem(FItemStruct &ItemStruct, const 
 			}
 			else // Empty location found
 			{
-				Storage.GetItem(FirstEmptyItemLoc) = ItemStruct;
+				BackPack.GetItem(FirstEmptyItemLoc) = ItemStruct;
 				ItemAdded(ItemStruct.ItemClass); // Items Added
 
 				ItemStruct.EmptyItem();
@@ -509,7 +488,7 @@ const bool APSE_LYFE_Inventory2_Storage::AddItem(FItemStruct &ItemStruct, const 
 		}
 		else
 		{
-			if (ItemLoc.RowNum > (StorageDisplaySize.RowNum - 1) && ItemLoc.ColNum > (StorageDisplaySize.ColNum - 1)) //Is Location within bounds
+			if (ItemLoc.RowNum > (BackPackDisplaySize.RowNum - 1) && ItemLoc.ColNum > (BackPackDisplaySize.ColNum - 1)) //Is Location within bounds
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "OutOfBounds-- " + FString::FromInt(ItemLoc.RowNum) + " "
 					+ FString::FromInt(ItemLoc.ColNum));
@@ -517,9 +496,9 @@ const bool APSE_LYFE_Inventory2_Storage::AddItem(FItemStruct &ItemStruct, const 
 			}
 			else
 			{
-				if (Storage.GetItem(ItemLoc).ItemClass == nullptr) // Is Location empty (triggered when adding item by mouse)
+				if (BackPack.GetItem(ItemLoc).ItemClass == nullptr) // Is Location empty (triggered when adding item by mouse)
 				{
-					Storage.GetItem(ItemLoc) = ItemStruct;
+					BackPack.GetItem(ItemLoc) = ItemStruct;
 					ItemAdded(ItemStruct.ItemClass); // Items Added
 
 					ItemStruct.EmptyItem();
@@ -542,36 +521,13 @@ void APSE_LYFE_Inventory2_Storage::ItemAdded(const TSubclassOf<class APSE_LYFE_B
 	else
 	{
 		TotalItemsArray.AddItemClass(ItemClass, Stacks);
-
 		if (ItemClass->IsChildOf(APSE_LYFE_BaseWeaponMagazine::StaticClass()))
 		{
-			TArray<APSE_LYFE_BaseWeapon*> Weapons = OwningPawn->GetAllWeapons();
-			for (int8 i = 0; i < Weapons.Num(); i++)
-			{
-				if (Weapons[i]->IsA(APSE_LYFE_ReloadableWeapon::StaticClass()))
-				{
-					APSE_LYFE_ReloadableWeapon* ReloadableWeapon = Cast<APSE_LYFE_ReloadableWeapon>(Weapons[i]);
-					if (ReloadableWeapon->AmmoClass == ItemClass)
-					{
-						TotalItemsArray.ItemArray[TotalItemsArray.ItemArray.Num() - 1].AddPointerValue(&ReloadableWeapon->NoOfClips);
-					}
-					else
-					{
-						FString String1 = "nullpptr";
-						FString String2 = "nullpptr";
-						if (ReloadableWeapon->AmmoClass)
-						{
-							String1 = ReloadableWeapon->AmmoClass->GetName();
-						}
-						if (ItemClass)
-						{
-							String2 = ItemClass->GetName();
-						}
-					}
-				}
-			}
+			WeaponMagazineAdded(ItemClass);
 		}
 	}
+	const float ItemWeight = CalculateWeight(ItemClass, Stacks);
+	TotalItemsWeight += ItemWeight;
 }
 
 void APSE_LYFE_Inventory2_Storage::ItemRemoved(const TSubclassOf<class APSE_LYFE_BaseInventoryItem> ItemClass, const uint8 Stacks)
@@ -583,11 +539,70 @@ void APSE_LYFE_Inventory2_Storage::ItemRemoved(const TSubclassOf<class APSE_LYFE
 		TotalStacks -= Stacks;
 		TotalItemsArray.UpdateItemStacks(ItemLocation, TotalStacks);
 	}
+	const float ItemWeight = CalculateWeight(ItemClass, Stacks);
+	TotalItemsWeight -= ItemWeight;
+}
+
+void APSE_LYFE_Inventory2_Storage::WeaponMagazineAdded(const TSubclassOf<class APSE_LYFE_BaseInventoryItem> ItemClass)
+{
+	const TArray<APSE_LYFE_BaseWeapon*> Weapons = OwningPawn->GetAllWeapons();
+	for (int8 i = 0; i < Weapons.Num(); i++)
+	{
+		/*	if (Weapons[i]->IsA(APSE_LYFE_ReloadableWeapon::StaticClass()))
+		{
+		APSE_LYFE_ReloadableWeapon* ReloadableWeapon = Cast<APSE_LYFE_ReloadableWeapon>(Weapons[i]);
+		if (ReloadableWeapon->AmmoClass == ItemClass)
+		{
+		TotalItemsArray.ItemArray[TotalItemsArray.ItemArray.Num() - 1].AddPointerValue(&ReloadableWeapon->NoOfClips);
+		}
+		else
+		{
+		FString String1 = "nullpptr";
+		FString String2 = "nullpptr";
+		if (ReloadableWeapon->AmmoClass)
+		{
+		String1 = ReloadableWeapon->AmmoClass->GetName();
+		}
+		if (ItemClass)
+		{
+		String2 = ItemClass->GetName();
+		}
+		}
+		}*/
+	}
+}
+
+const float APSE_LYFE_Inventory2_Storage::CalculateWeight(const TSubclassOf<class APSE_LYFE_BaseInventoryItem> ItemClass, const uint8 Stacks) const
+{
+	const APSE_LYFE_BaseInventoryItem* DefaultItem = ItemClass->GetDefaultObject<APSE_LYFE_BaseInventoryItem>();
+	const float WeightPerItem = DefaultItem->GetItemWeight();
+	return (WeightPerItem*Stacks);
+}
+
+const float APSE_LYFE_Inventory2_Storage::GetNoOfUsedSlots() const
+{
+	uint16 TempNoOfSlots = 0;
+	for (const FItemStruct ItemStruct : BackPackBase)
+	{
+		if (ItemStruct.ItemClass != nullptr)
+		{
+			TempNoOfSlots++;
+		}
+	}
+	return TempNoOfSlots;
+}
+
+void APSE_LYFE_Inventory2_Storage::CloseInventory()
+{
+	CharacterHUD->CloseInventoryUI();
+	InventoryState = EInventoryState::Close;
 }
 
 void APSE_LYFE_Inventory2_Storage::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(APSE_LYFE_Inventory2_Storage, StorageBase, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(APSE_LYFE_Inventory2_Storage, BackPackBase, COND_OwnerOnly);
+
+	DOREPLIFETIME_CONDITION(APSE_LYFE_Inventory2_Storage, TotalItemsWeight, COND_OwnerOnly);
 }

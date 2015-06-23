@@ -13,6 +13,7 @@ APSE_LYFE_Inventory0_Base::APSE_LYFE_Inventory0_Base()
 	bNetUseOwnerRelevancy = true;
 
 
+	InventoryState = EInventoryState::Close;
 }
 
 // Called when the game starts or when spawned

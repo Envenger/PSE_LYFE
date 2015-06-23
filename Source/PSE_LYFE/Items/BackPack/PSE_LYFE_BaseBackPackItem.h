@@ -3,7 +3,6 @@
 #pragma once
 
 #include "Items/PSE_LYFE_BaseInventoryItem.h"
-#include "PSE_LYFE_BackPackEquipment.h"
 #include "PSE_LYFE_BaseBackPackItem.generated.h"
 
 /**

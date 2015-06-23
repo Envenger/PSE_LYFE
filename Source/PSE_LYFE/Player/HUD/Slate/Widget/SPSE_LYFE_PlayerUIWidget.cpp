@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PSE_LYFE.h"
-#include "Player/HUD/PSE_LYFE_TPSHUD.h"
+#include "Player/Inventory/PSE_LYFE_Inventory5_ExterStorage.h"
 #include "SPSE_LYFE_PlayerUIWidget.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
@@ -38,8 +38,15 @@ FReply SPSE_LYFE_PlayerUIWidget::OnMouseButtonDoubleClick(const FGeometry& InMyG
 FReply SPSE_LYFE_PlayerUIWidget::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
 {
 	if (InKeyEvent.GetKey() == FKey("I") || InKeyEvent.GetKey() == FKey("Escape"))
-	{
-		InventoryPtr->CharacterHUD->CloseInventory();
+	{ 
+		if (InventoryPtr->InventoryState == EInventoryState::InventoryOpen)
+		{
+			InventoryPtr->CloseInventory();
+		}
+		else if (InventoryPtr->InventoryState == EInventoryState::StorageOpen)
+		{
+			InventoryPtr->CloseStorage();
+		}
 	}
 	else if (InKeyEvent.GetKey() == FKey("LeftAlt") || InKeyEvent.GetKey() == FKey("RightAlt"))
 	{

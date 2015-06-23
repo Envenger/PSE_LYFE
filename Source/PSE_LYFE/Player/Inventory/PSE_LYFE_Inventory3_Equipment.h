@@ -3,7 +3,6 @@
 #pragma once
 
 #include "Player/Inventory/PSE_LYFE_Inventory2_Storage.h"
-#include "Items/BackPack/PSE_LYFE_BackPackEquipment.h"
 #include "PSE_LYFE_Inventory3_Equipment.generated.h"
 
 
@@ -41,6 +40,14 @@ public:
 	const bool AddBackPack(FItemStruct &NewBackPackItemStruct);
 
 	const bool RemoveBackPack();
+
+	const bool AddWeapon(FItemStruct &WeaponItem, const uint8 EquipmentSlotLoc);
+
+	const bool RemoveWeapon(const uint8 EquipmentSlotLoc);
+
+	const bool ProcessAddInventoryEquipment(FItemStruct &NewItem, const uint8 EquipmentSlotLoc);
+
+	const bool ProcessRemoveInventoryEquipment(const uint8 EquipmentSlotLoc);
 
 	/** Item slot type needs to be checked before adding item or it wont work. Replaces the  */
 	void AddInventoryEquipment(FItemStruct &NewItem, const uint8 EquipmentSlotLoc);
@@ -91,9 +98,9 @@ public:
 
 private:
 
-	void ItemAdded(const uint8 EquipmentSlotLoc);
+	void EquipmentItemAdded(const uint8 EquipmentSlotLoc);
 
-	void ItemRemoved(const uint8 EquipmentSlotLoc);
+	void EquipmentItemRemoved(const uint8 EquipmentSlotLoc);
 	
 	
 };

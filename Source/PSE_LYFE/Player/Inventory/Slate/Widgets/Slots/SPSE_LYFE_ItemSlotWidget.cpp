@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PSE_LYFE.h"
-#include "Player/Inventory/PSE_LYFE_Inventory4_QuickSlots.h"
+#include "Player/Inventory/PSE_LYFE_Inventory5_ExterStorage.h"
 #include "Items/PSE_LYFE_BaseInventoryItem.h"
 #include "SPSE_LYFE_ItemSlotWidget.h"
 
@@ -70,11 +70,11 @@ FReply SPSE_LYFE_ItemSlotWidget::OnItemDoubleClicked(const FGeometry& MyGeometry
 FReply SPSE_LYFE_ItemSlotWidget::OnItemPressed(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
 	FStorageLoc ItemLoc = SlotLoc.Get();
-	if (!InventoryPtr->Storage.IsValidIndex(ItemLoc))
+	if (!InventoryPtr->BackPack.IsValidIndex(ItemLoc))
 	{
 		return FReply::Handled();
 	}
-	if (InventoryPtr->Storage.Rows[ItemLoc.RowNum].Columns[ItemLoc.ColNum].Index < 0)
+	if (InventoryPtr->BackPack.Rows[ItemLoc.RowNum].Columns[ItemLoc.ColNum].Index < 0)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.5f, FColor::Red, "Slot disabled");
 		return FReply::Handled();
@@ -83,12 +83,12 @@ FReply SPSE_LYFE_ItemSlotWidget::OnItemPressed(const FGeometry& MyGeometry, cons
 	{
 		if (MouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
 		{
-			InventoryPtr->StorageSlotLeftClick(ItemLoc);
+			InventoryPtr->BackPackSlotLeftClick(ItemLoc);
 			bUpDownLeftClick = true;
 		}
 		else if (MouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
 		{
-			InventoryPtr->StorageSlotRightClick(ItemLoc);
+			InventoryPtr->BackPackSlotRightClick(ItemLoc);
 		}
 		return FReply::Handled();
 	}
@@ -101,11 +101,11 @@ FReply SPSE_LYFE_ItemSlotWidget::OnItemPressed(const FGeometry& MyGeometry, cons
 FReply SPSE_LYFE_ItemSlotWidget::OnItemReleased(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
 	FStorageLoc ItemLoc = SlotLoc.Get();
-	if (!InventoryPtr->Storage.IsValidIndex(ItemLoc))
+	if (!InventoryPtr->BackPack.IsValidIndex(ItemLoc))
 	{
 		return FReply::Handled();
 	}
-	if (InventoryPtr->Storage.Rows[ItemLoc.RowNum].Columns[ItemLoc.ColNum].Index < 0)
+	if (InventoryPtr->BackPack.Rows[ItemLoc.RowNum].Columns[ItemLoc.ColNum].Index < 0)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.5f, FColor::Red, "Slot disabled");
 		return FReply::Handled();
@@ -116,7 +116,7 @@ FReply SPSE_LYFE_ItemSlotWidget::OnItemReleased(const FGeometry& MyGeometry, con
 		{
 			if (bUpDownLeftClick == false)
 			{
-				InventoryPtr->StorageSlotLeftClick(ItemLoc);
+				InventoryPtr->BackPackSlotLeftClick(ItemLoc);
 			}
 		}
 		return FReply::Handled();
@@ -130,22 +130,22 @@ FReply SPSE_LYFE_ItemSlotWidget::OnItemReleased(const FGeometry& MyGeometry, con
 FString SPSE_LYFE_ItemSlotWidget::GetNumOfStacks() const
 {
 	FStorageLoc ItemLoc = SlotLoc.Get();
-	if (!InventoryPtr->Storage.IsValidIndex(ItemLoc))
+	if (!InventoryPtr->BackPack.IsValidIndex(ItemLoc))
 	{
 		return("");
 	}
-	if (InventoryPtr->Storage.Rows[ItemLoc.RowNum].Columns[ItemLoc.ColNum].Index < 0)
+	if (InventoryPtr->BackPack.Rows[ItemLoc.RowNum].Columns[ItemLoc.ColNum].Index < 0)
 	{
 		return("");
 	}
-	if (InventoryPtr->Storage.GetItem(SlotLoc.Get()).ItemClass == nullptr)
+	if (InventoryPtr->BackPack.GetItem(SlotLoc.Get()).ItemClass == nullptr)
 	{
 		return("");
 	}
-	const APSE_LYFE_BaseInventoryItem* BaseItem = InventoryPtr->Storage.GetItem(ItemLoc).GetDefaultItem();
-	if (BaseItem->ItemType == EItemType::StackableItem || BaseItem->ItemType == EItemType::StackableUsableItem)
+	const APSE_LYFE_BaseInventoryItem* BaseItem = InventoryPtr->BackPack.GetItem(ItemLoc).GetDefaultItem();
+	if (BaseItem->GetItemType() == EItemType::StackableItem || BaseItem->GetItemType() == EItemType::StackableUsableItem)
 	{
-		const int32 CurrentStacks = InventoryPtr->Storage.GetItem(ItemLoc).GetStacks();
+		const int32 CurrentStacks = InventoryPtr->BackPack.GetItem(ItemLoc).GetStacks();
 		if (CurrentStacks > 1)
 		{
 			return(FString::FromInt(CurrentStacks));
@@ -158,22 +158,22 @@ FString SPSE_LYFE_ItemSlotWidget::GetNumOfStacks() const
 const FSlateBrush* SPSE_LYFE_ItemSlotWidget::GetItemIconImg() const
 {
 	FStorageLoc ItemLoc = SlotLoc.Get();
-	if (!InventoryPtr->Storage.IsValidIndex(ItemLoc))
+	if (!InventoryPtr->BackPack.IsValidIndex(ItemLoc))
 	{
 		return(&InventoryPtr->DisabledSlotImg);
 	}
-	if (InventoryPtr->Storage.Rows[ItemLoc.RowNum].Columns[ItemLoc.ColNum].Index < 0)
+	if (InventoryPtr->BackPack.Rows[ItemLoc.RowNum].Columns[ItemLoc.ColNum].Index < 0)
 	{
 		return(&InventoryPtr->DisabledSlotImg);
 	}
-	if (!InventoryPtr->Storage.StorageBasePtr || InventoryPtr->Storage.GetItem(ItemLoc).ItemClass == nullptr)
+	if (!InventoryPtr->BackPack.StorageBasePtr || InventoryPtr->BackPack.GetItem(ItemLoc).ItemClass == nullptr)
 	{
 		return(&InventoryPtr->EmptySlotImg);
 	}
 	else
 	{
-		const APSE_LYFE_BaseInventoryItem* BaseItem = InventoryPtr->Storage.GetItem(ItemLoc).GetDefaultItem();
-		return(&BaseItem->ItemIcon);
+		const APSE_LYFE_BaseInventoryItem* BaseItem = InventoryPtr->BackPack.GetItem(ItemLoc).GetDefaultItem();
+		return(BaseItem->GetItemIcon());
 	}
 }
 

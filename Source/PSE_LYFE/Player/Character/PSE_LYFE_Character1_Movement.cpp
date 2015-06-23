@@ -3,7 +3,6 @@
 #include "PSE_LYFE.h"
 #include "Player/PSE_LYFE_CMovementComponent.h"
 #include "PSE_LYFE_Character4_Weapon.h"
-#include "Weapons/BaseFiles/PSE_LYFE_ReloadableWeapon.h"
 #include "UnrealNetwork.h"
 #include "PSE_LYFE_Character1_Movement.h"
 
@@ -23,13 +22,12 @@ APSE_LYFE_Character1_Movement::APSE_LYFE_Character1_Movement(const FObjectInitia
 	CrouchState = ECrouchState::Null;
 	CrouchingDuration = 0.3;
 
-	CrouchHeightDecrease = 40;
-	CameraCrouchAlpha = AnimBP_CrouchStandAlpha;
+	MaxCrouchHeightDecrease = 40;
 
 	CurrentCrouchDecreasedHeight = 0;
+	CameraCrouchStandAlpha = 0;
 
 	bIsSprinting = false;
-
 }
 
 void APSE_LYFE_Character1_Movement::SetupPlayerInputComponent(class UInputComponent* InputComponent)
@@ -54,7 +52,7 @@ void APSE_LYFE_Character1_Movement::SetupPlayerInputComponent(class UInputCompon
 	InputComponent->BindAxis("LookUpRate", this, &APSE_LYFE_Character1_Movement::LookUpAtRate);
 }
 
-void APSE_LYFE_Character1_Movement::Tick(float DeltaSeconds)
+void APSE_LYFE_Character1_Movement::Tick(float DeltaTime)
 {
 	AnimBP_MoveSpeed = GetMovementComponent()->Velocity.Size();
 
@@ -74,44 +72,78 @@ void APSE_LYFE_Character1_Movement::Tick(float DeltaSeconds)
 	AimRotation.Normalize();
 	AnimBP_AimPitch = AimRotation.Pitch;
 	////////////////////////////////
-	CalculateCrouch(DeltaSeconds);
-	/////////////////////////////////
 
-
-	Super::Tick(DeltaSeconds);
+	if (CrouchState != ECrouchState::Null)
+	{
+		const float CrouchAlpha = CalculateCrouch(DeltaTime);
+		if (AnimBP_CrouchStandAlpha != CrouchAlpha)
+		{
+			AnimBP_CrouchStandAlpha = CrouchAlpha;
+		}
+	}
+	
+	Super::Tick(DeltaTime); //Calculate the camera aim first then crouch decrease
 }
 
-void APSE_LYFE_Character1_Movement::CalculateCameraAim(const float DeltaSeconds)
+void APSE_LYFE_Character1_Movement::CalculateCameraFinal(const float DeltaTime)
 {
-	float NewCameraAimCoeffcient = CameraAimCoeffcient;
-	if (bIsTryingCameraAim == true)
+	FVector NewCameraLocation = UpdatedCameraLocation;
+	FRotator NewCameraRotation = UpdatedCameraRotation;
+
+	float NewCameraAimCoeffcient = CalculateCameraAimCoeffcient(DeltaTime);
+
+	float CrouchHeightChange = 0;
+	if (CameraCrouchStandAlpha != AnimBP_CrouchStandAlpha)
 	{
-		if (CameraAimCoeffcient < 1)
-		{
-			float DeltaIncrement = 1 / CameraAimingTime * DeltaSeconds;
-			NewCameraAimCoeffcient = FMath::Min((NewCameraAimCoeffcient + DeltaIncrement), 1.0f);
-		}
-	}
-	else
-	{
-		if (CameraAimCoeffcient > 0)
-		{
-			float DeltaIncrement = 1 / CameraAimingTime * DeltaSeconds;
-			NewCameraAimCoeffcient = FMath::Max((NewCameraAimCoeffcient - DeltaIncrement), 0.0f);
-		}
+		CameraCrouchStandAlpha = AnimBP_CrouchStandAlpha;
+
+		const float NewCrouchDecreasedHeight = CalculateCrouchCameraDecHeight();
+		CrouchHeightChange = NewCrouchDecreasedHeight - CurrentCrouchDecreasedHeight;
+		CurrentCrouchDecreasedHeight = NewCrouchDecreasedHeight;
 	}
 
+	if (NewCameraAimCoeffcient != CameraAimCoeffcient)
+	{
+		CameraAimCoeffcient = NewCameraAimCoeffcient;
+
+		float NewFieldOfView = 0;
+		CalculateCameraAimAttributes(DeltaTime, NewCameraLocation, NewCameraRotation, NewFieldOfView);
+		GetFollowCamera()->FieldOfView = NewFieldOfView;
+
+		NewCameraLocation.Z -= CurrentCrouchDecreasedHeight;
+	}
+	else if (CrouchHeightChange != 0)
+	{
+		NewCameraLocation.Z -= CrouchHeightChange;
+	}
+
+	if (UpdatedCameraLocation != NewCameraLocation || UpdatedCameraRotation != NewCameraRotation)
+	{
+		UpdateCamera(NewCameraLocation, NewCameraRotation);
+	}
+}
+
+const float APSE_LYFE_Character1_Movement::CalculateCrouchCameraDecHeight() const
+{
+	return FMath::Lerp(0.f, MaxCrouchHeightDecrease, AnimBP_CrouchStandAlpha);
+}
+
+/*
+void APSE_LYFE_Character1_Movement::CalculateCameraAim(const float DeltaSeconds)
+{
 	bool bDidAimDecrease = false;
 	float NewCrouchHeightDifference = 0;
 	if (CameraCrouchAlpha != AnimBP_CrouchStandAlpha)
 	{
 		CameraCrouchAlpha = AnimBP_CrouchStandAlpha;
+
 		float NewCrouchDecreasedHeight = FMath::Lerp(0.0f, CrouchHeightDecrease, CameraCrouchAlpha);
 		NewCrouchHeightDifference = CurrentCrouchDecreasedHeight - NewCrouchDecreasedHeight;
 		CurrentCrouchDecreasedHeight = NewCrouchDecreasedHeight;
 
 		bDidAimDecrease = true;
 	}
+
 	if (CameraAimCoeffcient != NewCameraAimCoeffcient)
 	{
 		CameraAimCoeffcient = NewCameraAimCoeffcient;
@@ -127,21 +159,17 @@ void APSE_LYFE_Character1_Movement::CalculateCameraAim(const float DeltaSeconds)
 		UpdateCamera(DeltaLocation, DeltaRotation);
 
 		GetFollowCamera()->FieldOfView = FMath::Lerp(90, 75, CameraAimCoeffcient);
+
+		CameraCrouchAlpha = AnimBP_CrouchStandAlpha;
 	}
 	else if (bDidAimDecrease == true)
 	{
-		CameraCrouchAlpha = AnimBP_CrouchStandAlpha;
-
 		FVector DeltaLocation = GetCameraBoom()->RelativeLocation;
 		DeltaLocation.Z += NewCrouchHeightDifference;
 		GetCameraBoom()->SetRelativeLocation(DeltaLocation);
 	}
-
-	if (IsLocallyControlled())
-	{
-		FVector TestLocation = GetCameraBoom()->RelativeLocation;
-	}
 }
+*/
 
 bool APSE_LYFE_Character1_Movement::ServerUpdateAimRotation_Validate(FRotator NewAimRotation)
 {
@@ -289,7 +317,7 @@ void APSE_LYFE_Character1_Movement::ServerEndCrouch_Implementation()
 	}
 }
 
-void APSE_LYFE_Character1_Movement::CalculateCrouch(const float DeltaSeconds)
+const float APSE_LYFE_Character1_Movement::CalculateCrouch(const float DeltaSeconds)
 {
 	if (!GetCharacterMovement()->IsFalling())
 	{
@@ -297,25 +325,27 @@ void APSE_LYFE_Character1_Movement::CalculateCrouch(const float DeltaSeconds)
 		{
 			if (AnimBP_CrouchStandAlpha < 1)
 			{
-				AnimBP_CrouchStandAlpha = FMath::Min((AnimBP_CrouchStandAlpha + (1 / CrouchingDuration*DeltaSeconds)), 1.0f);
+				return FMath::Min((AnimBP_CrouchStandAlpha + (1 / CrouchingDuration*DeltaSeconds)), 1.0f);
+			}
+			else
+			{
+				return 1;
 			}
 		}
 		else if (CrouchState == ECrouchState::EndCrouch)
 		{
 			if (AnimBP_CrouchStandAlpha > 0)
 			{
-				AnimBP_CrouchStandAlpha = FMath::Max((AnimBP_CrouchStandAlpha - ((1 / CrouchingDuration)*DeltaSeconds)), 0.0f);
+				return FMath::Max((AnimBP_CrouchStandAlpha - ((1 / CrouchingDuration)*DeltaSeconds)), 0.0f);
 			}
 			else if (AnimBP_CrouchStandAlpha == 0)// Crouch End completely
 			{
 				CrouchState = ECrouchState::Null;
+				return 0;
 			}
 		}
 	}
-	else if (AnimBP_CrouchStandAlpha != 0)
-	{
-		AnimBP_CrouchStandAlpha = 0;
-	}
+	return 0;
 }
 
 ///////////////////////////////////////////
@@ -326,15 +356,6 @@ void APSE_LYFE_Character1_Movement::StartSprint()
 	APSE_LYFE_Character4_Weapon* WeaponCharacter = Cast<APSE_LYFE_Character4_Weapon>(this);
 	if (WeaponCharacter)
 	{
-		if (WeaponCharacter->GetCurrentWeapon() && WeaponCharacter->GetCurrentWeapon()->IsA(APSE_LYFE_ReloadableWeapon::StaticClass()))
-		{
-			APSE_LYFE_ReloadableWeapon* ReloadableWeapon = Cast<APSE_LYFE_ReloadableWeapon>(WeaponCharacter->GetCurrentWeapon());
-			if (ReloadableWeapon->CurrentState == EWeaponState::Reloading)
-			{
-				ReloadableWeapon->CancelReload();
-			}
-		}
-		WeaponCharacter->StopWeaponFire();
 	}
 	if (CrouchState != ECrouchState::Null)
 	{

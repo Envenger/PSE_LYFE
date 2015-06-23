@@ -4,6 +4,7 @@
 #include "Player/HUD/PSE_LYFE_TPSHUD.h"
 #include "Player/Inventory/PSE_LYFE_Inventory4_QuickSlots.h"
 #include "PSE_LYFE_Character4_Weapon.h"
+#include "Storage/PSE_LYFE_BaseStorage.h"
 #include "UnrealNetwork.h"
 #include "PSE_LYFE_Character2_Inventory.h"
 
@@ -14,7 +15,7 @@ void APSE_LYFE_Character2_Inventory::SetupPlayerInputComponent(class UInputCompo
 	// Set up gameplay key bindings
 	check(InputComponent);
 
-	InputComponent->BindAction("Use", IE_Released, this, &APSE_LYFE_Character2_Inventory::PickInventoryItem);
+	InputComponent->BindAction("Use", IE_Released, this, &APSE_LYFE_Character2_Inventory::UseItem);
 	InputComponent->BindAction("UseInventory", IE_Pressed, this, &APSE_LYFE_Character2_Inventory::UseInventory);
 }
 
@@ -23,7 +24,7 @@ void APSE_LYFE_Character2_Inventory::BeginPlay()
 	Super::BeginPlay();
 	if (Role == ROLE_Authority)
 	{
-		InventoryPtr = GetWorld()->SpawnActor<APSE_LYFE_Inventory4_QuickSlots>(InventoryClass);
+		InventoryPtr = GetWorld()->SpawnActor<APSE_LYFE_Inventory5_ExterStorage>(InventoryClass);
 		if (this->IsA(APSE_LYFE_Character4_Weapon::StaticClass()))
 		{
 			InventoryPtr->SetOwningPawn(Cast<APSE_LYFE_Character4_Weapon>(this));
@@ -76,18 +77,21 @@ void APSE_LYFE_Character2_Inventory::UseInventory()
 {
 	if (CharacterHUD)
 	{
-		if (CharacterHUD->bIsInventoryOpen == false)
+		if (InventoryPtr->InventoryState == EInventoryState::Close)
 		{
-			CharacterHUD->CreateInventory();
+			if (CharacterHUD->CreateInventoryUI())
+			{
+				InventoryPtr->InventoryState = EInventoryState::InventoryOpen;
+			}
 		}
 		else
 		{
-			CharacterHUD->CloseInventory();
+			InventoryPtr->CloseInventory();
 		}
 	}
 }
 
-void APSE_LYFE_Character2_Inventory::PickInventoryItem()
+void APSE_LYFE_Character2_Inventory::UseItem()
 {
 	FVector TraceStart = ViewOrigin;
 	FVector TraceEnd = ViewOrigin + (500 * ViewDirection);
@@ -104,6 +108,10 @@ void APSE_LYFE_Character2_Inventory::PickInventoryItem()
 			if (Hit.GetActor()->IsA(APSE_LYFE_BaseInventoryItem::StaticClass()) && InventoryPtr)
 			{
 				Server_PickInventoryItem();
+			}
+			if (Hit.GetActor()->IsA(APSE_LYFE_BaseStorage::StaticClass()) && InventoryPtr && InventoryPtr->InventoryState == EInventoryState::Close)
+			{
+				Server_OpenStorage();
 			}
 		}
 	}
@@ -133,6 +141,31 @@ void APSE_LYFE_Character2_Inventory::Server_PickInventoryItem_Implementation()
 				{
 					TempItem->Destroy();
 				}
+			}
+		}
+	}
+}
+
+bool APSE_LYFE_Character2_Inventory::Server_OpenStorage_Validate()
+{	
+	return true;
+}
+
+void APSE_LYFE_Character2_Inventory::Server_OpenStorage_Implementation()
+{
+	FVector TraceStart = ViewOrigin;
+	FVector TraceEnd = ViewOrigin + (500 * ViewDirection);
+	FCollisionQueryParams TraceParams(TEXT("ItemPickTrace"), true, this);
+	FHitResult Hit(ForceInit);
+	GetWorld()->LineTraceSingle(Hit, TraceStart, TraceEnd, ECC_PhysicsBody, TraceParams);
+	if (Hit.bBlockingHit && ((Hit.ImpactPoint - GetActorLocation()).Size() < 500))
+	{
+		if (Hit.GetActor())
+		{
+			if (Hit.GetActor()->IsA(APSE_LYFE_BaseStorage::StaticClass()) && InventoryPtr)
+			{
+				APSE_LYFE_BaseStorage* TracedStorage = Cast<APSE_LYFE_BaseStorage>(Hit.GetActor());
+				InventoryPtr->OpenedStorage = TracedStorage;
 			}
 		}
 	}

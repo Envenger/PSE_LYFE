@@ -3,7 +3,7 @@
 #pragma once
 
 #include "GameFramework/HUD.h"
-#include "Player/Inventory/PSE_LYFE_Inventory4_QuickSlots.h"
+#include "Player/Inventory/PSE_LYFE_Inventory5_ExterStorage.h"
 #include "PSE_LYFE_TPSHUD.generated.h"
 
 class APSE_LYFE_Character4_Weapon;
@@ -22,19 +22,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Font)
 	UFont* UE4Font;
 
-	void CreateInventory();
+	bool CreateInventoryUI();
 
-	void CloseInventory();
+	void CloseInventoryUI();
+
+	bool CreateStorageUI();
+
+	void CloseStorageUI();
 
 	/** Used when swapping bags */
-	void CreateStorageSlot();
+	void CreateTempBackPackSlot();
 
 	/** Used when swapping bags */
-	void CloseStorageSlot();
+	void CloseTempBackPackSlot();
 
 	bool ItemThrowHoverTest();
-
-	bool bIsInventoryOpen;
 
 	/** Primary draw call for the HUD */
 	virtual void DrawHUD() override;
@@ -51,7 +53,7 @@ public:
 	APSE_LYFE_Character4_Weapon* OwningCharacter;
 
 	UPROPERTY()
-	APSE_LYFE_Inventory4_QuickSlots* InventoryPtr;
+	APSE_LYFE_Inventory5_ExterStorage* InventoryPtr;
 	//TWeakObjectPtr<class APSE_LYFE_Inventory4_QuickSlots> InventoryPtr;
 
 	void StartDisplayActorRotate();
@@ -76,13 +78,16 @@ private:
 	TSharedPtr<class SWidget> MainPlayerUIContainer;
 
 	/** pointer storing the game slate Ui */
-	TSharedPtr<class SPSE_LYFE_StorageFrameWidget> StorageUI;
+	TSharedPtr<class SPSE_LYFE_BackPackFrameWidget> BackPackUI;
 
 	/** pointer storing the game slate Ui */
 	TSharedPtr<class SPSE_LYFE_EquipmentFrameWidget> EquipmentUI;
 
 	/** pointer storing the game slate Ui */
 	TSharedPtr<class SPSE_LYFE_QuickUseFrameWidget> QuickSlotUI;
+
+	/** pointer storing the game slate Ui */
+	TSharedPtr<class SPSE_LYFE_StorgeFrameWidget> StorageUI;
 
 	/** pointer storing the game slate Ui */
 	TSharedPtr<class SPSE_LYFE_CursorSlotWidget> CursorItemUI;

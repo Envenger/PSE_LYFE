@@ -7,7 +7,6 @@
 #include "Items/Equipments/PSE_LYFE_BaseBottomItem.h"
 #include "Items/Equipments/PSE_LYFE_BaseGlovesItem.h"
 #include "Items/Equipments/PSE_LYFE_BaseTopItem.h"
-#include "Items/BackPack/PSE_LYFE_BackPackEquipment.h"
 #include "PSE_LYFE_Character0_Base.generated.h"
 
 USTRUCT()
@@ -63,6 +62,8 @@ struct FCharacterEquipmentStatus
 	}
 
 };
+
+class UPSE_LYFE_AnimInstance;
 
 UCLASS()
 class PSE_LYFE_API APSE_LYFE_Character0_Base : public ACharacter
@@ -178,7 +179,11 @@ public:
 	/** Time taken to shift aim */
 	float CameraAimingTime;
 
-	virtual void CalculateCameraAim(const float DeltaSeconds);
+	const float CalculateCameraAimCoeffcient(const float DeltaSeconds) const;
+
+	void CalculateCameraAimAttributes(const float DeltaSeconds, FVector &NewCameraLocation, FRotator &NewCameraRotation, float & NewFieldOfView) const;
+
+	virtual void CalculateCameraFinal(const float DeltaTime);
 
 	FRotator NonAimCameraRotation;
 
@@ -190,11 +195,24 @@ public:
 
 	void UpdateCamera(const FVector CameraLocation, const FRotator CameraRotation);
 
+	/** Camera location is set each time UpdateCamera is called */
+	FVector UpdatedCameraLocation;
+
+	/** Camera rotation is set each time UpdateCamera is called */
+	FRotator UpdatedCameraRotation;
+
 protected:
 
 	void RightClickPressed();
 
 	void RightClickReleased();
+
+//////////////////////////////////////////////////////////////
+// Animation BluePrint
+
+	UPROPERTY()
+	UPSE_LYFE_AnimInstance* CoverAnimInstance;
+
 
 public:
 	/** Returns CameraBoom subobject **/

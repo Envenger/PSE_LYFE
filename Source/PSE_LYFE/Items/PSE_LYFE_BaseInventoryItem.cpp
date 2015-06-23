@@ -20,6 +20,7 @@ APSE_LYFE_BaseInventoryItem::APSE_LYFE_BaseInventoryItem()
 
 	EquipmentSlotType = EEquipmentSlotType::Nothing;
 
+	ItemWeight = 1;
 
 	bReplicates = true;
 	bReplicateMovement = true;
@@ -40,9 +41,7 @@ FItemStruct APSE_LYFE_BaseInventoryItem::CreateStruct() const
 }
 
 void APSE_LYFE_BaseInventoryItem::UseItem(APSE_LYFE_Character4_Weapon* UsingPawn) const
-{
-
-}
+{}
 
 void APSE_LYFE_BaseInventoryItem::EquipItem() const
 {

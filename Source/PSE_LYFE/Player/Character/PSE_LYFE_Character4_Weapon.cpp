@@ -62,9 +62,17 @@ void APSE_LYFE_Character4_Weapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(NULL) || !GetCurrentWeapon())
+	if (GetMesh())
 	{
-		AnimBP_bIKLeftHand = false;
+		GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Green, "Works1");
+		if (GetMesh()->GetAnimInstance())		
+		{
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Green, "Works2");
+			if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(NULL) || !GetCurrentWeapon())
+			{
+				AnimBP_bIKLeftHand = false;
+			}
+		}
 	}
 	else
 	{

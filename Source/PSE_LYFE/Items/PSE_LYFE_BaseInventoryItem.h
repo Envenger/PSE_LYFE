@@ -46,6 +46,14 @@ enum class EEquipmentSlotType : uint8
 	Nothing,
 };
 
+UENUM(BlueprintType)
+enum class EGender : uint8
+{
+	Male,
+	Female,
+	Both,
+};
+
 USTRUCT()
 struct FItemStruct
 {
@@ -155,6 +163,9 @@ protected:
 	int32 MaxUses;
 
 	int32 CurrentUses;
+
+	UPROPERTY(EditDefaultsOnly, Category = ItemProperties)
+	EGender ItemGender;
 
 public:
 

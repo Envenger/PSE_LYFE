@@ -45,7 +45,7 @@ APSE_LYFE_Character0_Base::APSE_LYFE_Character0_Base(const FObjectInitializer& O
 	Top = GetMesh();// We don't use get GetMesh()
 	Top->AlwaysLoadOnClient = true;
 	Top->AlwaysLoadOnServer = true;
-	Bottom = CreateDefaultSubobject<USkeletalMeshComponent>("BottomComponent");
+	Bottom = CreateOptionalDefaultSubobject<USkeletalMeshComponent>("BottomComponent");
 	if (Bottom)
 	{
 		Bottom->AlwaysLoadOnClient = true;
@@ -63,7 +63,7 @@ APSE_LYFE_Character0_Base::APSE_LYFE_Character0_Base(const FObjectInitializer& O
 	}
 	
 	
-	Hair = CreateDefaultSubobject<USkeletalMeshComponent>("HairComponent");
+	Hair = CreateOptionalDefaultSubobject<USkeletalMeshComponent>("HairComponent");
 	if (Hair)
 	{
 		Hair->AlwaysLoadOnClient = true;
@@ -80,7 +80,7 @@ APSE_LYFE_Character0_Base::APSE_LYFE_Character0_Base(const FObjectInitializer& O
 		Hair->SetMasterPoseComponent(Top);
 	}
 	
-	Boots = CreateDefaultSubobject<USkeletalMeshComponent>("BootsComponent");
+	Boots = CreateOptionalDefaultSubobject<USkeletalMeshComponent>("BootsComponent");
 	if (Boots)
 	{
 		Boots->AlwaysLoadOnClient = true;
@@ -97,7 +97,7 @@ APSE_LYFE_Character0_Base::APSE_LYFE_Character0_Base(const FObjectInitializer& O
 		Boots->SetMasterPoseComponent(Top);
 	}
 
-	BackPack = CreateDefaultSubobject<UStaticMeshComponent>("BackPack");
+	BackPack = CreateOptionalDefaultSubobject<UStaticMeshComponent>("BackPack");
 	if (BackPack)
 	{
 		BackPack->AlwaysLoadOnClient = true;
@@ -108,7 +108,7 @@ APSE_LYFE_Character0_Base::APSE_LYFE_Character0_Base(const FObjectInitializer& O
 		BackPack->bGenerateOverlapEvents = false;
 		BackPack->SetVisibility(false);
 
-		BackPack->AttachTo(Top, BackPackSocketName);
+		BackPack->AttachTo(GetMesh(), BackPackSocketName);
 	}
 
 }

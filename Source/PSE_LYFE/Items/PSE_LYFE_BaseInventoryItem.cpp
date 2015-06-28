@@ -20,8 +20,6 @@ APSE_LYFE_BaseInventoryItem::APSE_LYFE_BaseInventoryItem()
 
 	EquipmentSlotType = EEquipmentSlotType::Nothing;
 
-	ItemGender = EGender::Both;
-
 	ItemWeight = 1;
 
 	bReplicates = true;

@@ -20,7 +20,7 @@ public:
 
 	virtual void PostInitializeComponents() override;
 
-	UPROPERTY(Replicated, Repretry)
+	UPROPERTY(Replicated)
 	TArray<FItemStruct> StorageBase;
 
 	/** This stores the item structures pointers */

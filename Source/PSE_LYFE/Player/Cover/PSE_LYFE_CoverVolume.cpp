@@ -14,9 +14,9 @@ APSE_LYFE_CoverVolume::APSE_LYFE_CoverVolume(const FObjectInitializer& ObjectIni
 	BrushColor.A = 255;
 }
 
-void APSE_LYFE_CoverVolume::ReceiveActorBeginOverlap(AActor* OtherActor)
+void APSE_LYFE_CoverVolume::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	Super::ReceiveActorBeginOverlap(OtherActor);
+	Super::NotifyActorBeginOverlap(OtherActor);
 	if (Role == ROLE_Authority)
 	{
 		if (OtherActor->IsA(APSE_LYFE_Character5_Cover::StaticClass()))
@@ -27,9 +27,9 @@ void APSE_LYFE_CoverVolume::ReceiveActorBeginOverlap(AActor* OtherActor)
 	}
 }
 
-void APSE_LYFE_CoverVolume::ReceiveActorEndOverlap(AActor* OtherActor)
+void APSE_LYFE_CoverVolume::NotifyActorEndOverlap(AActor* OtherActor)
 {
-	Super::ReceiveActorEndOverlap(OtherActor);
+	Super::NotifyActorEndOverlap(OtherActor);
 	if (Role == ROLE_Authority)
 	{
 		if (OtherActor->IsA(APSE_LYFE_Character5_Cover::StaticClass()))

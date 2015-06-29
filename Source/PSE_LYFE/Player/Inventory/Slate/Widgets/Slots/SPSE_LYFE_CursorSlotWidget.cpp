@@ -37,12 +37,11 @@ void SPSE_LYFE_CursorSlotWidget::Construct(const FArguments& InArgs)
 }
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
-FString SPSE_LYFE_CursorSlotWidget::GetNumOfStacks() const
+FText SPSE_LYFE_CursorSlotWidget::GetNumOfStacks() const
 {
-
 	if (InventoryPtr->CursorItem.ItemClass == nullptr)
 	{
-		return("");
+		return(FText::FromString(""));
 	}
 	const APSE_LYFE_BaseInventoryItem* BaseItem = InventoryPtr->CursorItem.GetDefaultItem();
 	if (BaseItem->GetItemType() == EItemType::StackableItem || BaseItem->GetItemType() == EItemType::StackableUsableItem)
@@ -50,11 +49,11 @@ FString SPSE_LYFE_CursorSlotWidget::GetNumOfStacks() const
 		const int32 CurrentStacks = InventoryPtr->CursorItem.ItemProperties[0];
 		if (CurrentStacks > 1)
 		{
-			return(FString::FromInt(CurrentStacks));
+			return(FText::FromString(FString::FromInt(CurrentStacks)));
 		}
-		return("");
+		return(FText::FromString(""));
 	}
-	return("");
+	return(FText::FromString(""));
 }
 
 const FSlateBrush* SPSE_LYFE_CursorSlotWidget::GetItemIcon() const

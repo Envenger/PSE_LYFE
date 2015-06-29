@@ -117,8 +117,8 @@ const ECoverState APSE_LYFE_Character5_Cover::CheckEnterCover(float &CoverNormal
 	FHitResult Hit1(ForceInit);
 	FHitResult Hit2(ForceInit);
 
-	GetWorld()->LineTraceSingle(Hit1, FirstTraceStart, FirstTraceEnd, ECC_PhysicsBody, TraceParams);
-	GetWorld()->LineTraceSingle(Hit2, SecondTraceStart, SecondTraceEnd, ECC_PhysicsBody, TraceParams);
+	GetWorld()->LineTraceSingleByChannel(Hit1, FirstTraceStart, FirstTraceEnd, ECC_PhysicsBody, TraceParams);
+	GetWorld()->LineTraceSingleByChannel(Hit2, SecondTraceStart, SecondTraceEnd, ECC_PhysicsBody, TraceParams);
 
 	if (Hit1.bBlockingHit && Hit2.bBlockingHit)
 	{

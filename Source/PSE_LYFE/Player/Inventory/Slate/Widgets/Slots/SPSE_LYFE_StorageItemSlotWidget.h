@@ -24,7 +24,7 @@ public:
 	/** Constructs this widget with InArgs */
 	void Construct(const FArguments& InArgs);
 
-	FString GetNumOfStacks() const;
+	FText GetNumOfStacks() const;
 
 	const FSlateBrush* GetItemIconImg() const;
 

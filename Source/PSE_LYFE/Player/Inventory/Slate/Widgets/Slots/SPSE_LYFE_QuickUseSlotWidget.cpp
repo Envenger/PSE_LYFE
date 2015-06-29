@@ -103,19 +103,19 @@ FReply SPSE_LYFE_QuickUseSlotWidget::OnItemReleased(const FGeometry& MyGeometry,
 	}
 }
 
-FString SPSE_LYFE_QuickUseSlotWidget::GetNumOfStacks() const
+FText SPSE_LYFE_QuickUseSlotWidget::GetNumOfStacks() const
 {
 	if (InventoryPtr->QuickSlots[QuickSlotIndex.Get()] == nullptr)
 	{
-		return("");
+		return(FText::FromString(""));
 	}
 	const APSE_LYFE_BaseInventoryItem* BaseItem = InventoryPtr->QuickSlots[QuickSlotIndex.Get()]->GetDefaultObject<APSE_LYFE_BaseInventoryItem>();
 	const int32 CurrentStacks = InventoryPtr->FindTotalItemsOfType(InventoryPtr->QuickSlots[QuickSlotIndex.Get()]);
 	if (CurrentStacks > 1)
 	{
-		return(FString::FromInt(CurrentStacks));
+		return(FText::FromString(FString::FromInt(CurrentStacks)));
 	}
-	return("");
+	return(FText::FromString(""));
 }
 
 const FSlateBrush* SPSE_LYFE_QuickUseSlotWidget::GetItemIcon() const

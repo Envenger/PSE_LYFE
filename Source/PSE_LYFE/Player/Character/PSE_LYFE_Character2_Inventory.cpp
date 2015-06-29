@@ -99,7 +99,7 @@ void APSE_LYFE_Character2_Inventory::UseItem()
 	TraceParams.AddIgnoredActor(this);
 	FHitResult Hit(ForceInit);
 	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor(255, 150, 0), false, 10, 0, 6);
-	GetWorld()->LineTraceSingle(Hit, TraceStart, TraceEnd, ECC_PhysicsBody, TraceParams);
+	GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_PhysicsBody, TraceParams);
 
 	if (Hit.bBlockingHit && ((Hit.ImpactPoint - GetActorLocation()).Size() < 500))
 	{
@@ -128,7 +128,7 @@ void APSE_LYFE_Character2_Inventory::Server_PickInventoryItem_Implementation()
 	FVector TraceEnd = ViewOrigin + (500 * ViewDirection);
 	FCollisionQueryParams TraceParams(TEXT("ItemPickTrace"), true, this);
 	FHitResult Hit(ForceInit);
-	GetWorld()->LineTraceSingle(Hit, TraceStart, TraceEnd, ECC_PhysicsBody, TraceParams);
+	GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_PhysicsBody, TraceParams);
 	if (Hit.bBlockingHit && ((Hit.ImpactPoint - GetActorLocation()).Size() < 500))
 	{
 		if (Hit.GetActor())
@@ -157,7 +157,7 @@ void APSE_LYFE_Character2_Inventory::Server_OpenStorage_Implementation()
 	FVector TraceEnd = ViewOrigin + (500 * ViewDirection);
 	FCollisionQueryParams TraceParams(TEXT("ItemPickTrace"), true, this);
 	FHitResult Hit(ForceInit);
-	GetWorld()->LineTraceSingle(Hit, TraceStart, TraceEnd, ECC_PhysicsBody, TraceParams);
+	GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_PhysicsBody, TraceParams);
 	if (Hit.bBlockingHit && ((Hit.ImpactPoint - GetActorLocation()).Size() < 500))
 	{
 		if (Hit.GetActor())

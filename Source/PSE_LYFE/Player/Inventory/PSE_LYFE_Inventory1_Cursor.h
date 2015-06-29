@@ -32,7 +32,7 @@ public:
 	/** Alt pressed or not. Used for alt left click */
 	bool bIsAltPressed;
 
-	UPROPERTY(replicated, Repretry)
+	UPROPERTY(replicated)
 	FItemStruct CursorItem;
 
 	void AddItemToCursor(FItemStruct& StoredItem, FStorageLoc StoredLoc, EStorageType StorageType);// = EStorageType::BackPackSlot);

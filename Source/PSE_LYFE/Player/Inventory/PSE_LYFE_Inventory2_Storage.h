@@ -27,7 +27,7 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-	UPROPERTY(ReplicatedUsing = OnRep_ClientResetBagSize, Repretry)
+	UPROPERTY(ReplicatedUsing = OnRep_ClientResetBagSize)
 	TArray<FItemStruct> BackPackBase;
 
 	/** This stores the item structures pointers */

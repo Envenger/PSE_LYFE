@@ -22,7 +22,7 @@ public:
 
 	virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
 
-	FString GetNumOfStacks() const;
+	FText GetNumOfStacks() const;
 
 	const FSlateBrush* GetItemIcon() const;
 

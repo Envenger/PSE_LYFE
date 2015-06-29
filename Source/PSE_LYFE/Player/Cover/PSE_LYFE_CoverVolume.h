@@ -16,8 +16,8 @@ class PSE_LYFE_API APSE_LYFE_CoverVolume : public AVolume
 	APSE_LYFE_CoverVolume(const FObjectInitializer& ObjectInitializer);
 	
 	/** Actor Overlap start */
-	virtual void ReceiveActorBeginOverlap(AActor* OtherActor) override;
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 	/** Actor Overlap end */
-	virtual void ReceiveActorEndOverlap(AActor* OtherActor) override;
+	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
 };

@@ -67,7 +67,7 @@ void SPSE_LYFE_BackPackFrameWidget::Construct(const FArguments& InArgs)
 							.Font(InventoryPtr->InventoryHeadlineFont)
 							.ColorAndOpacity(FSlateColor(FLinearColor(1, 1, 1, 0.75)))
 							.Justification(ETextJustify::Right)
-							.Text(FString("PLAYER INVENTORY"))
+							.Text(FText::FromString("PLAYER INVENTORY"))
 						]
 						+ SVerticalBox::Slot()
 							.AutoHeight()
@@ -125,7 +125,7 @@ void SPSE_LYFE_BackPackFrameWidget::Construct(const FArguments& InArgs)
 									.Font(InventoryPtr->Detial1Font)
 									.ColorAndOpacity(FSlateColor(FLinearColor(1, 1, 1, 0.75)))
 									.Justification(ETextJustify::Left)
-									.Text(FString("Military Grade Backpack Stats"))
+									.Text(FText::FromString("Military Grade Backpack Stats"))
 								]
 							+ SVerticalBox::Slot()
 								.AutoHeight()
@@ -161,7 +161,7 @@ void SPSE_LYFE_BackPackFrameWidget::Construct(const FArguments& InArgs)
 										SNew(STextBlock)
 										.Font(InventoryPtr->Detial1Font)
 										.ColorAndOpacity(FSlateColor(FLinearColor(1, 1, 1, 0.75)))
-										.Text(FString("Close"))
+										.Text(FText::FromString("Close"))
 									]
 								]
 						]
@@ -208,16 +208,16 @@ FReply SPSE_LYFE_BackPackFrameWidget::OnMouseCloseButtonDown(const FGeometry& In
 	}
 }
 
-const FString SPSE_LYFE_BackPackFrameWidget::GetBackPackSlots() const
+const FText SPSE_LYFE_BackPackFrameWidget::GetBackPackSlots() const
 {
 	const uint16 MaxSlots = InventoryPtr->GetTotalBackPackSize();
 	const uint16 UsedSlots = InventoryPtr->GetNoOfUsedSlots();
-	return FString("Available Slots in Inventory : " + FString::FromInt(UsedSlots) + "/" + FString::FromInt(MaxSlots));
+	return FText::FromString(FString("Available Slots in Inventory : " + FString::FromInt(UsedSlots) + "/" + FString::FromInt(MaxSlots)));
 }
 
-const FString SPSE_LYFE_BackPackFrameWidget::GetBackPackWeight() const
+const FText SPSE_LYFE_BackPackFrameWidget::GetBackPackWeight() const
 {
 	const uint16 MaxWeight = 25;
 	const uint16 CurrentWeight = InventoryPtr->TotalItemsWeight;
-	return FString("Backpack Weight:  : " + FString::FromInt(CurrentWeight) + "/" + FString::FromInt(MaxWeight) + " KGs");
+	return FText::FromString(FString("Backpack Weight:  : " + FString::FromInt(CurrentWeight) + "/" + FString::FromInt(MaxWeight) + " KGs"));
 }

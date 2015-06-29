@@ -26,7 +26,7 @@ private:
 
 	FVector2D GetCursorLocation() const;
 
-	FString GetNumOfStacks() const;
+	FText GetNumOfStacks() const;
 
 	const FSlateBrush* GetItemIcon() const;
 

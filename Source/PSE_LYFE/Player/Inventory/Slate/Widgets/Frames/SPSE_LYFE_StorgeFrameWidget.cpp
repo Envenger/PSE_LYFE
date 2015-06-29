@@ -70,7 +70,7 @@ void SPSE_LYFE_StorgeFrameWidget::Construct(const FArguments& InArgs)
 							.Font(InventoryPtr->InventoryHeadlineFont)
 							.ColorAndOpacity(FSlateColor(FLinearColor(1, 1, 1, 0.75)))
 							.Justification(ETextJustify::Left)
-							.Text(FString("STORAGE"))
+							.Text(FText::FromString(FString("STORAGE")))
 						]
 						+ SVerticalBox::Slot()
 						.AutoHeight()

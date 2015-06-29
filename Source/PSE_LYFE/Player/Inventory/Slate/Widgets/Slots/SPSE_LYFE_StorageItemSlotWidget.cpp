@@ -129,20 +129,20 @@ FReply SPSE_LYFE_StorageItemSlotWidget::OnItemReleased(const FGeometry& MyGeomet
 	}
 }
 
-FString SPSE_LYFE_StorageItemSlotWidget::GetNumOfStacks() const
+FText SPSE_LYFE_StorageItemSlotWidget::GetNumOfStacks() const
 {
 	FStorageLoc ItemLoc = SlotLoc.Get();
 	if (!ExternalStoragePtr->Storage.IsValidIndex(ItemLoc))
 	{
-		return("");
+		return(FText::FromString(""));
 	}
 	else if (ExternalStoragePtr->Storage.Rows[ItemLoc.RowNum].Columns[ItemLoc.ColNum].Index < 0)
 	{
-		return("");
+		return(FText::FromString(""));
 	}
 	else if (ExternalStoragePtr->Storage.GetItem(SlotLoc.Get()).ItemClass == nullptr)
 	{
-		return("");
+		return(FText::FromString(""));
 	}
 	const APSE_LYFE_BaseInventoryItem* BaseItem = ExternalStoragePtr->Storage.GetItem(ItemLoc).GetDefaultItem();
 	if (BaseItem->GetItemType() == EItemType::StackableItem || BaseItem->GetItemType() == EItemType::StackableUsableItem)
@@ -150,11 +150,11 @@ FString SPSE_LYFE_StorageItemSlotWidget::GetNumOfStacks() const
 		const int32 CurrentStacks = ExternalStoragePtr->Storage.GetItem(ItemLoc).GetStacks();
 		if (CurrentStacks > 1)
 		{
-			return(FString::FromInt(CurrentStacks));
+			return(FText::FromString(FString::FromInt(CurrentStacks)));
 		}
-		return("");
+		return(FText::FromString(""));
 	}
-	return("");
+	return(FText::FromString(""));
 }
 
 const FSlateBrush* SPSE_LYFE_StorageItemSlotWidget::GetItemIconImg() const

@@ -19,7 +19,7 @@ public:
 
 	virtual void BeginPlay() override;
 
-	UPROPERTY(ReplicatedUsing = OnRep_EquipmentChanged, Repretry)
+	UPROPERTY(ReplicatedUsing = OnRep_EquipmentChanged)
 	TArray<FItemStruct> EquipmentStorage;
 
 	/** Function that gets replicated on all clients when a character equipment slot changes */

@@ -55,7 +55,7 @@ void SPSE_LYFE_EquipmentFrameWidget::Construct(const FArguments& InArgs)
 							.Font(InventoryPtr->InventoryHeadlineFont)
 							.ColorAndOpacity(FSlateColor(FLinearColor(1, 1, 1, 0.75)))
 							.Justification(ETextJustify::Left)
-							.Text(FString("PLAYER EQUIPMENT"))
+							.Text(FText::FromString("PLAYER EQUIPMENT"))
 						]
 						+ SVerticalBox::Slot()
 							.AutoHeight()
@@ -104,7 +104,7 @@ void SPSE_LYFE_EquipmentFrameWidget::Construct(const FArguments& InArgs)
 												.Font(InventoryPtr->Detial2Font)
 												.ColorAndOpacity(FSlateColor(FLinearColor(1, 1, 1, 0.75)))
 												.Justification(ETextJustify::Left)
-												.Text(FString("Item1"))
+												.Text(FText::FromString("Item1"))
 											]
 									]
 									+ SVerticalBox::Slot()
@@ -126,7 +126,7 @@ void SPSE_LYFE_EquipmentFrameWidget::Construct(const FArguments& InArgs)
 													.Font(InventoryPtr->Detial2Font)
 													.ColorAndOpacity(FSlateColor(FLinearColor(1, 1, 1, 0.75)))
 													.Justification(ETextJustify::Left)
-													.Text(FString("Item1"))
+													.Text(FText::FromString("Item1"))
 												]
 										]
 									+ SVerticalBox::Slot()
@@ -148,7 +148,7 @@ void SPSE_LYFE_EquipmentFrameWidget::Construct(const FArguments& InArgs)
 													.Font(InventoryPtr->Detial2Font)
 													.ColorAndOpacity(FSlateColor(FLinearColor(1, 1, 1, 0.75)))
 													.Justification(ETextJustify::Left)
-													.Text(FString("Item1"))
+													.Text(FText::FromString("Item1"))
 												]
 										]
 									+ SVerticalBox::Slot()
@@ -170,7 +170,7 @@ void SPSE_LYFE_EquipmentFrameWidget::Construct(const FArguments& InArgs)
 													.Font(InventoryPtr->Detial2Font)
 													.ColorAndOpacity(FSlateColor(FLinearColor(1, 1, 1, 0.75)))
 													.Justification(ETextJustify::Left)
-													.Text(FString("Item1"))
+													.Text(FText::FromString("Item1"))
 												]
 										]
 								]
@@ -226,7 +226,7 @@ void SPSE_LYFE_EquipmentFrameWidget::Construct(const FArguments& InArgs)
 													.Font(InventoryPtr->Detial2Font)
 													.ColorAndOpacity(FSlateColor(FLinearColor(1, 1, 1, 0.75)))
 													.Justification(ETextJustify::Right)
-													.Text(FString("Item1"))
+													.Text(FText::FromString("Item1"))
 												]
 										]
 										+ SVerticalBox::Slot()
@@ -248,7 +248,7 @@ void SPSE_LYFE_EquipmentFrameWidget::Construct(const FArguments& InArgs)
 														.Font(InventoryPtr->Detial2Font)
 														.ColorAndOpacity(FSlateColor(FLinearColor(1, 1, 1, 0.75)))
 														.Justification(ETextJustify::Right)
-														.Text(FString("Item1"))
+														.Text(FText::FromString("Item1"))
 													]
 											]
 										+ SVerticalBox::Slot()
@@ -270,7 +270,7 @@ void SPSE_LYFE_EquipmentFrameWidget::Construct(const FArguments& InArgs)
 														.Font(InventoryPtr->Detial2Font)
 														.ColorAndOpacity(FSlateColor(FLinearColor(1, 1, 1, 0.75)))
 														.Justification(ETextJustify::Right)
-														.Text(FString("Item1"))
+														.Text(FText::FromString("Item1"))
 													]
 											]
 										+ SVerticalBox::Slot()
@@ -292,7 +292,7 @@ void SPSE_LYFE_EquipmentFrameWidget::Construct(const FArguments& InArgs)
 														.Font(InventoryPtr->Detial2Font)
 														.ColorAndOpacity(FSlateColor(FLinearColor(1, 1, 1, 0.75)))
 														.Justification(ETextJustify::Right)
-														.Text(FString("Item1"))
+														.Text(FText::FromString("Item1"))
 													]
 											]
 									]
@@ -311,7 +311,7 @@ void SPSE_LYFE_EquipmentFrameWidget::Construct(const FArguments& InArgs)
 								.Font(InventoryPtr->InventoryHeadlineFont)
 								.ColorAndOpacity(FSlateColor(FLinearColor(1, 1, 1, 0.75)))
 								.Justification(ETextJustify::Left)
-								.Text(FString("PLAYER NAME"))
+								.Text(FText::FromString("PLAYER NAME"))
 							]
 							+ SVerticalBox::Slot()
 								.Padding(FMargin(0, 0, 0, 6))
@@ -321,7 +321,7 @@ void SPSE_LYFE_EquipmentFrameWidget::Construct(const FArguments& InArgs)
 									.Font(InventoryPtr->Detial2Font)
 									.ColorAndOpacity(FSlateColor(FLinearColor(1, 1, 1, 0.75)))
 									.Justification(ETextJustify::Left)
-									.Text(FString("PLAYER STATS MESSAGE"))
+									.Text(FText::FromString("PLAYER STATS MESSAGE"))
 								]
 							+ SVerticalBox::Slot()
 								.AutoHeight()
@@ -330,7 +330,7 @@ void SPSE_LYFE_EquipmentFrameWidget::Construct(const FArguments& InArgs)
 									.Font(InventoryPtr->Detial1Font)
 									.ColorAndOpacity(FSlateColor(FLinearColor(1, 1, 1, 0.75)))
 									.Justification(ETextJustify::Left)
-									.Text(FString("DAYS SURVIVED : 1 Minutes"))
+									.Text(FText::FromString("DAYS SURVIVED : 1 Minutes"))
 								]
 						]
 				]

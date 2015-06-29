@@ -26,9 +26,9 @@ private:
 
 	FReply OnMouseCloseButtonDown(const FGeometry& InMyGeometry, const FPointerEvent& InMouseEvent);
 
-	const FString GetBackPackSlots() const;
+	const FText GetBackPackSlots() const;
 
-	const FString GetBackPackWeight() const;
+	const FText GetBackPackWeight() const;
 
 	TWeakObjectPtr<class APSE_LYFE_Inventory5_ExterStorage> InventoryPtr;
 };

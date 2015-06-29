@@ -127,20 +127,20 @@ FReply SPSE_LYFE_ItemSlotWidget::OnItemReleased(const FGeometry& MyGeometry, con
 	}
 }
 
-FString SPSE_LYFE_ItemSlotWidget::GetNumOfStacks() const
+FText SPSE_LYFE_ItemSlotWidget::GetNumOfStacks() const
 {
 	FStorageLoc ItemLoc = SlotLoc.Get();
 	if (!InventoryPtr->BackPack.IsValidIndex(ItemLoc))
 	{
-		return("");
+		return(FText::FromString(""));
 	}
 	if (InventoryPtr->BackPack.Rows[ItemLoc.RowNum].Columns[ItemLoc.ColNum].Index < 0)
 	{
-		return("");
+		return(FText::FromString(""));
 	}
 	if (InventoryPtr->BackPack.GetItem(SlotLoc.Get()).ItemClass == nullptr)
 	{
-		return("");
+		return(FText::FromString(""));
 	}
 	const APSE_LYFE_BaseInventoryItem* BaseItem = InventoryPtr->BackPack.GetItem(ItemLoc).GetDefaultItem();
 	if (BaseItem->GetItemType() == EItemType::StackableItem || BaseItem->GetItemType() == EItemType::StackableUsableItem)
@@ -148,11 +148,11 @@ FString SPSE_LYFE_ItemSlotWidget::GetNumOfStacks() const
 		const int32 CurrentStacks = InventoryPtr->BackPack.GetItem(ItemLoc).GetStacks();
 		if (CurrentStacks > 1)
 		{
-			return(FString::FromInt(CurrentStacks));
+			return(FText::FromString(FString::FromInt(CurrentStacks)));
 		}
-		return("");
+		return(FText::FromString(""));
 	}
-	return("");
+	return(FText::FromString(""));
 }
 
 const FSlateBrush* SPSE_LYFE_ItemSlotWidget::GetItemIconImg() const

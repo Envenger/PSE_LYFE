@@ -98,7 +98,6 @@ void APSE_LYFE_Character2_Inventory::UseItem()
 	FCollisionQueryParams TraceParams(TEXT("ItemPickTrace"), true, this);
 	TraceParams.AddIgnoredActor(this);
 	FHitResult Hit(ForceInit);
-	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor(255, 150, 0), false, 10, 0, 6);
 	GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_PhysicsBody, TraceParams);
 
 	if (Hit.bBlockingHit && ((Hit.ImpactPoint - GetActorLocation()).Size() < 500))

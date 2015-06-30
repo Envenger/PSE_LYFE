@@ -8,7 +8,8 @@
 #include "Player/HUD/PSE_LYFE_TPSHUD.h"
 #include "UnrealNetwork.h"
 #include "PSE_LYFE_Inventory2_Storage.h"
-//#include "Weapons/BaseFiles/PSE_LYFE_ReloadableWeapon.h"
+#include "Weapons/FiringWeapon/PSE_LYFE_ReloadableWeapon.h"
+
 APSE_LYFE_Inventory2_Storage::APSE_LYFE_Inventory2_Storage()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -514,7 +515,7 @@ void APSE_LYFE_Inventory2_Storage::ItemAdded(const TSubclassOf<class APSE_LYFE_B
 	int16 ItemLocation = TotalItemsArray.GetItemClassLocation(ItemClass);
 	if (ItemLocation >= 0)
 	{
-		uint16 TotalStacks = TotalItemsArray.ItemArray[ItemLocation].TotalStacks;
+		uint16 TotalStacks = TotalItemsArray.GetItemStructAtLocation(ItemLocation).TotalStacks;
 		TotalStacks += Stacks;
 		TotalItemsArray.UpdateItemStacks(ItemLocation, TotalStacks);
 	}
@@ -535,7 +536,7 @@ void APSE_LYFE_Inventory2_Storage::ItemRemoved(const TSubclassOf<class APSE_LYFE
 	int16 ItemLocation = TotalItemsArray.GetItemClassLocation(ItemClass);
 	if (ItemLocation >= 0)
 	{
-		uint16 TotalStacks = TotalItemsArray.ItemArray[ItemLocation].TotalStacks;
+		uint16 TotalStacks = TotalItemsArray.GetItemStructAtLocation(ItemLocation).TotalStacks;
 		TotalStacks -= Stacks;
 		TotalItemsArray.UpdateItemStacks(ItemLocation, TotalStacks);
 	}
@@ -546,29 +547,38 @@ void APSE_LYFE_Inventory2_Storage::ItemRemoved(const TSubclassOf<class APSE_LYFE
 void APSE_LYFE_Inventory2_Storage::WeaponMagazineAdded(const TSubclassOf<class APSE_LYFE_BaseInventoryItem> ItemClass)
 {
 	const TArray<APSE_LYFE_BaseWeapon*> Weapons = OwningPawn->GetAllWeapons();
-	for (int8 i = 0; i < Weapons.Num(); i++)
+	for (APSE_LYFE_BaseWeapon* Weapon : Weapons)
 	{
-		/*	if (Weapons[i]->IsA(APSE_LYFE_ReloadableWeapon::StaticClass()))
+		if (Weapon && Weapon->IsA(APSE_LYFE_ReloadableWeapon::StaticClass()))
 		{
-		APSE_LYFE_ReloadableWeapon* ReloadableWeapon = Cast<APSE_LYFE_ReloadableWeapon>(Weapons[i]);
-		if (ReloadableWeapon->AmmoClass == ItemClass)
-		{
-		TotalItemsArray.ItemArray[TotalItemsArray.ItemArray.Num() - 1].AddPointerValue(&ReloadableWeapon->NoOfClips);
+			APSE_LYFE_ReloadableWeapon* ReloadableWeapon = Cast<APSE_LYFE_ReloadableWeapon>(Weapon);
+			if (ReloadableWeapon->AmmoClass == ItemClass)
+			{
+				TotalItemsArray.AddPointerValue(TotalItemsArray.GetItemArrayNum() - 1, & ReloadableWeapon->NoOfClips);
+			}
+			else
+			{
+				FString String1 = "nullpptr";
+				FString String2 = "nullpptr";
+				if (ReloadableWeapon->AmmoClass)
+				{
+				String1 = ReloadableWeapon->AmmoClass->GetName();
+				}
+				if (ItemClass)
+				{
+					String2 = ItemClass->GetName();
+				}
+			}
 		}
-		else
-		{
-		FString String1 = "nullpptr";
-		FString String2 = "nullpptr";
-		if (ReloadableWeapon->AmmoClass)
-		{
-		String1 = ReloadableWeapon->AmmoClass->GetName();
-		}
-		if (ItemClass)
-		{
-		String2 = ItemClass->GetName();
-		}
-		}
-		}*/
+	}
+}
+
+void APSE_LYFE_Inventory2_Storage::WeaponAdded(APSE_LYFE_ReloadableWeapon* ReloadableWeapon)
+{
+	int16 ItemLocation = TotalItemsArray.GetItemClassLocation(ReloadableWeapon->AmmoClass);
+	if (ItemLocation != -1)
+	{
+		TotalItemsArray.AddPointerValue(ItemLocation, &ReloadableWeapon->NoOfClips);
 	}
 }
 

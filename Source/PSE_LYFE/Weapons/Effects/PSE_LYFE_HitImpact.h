@@ -42,6 +42,8 @@ public:
 	/** spawn effect */
 	virtual void PostInitializeComponents() override;
 
+	virtual void BeginPlay() override;
+
 	/** surface data for spawning */
 	UPROPERTY(BlueprintReadOnly, Category = Surface)
 	FHitResult SurfaceHit;
@@ -49,4 +51,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Defaults)
 	struct FDecalData DefaultDecal;	
 	
+	/** FX for muzzle flash */
+	UPROPERTY(EditDefaultsOnly, Category = Effects)
+	UParticleSystem* ImpactFX;
+
+	/** spawned component for muzzle FX */
+	UPROPERTY()
+	UParticleSystemComponent* ImpactPSC;
 };

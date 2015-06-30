@@ -14,11 +14,14 @@ class PSE_LYFE_API APSE_LYFE_BaseWeapon : public AActor
 
 public:
 
-	APSE_LYFE_BaseWeapon(const FObjectInitializer& ObjectInitializer);
+	APSE_LYFE_BaseWeapon();
 
+private:
 	/** weapon mesh : 3rd person view */
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	UStaticMeshComponent* Mesh3P;
+
+public:
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponProperties)
 	UAnimMontage* UnEquipAnimation;
@@ -27,7 +30,7 @@ public:
 	UAnimMontage* EquipAnimation;
 
 	/** set the weapon's owning pawn */
-	void SetOwningPawn(APSE_LYFE_Character4_Weapon* AOwningCharacter);
+	virtual void SetOwningPawn(APSE_LYFE_Character4_Weapon* AOwningCharacter);
 
 	/** pawn owner */
 	UPROPERTY(Transient, Replicated)
@@ -36,23 +39,9 @@ public:
 	/** attaches weapon mesh to pawn's mesh */
 	void AttachMeshToPawn();
 
-	/*void PostInitializeComponents() override;
-
-	virtual void Tick(float DeltaSeconds) override;
-
-
-
-	
-
-
-
-	////////////////////////////////////////////////////////////
-	//EQuiping Logic and Properties
-
-
-	*/
-
-	
+public:
+	/** Returns Mesh3P subobject **/
+	FORCEINLINE UStaticMeshComponent* GetMesh3P() const { return Mesh3P; }
 
 
 };

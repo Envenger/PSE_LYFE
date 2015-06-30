@@ -107,8 +107,10 @@ protected:
 	UPROPERTY(Transient)
 	APSE_LYFE_BaseWeapon* OwnerLastUsedWeapon;
 
+public:
 	APSE_LYFE_BaseWeapon* GetCurrentWeapon() const;
 
+protected:
 	APSE_LYFE_BaseWeapon* GetWeaponWithIndex(int8 Index) const;
 
 	/** Called on clients calls its server function */

@@ -9,6 +9,7 @@
 #include "Player/Inventory/Slate/Widgets/Frames/SPSE_LYFE_StorgeFrameWidget.h"
 #include "Player/Inventory/Slate/Widgets/Frames/SPSE_LYFE_QuickUseFrameWidget.h"
 #include "Player/Inventory/Slate/Widgets/Slots/SPSE_LYFE_CursorSlotWidget.h"
+#include "Weapons/FiringWeapon/PSE_LYFE_AutoRWeapon.h"
 #include "TextureResource.h"
 #include "CanvasItem.h"
 #include "PSE_LYFE_TPSHUD.h"
@@ -72,24 +73,25 @@ void APSE_LYFE_TPSHUD::DrawHUD()
 		{
 			OwningCharacter->ServerSetAim(Origin, Direction);
 		}
-		/*if (OwningCharacter->GetCurrentWeapon())
-		(
+		if (OwningCharacter->GetCurrentWeapon())
+		{
 			if (OwningCharacter->GetCurrentWeapon()->IsA(APSE_LYFE_ReloadableWeapon::StaticClass()))
-					{
-						APSE_LYFE_ReloadableWeapon* Weapon = Cast<APSE_LYFE_ReloadableWeapon>(OwningCharacter->GetCurrentWeapon());
+			{
+				APSE_LYFE_ReloadableWeapon* Weapon = Cast<APSE_LYFE_ReloadableWeapon>(OwningCharacter->GetCurrentWeapon());
+
+				int32 CurrentAmmo = Weapon->CurrentAmmo;
+				int32 NoOfClips = Weapon->NoOfClips;
+
+				FCanvasTextItem NewText(
+					FVector2D(10, (Canvas->SizeY - 40)),
+					FText::FromString(FString::FromInt(CurrentAmmo) + "/" + FString::FromInt(NoOfClips)),
+					UE4Font,
+					FColor::Black
+					);
+				Canvas->DrawItem(NewText);
+			}
+		}
 			
-						int32 CurrentAmmo = Weapon->CurrentAmmo;
-						int32 NoOfClips = Weapon->NoOfClips;
-			
-						FCanvasTextItem NewText(
-							FVector2D(10, (Canvas->SizeY - 40)),
-							FText::FromString(FString::FromInt(CurrentAmmo) + "/" + FString::FromInt(NoOfClips)),
-							UE4Font,
-							FColor::Black
-							);
-						Canvas->DrawItem(NewText);
-						})
-			*/
 
 		int8 CurrentStamina = OwningCharacter->GetCurrentStaminaDisplay();
 		int8 MaxStamina = OwningCharacter->MaxStamina;

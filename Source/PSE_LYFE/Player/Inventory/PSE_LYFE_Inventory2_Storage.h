@@ -4,6 +4,7 @@
 
 #include "Player/Inventory/PSE_LYFE_Inventory1_Cursor.h"
 #include "Items/PSE_LYFE_BaseInventoryItem.h"
+#include "Weapons/FiringWeapon/PSE_LYFE_ReloadableWeapon.h"
 #include "PSE_LYFE_Inventory2_Storage.generated.h"
 
 /**
@@ -96,6 +97,8 @@ public:
 	void ItemRemoved(const TSubclassOf<class APSE_LYFE_BaseInventoryItem> ItemClass, const uint8 Stacks = 1);
 
 	void WeaponMagazineAdded(const TSubclassOf<class APSE_LYFE_BaseInventoryItem> ItemClass);
+
+	void WeaponAdded(APSE_LYFE_ReloadableWeapon* ReloadableWeapon);
 
 
 //////////////////////////////////////////////

@@ -3,9 +3,11 @@
 #include "PSE_LYFE.h"
 #include "Weapons/BaseFiles/PSE_LYFE_BaseWeapon.h"
 #include "Weapons/BaseFiles/PSE_LYFE_GrenadeComponent.h"
-#include "Player/Inventory/PSE_LYFE_Inventory4_QuickSlots.h"
+#include "Player/Inventory/PSE_LYFE_Inventory5_ExterStorage.h"
 #include "Items/PSE_LYFE_BaseInventoryItem.h"
 #include "Items/Weapon/PSE_LYFE_BaseWeaponItem.h"
+#include "Weapons/FiringWeapon/PSE_LYFE_BaseFiringWeapon.h"
+#include "Weapons/FiringWeapon/PSE_LYFE_AutoRWeapon.h"
 #include "UnrealNetwork.h"
 #include "Player/PSE_LYFE_AnimInstance.h"
 #include "PSE_LYFE_Character4_Weapon.h"
@@ -101,6 +103,10 @@ bool APSE_LYFE_Character4_Weapon::SpawnWeapon(TSubclassOf<APSE_LYFE_BaseWeapon> 
 		if (World)
 		{
 			APSE_LYFE_BaseWeapon* TempWeapon = GetWorld()->SpawnActor<APSE_LYFE_BaseWeapon>(WeaponClass);
+			if (TempWeapon->IsA(APSE_LYFE_ReloadableWeapon::StaticClass()) && InventoryPtr)
+			{
+				InventoryPtr->WeaponAdded(Cast<APSE_LYFE_ReloadableWeapon>(TempWeapon));
+			}
 			TempWeapon->SetOwningPawn(this);
 			const float EquipingTime = TempWeapon->EquipAnimation->SequenceLength;
 
@@ -155,11 +161,11 @@ void APSE_LYFE_Character4_Weapon::OnRep_CurrentWeaponIndex()// Just used for ani
 		{
 			if (i == CurrentWeaponIndex && GetWeaponWithIndex(i))
 			{
-				GetWeaponWithIndex(i)->Mesh3P->SetVisibility(true);
+				GetWeaponWithIndex(i)->GetMesh3P()->SetVisibility(true);
 			}
 			else
 			{
-				GetWeaponWithIndex(i)->Mesh3P->SetVisibility(false);
+				GetWeaponWithIndex(i)->GetMesh3P()->SetVisibility(false);
 			}
 		}
 	}
@@ -171,7 +177,7 @@ void APSE_LYFE_Character4_Weapon::OnRep_ArmedWeapons()
 	{
 		if (i == CurrentWeaponIndex && CurrentArmedWeapons[i])
 		{
-			CurrentArmedWeapons[i]->Mesh3P->SetVisibility(true);
+			CurrentArmedWeapons[i]->GetMesh3P()->SetVisibility(true);
 		}
 		if (ClientCurrentArmedWeapons[i] != CurrentArmedWeapons[i])
 		{
@@ -211,7 +217,7 @@ void APSE_LYFE_Character4_Weapon::AnimBP_UnEquipNotify()
 {
 	if (CurrentArmedWeapons[AnimBP_UnEquipSlot])
 	{
-		CurrentArmedWeapons[AnimBP_UnEquipSlot]->Mesh3P->SetVisibility(false);
+		CurrentArmedWeapons[AnimBP_UnEquipSlot]->GetMesh3P()->SetVisibility(false);
 	}
 }
 
@@ -251,7 +257,7 @@ void APSE_LYFE_Character4_Weapon::AnimBP_EquipNotify()
 	}
 	if (CurrentArmedWeapons[AnimBP_EquipSlot])
 	{
-		CurrentArmedWeapons[AnimBP_EquipSlot]->Mesh3P->SetVisibility(true);
+		CurrentArmedWeapons[AnimBP_EquipSlot]->GetMesh3P()->SetVisibility(true);
 	}
 }
 
@@ -334,6 +340,22 @@ void APSE_LYFE_Character4_Weapon::ServerChangeWeaponTo_Implementation(int8 NewWe
 {
 	if (GetWeaponWithIndex(NewWeaponIndex) && NewWeaponIndex != CurrentWeaponIndex && bIsWeaponChanging == false)
 	{
+		if (GetCurrentWeapon()->IsA(APSE_LYFE_BaseFiringWeapon::StaticClass()))
+		{
+			APSE_LYFE_BaseFiringWeapon* FiringWeapon = Cast<APSE_LYFE_BaseFiringWeapon>(GetCurrentWeapon());
+			if (FiringWeapon->CurrentState == EWeaponState::Firing)
+			{
+				FiringWeapon->StopFire();
+			}
+		}
+		if (GetCurrentWeapon()->IsA(APSE_LYFE_ReloadableWeapon::StaticClass()))
+		{
+			APSE_LYFE_ReloadableWeapon* FiringWeapon = Cast<APSE_LYFE_ReloadableWeapon>(GetCurrentWeapon());
+			if (FiringWeapon->CurrentState == EWeaponState::Reloading)
+			{
+				FiringWeapon->ServerCancelReload();
+			}
+		}
 		bIsWeaponChanging = true;
 		Client_UnEquipWeapon(CurrentWeaponIndex, NewWeaponIndex);
 		const float UnEquipingTime = GetCurrentWeapon()->UnEquipAnimation->SequenceLength;
@@ -369,67 +391,69 @@ APSE_LYFE_BaseWeapon* APSE_LYFE_Character4_Weapon::GetWeaponWithIndex(int8 Index
 
 void APSE_LYFE_Character4_Weapon::StartWeaponFire()
 {
-	if (CanFire() && GetCurrentWeapon())
+	if (CanFire() && GetCurrentWeapon() && bIsWeaponChanging == false)
 	{
-		//	if (GetCurrentWeapon()->CurrentState != EWeaponState::Passive)
-		//	{
-		//		GetCurrentWeapon()->StartFire();
-		//	}
+		if (GetCurrentWeapon()->IsA(APSE_LYFE_BaseFiringWeapon::StaticClass()))
+		{
+			APSE_LYFE_BaseFiringWeapon* FiringWeapon = Cast<APSE_LYFE_BaseFiringWeapon>(GetCurrentWeapon());
+			FiringWeapon->StartFire();
+		}
 	}
 }
 
 
 void APSE_LYFE_Character4_Weapon::StopWeaponFire()
 {
-	if (GetCurrentWeapon())
+	if (GetCurrentWeapon() && bIsWeaponChanging == false)
 	{
-		//	if (GetCurrentWeapon()->IsA(APSE_LYFE_AutoRWeapon::StaticClass()))
-		//	{
-		//		GetCurrentWeapon()->StopFire();
-		//	}
+		if (GetCurrentWeapon()->IsA(APSE_LYFE_AutoRWeapon::StaticClass()))
+		{
+			APSE_LYFE_BaseFiringWeapon* FiringWeapon = Cast<APSE_LYFE_AutoRWeapon>(GetCurrentWeapon());
+			FiringWeapon->StopFire();
+		}
 	}
 }
 
 
 void APSE_LYFE_Character4_Weapon::StartWeaponReload()
 {
-	/*APSE_LYFE_BaseWeapon* TempWeapon = GetCurrentWeapon();
+	APSE_LYFE_BaseWeapon* TempWeapon = GetCurrentWeapon();
 	if (TempWeapon->IsA(APSE_LYFE_ReloadableWeapon::StaticClass()))
 	{
-	APSE_LYFE_ReloadableWeapon* ReloadableWeapon = Cast<APSE_LYFE_ReloadableWeapon>(TempWeapon);
-	if (ReloadableWeapon->CanReload() && (ReloadableWeapon->CurrentState == EWeaponState::Firing ||
-	ReloadableWeapon->CurrentState == EWeaponState::Idle))
-	{
-	if (bIsSprinting == true)
-	{
-	EndSprint();
+		APSE_LYFE_ReloadableWeapon* ReloadableWeapon = Cast<APSE_LYFE_ReloadableWeapon>(TempWeapon);
+		if (ReloadableWeapon->CanReload() && (ReloadableWeapon->CurrentState == EWeaponState::Firing ||
+		ReloadableWeapon->CurrentState == EWeaponState::Idle))
+		{
+			if (bIsSprinting == true)
+			{
+				EndSprint();
+			}
+			ReloadableWeapon->StartReload();
+		}
 	}
-	ReloadableWeapon->StartReload();
-	}
-	}*/
 }
 
 void APSE_LYFE_Character4_Weapon::CancleWeaponReload()
 {
-	/*
+	
 	APSE_LYFE_BaseWeapon* TempWeapon = GetCurrentWeapon();
 	if (TempWeapon->IsA(APSE_LYFE_ReloadableWeapon::StaticClass()))
 	{
-	APSE_LYFE_ReloadableWeapon* ReloadableWeapon = Cast<APSE_LYFE_ReloadableWeapon>(TempWeapon);
-	if (ReloadableWeapon->CurrentState == EWeaponState::Reloading)
-	{
-	ReloadableWeapon->CancelReload();
+		APSE_LYFE_ReloadableWeapon* ReloadableWeapon = Cast<APSE_LYFE_ReloadableWeapon>(TempWeapon);
+		if (ReloadableWeapon->CurrentState == EWeaponState::Reloading)
+		{
+			ReloadableWeapon->CancelReload();
+		}
 	}
-	}
-	*/
+
 }
 
 bool APSE_LYFE_Character4_Weapon::CanFire()
 {
-	if (!bIsWeaponChanging && GrenadeComp->CurrentGrenadeState == EGrenadeState::Null)
+	/*if (!bIsWeaponChanging && GrenadeComp->CurrentGrenadeState == EGrenadeState::Null)
 	{
 		return false;
-	}
+	}*/
 	return true;
 }
 
@@ -464,7 +488,7 @@ void APSE_LYFE_Character4_Weapon::LeftClickReleased()
 {
 
 	bWantsToFire = false;
-	/*StopWeaponFire();*/
+	StopWeaponFire();
 }
 
 void APSE_LYFE_Character4_Weapon::GrenadeThrowPressed()
@@ -492,7 +516,7 @@ FVector APSE_LYFE_Character4_Weapon::LeftHandWeaponAttachmentLocation()
 {
 	if (GetCurrentWeapon())
 	{
-		FVector WorldWeaponLocation = GetCurrentWeapon()->Mesh3P->GetSocketLocation("LeftHandAttachmentLocation");
+		FVector WorldWeaponLocation = GetCurrentWeapon()->GetMesh3P()->GetSocketLocation("LeftHandAttachmentLocation");
 		return GetMesh()->ComponentToWorld.InverseTransformPosition(WorldWeaponLocation);
 	}
 

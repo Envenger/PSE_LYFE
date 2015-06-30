@@ -6,9 +6,9 @@
 #include "Weapons/Effects/PSE_LYFE_HitImpact.h"
 #include "PSE_LYFE_BaseWeapon.h"
 
-APSE_LYFE_BaseWeapon::APSE_LYFE_BaseWeapon(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+APSE_LYFE_BaseWeapon::APSE_LYFE_BaseWeapon()
 {
-	Mesh3P = ObjectInitializer.CreateDefaultSubobject<UStaticMeshComponent>(this, TEXT("WeaponMesh3P"));
+	Mesh3P = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh3P"));
 	Mesh3P->bReceivesDecals = false;
 	Mesh3P->CastShadow = true;
 	Mesh3P->SetCollisionObjectType(ECC_WorldDynamic);
@@ -31,7 +31,6 @@ void APSE_LYFE_BaseWeapon::SetOwningPawn(APSE_LYFE_Character4_Weapon* NewOwner)
 	MyPawn = NewOwner;
 	Instigator = NewOwner;
 	SetOwner(NewOwner);
-	//CurrentState = EWeaponState::Passive;
 	AttachMeshToPawn();
 }
 

@@ -59,9 +59,11 @@ void APSE_LYFE_Character5_Cover::Tick(float DeltaTime)
 
 	if (IsLocallyControlled())
 	{
-		const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ECoverState"), true);
+/*
 		
-		GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Green, EnumPtr->GetEnumName((uint8)CoverAnimInstance->CoverState));
+			const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ECoverState"), true);
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Green, EnumPtr->GetEnumName((uint8)CoverAnimInstance->CoverState));
+		*/
 
 		if (CoveredCounter > 0 && CoverAnimInstance->CoverState == ECoverState::NoCover && bLockCoverDetection == false)
 		{
@@ -93,8 +95,9 @@ void APSE_LYFE_Character5_Cover::Tick(float DeltaTime)
 
 	if (IsLocallyControlled())
 	{
+/*
 		GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Green, (GetCameraBoom()->RelativeRotation + GetActorRotation()).ToString() + "    "
-			+ GetActorRotation().ToString());
+			+ GetActorRotation().ToString());*/
 		if (bCharacterRotationEnabled)
 		{
 			DeltaCharacterRotation(DeltaTime);

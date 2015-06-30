@@ -198,12 +198,13 @@ struct FTotalItemUnitStruct
 
 	TArray<uint16*> HoldingValues;
 
+/*
 	void AddPointerValue(uint16* NewPointerLocation)
 	{
 
 		*NewPointerLocation = TotalStacks;
 		HoldingValues.AddUnique(NewPointerLocation);
-	}
+	}*/
 
 	//default properties
 	FTotalItemUnitStruct()
@@ -224,14 +225,27 @@ struct FTotalItemStruct
 {
 	GENERATED_USTRUCT_BODY()
 
+private:
 	UPROPERTY()
 	TArray<FTotalItemUnitStruct> ItemArray;
+
+public:
+	/** Use this instead of using the array directly */
+	const FTotalItemUnitStruct GetItemStructAtLocation(int16 Index) const
+	{
+		return ItemArray[Index];
+	}
+
+	const int32 GetItemArrayNum() const
+	{
+		return ItemArray.Num();
+	}
 
 	const int16 GetItemClassLocation(TSubclassOf<class APSE_LYFE_BaseInventoryItem> CheckItemClass) const
 	{
 		if (CheckItemClass != nullptr)
 		{
-			for (uint16 i = 0; i < ItemArray.Num(); i++)
+			for (int16 i = 0; i < ItemArray.Num(); i++)
 			{
 				if (ItemArray[i].ItemClass == CheckItemClass)
 				{
@@ -281,6 +295,11 @@ struct FTotalItemStruct
 		}
 	}
 
+	void AddPointerValue(int32 ArrayIndex, uint16* NewPointerLocation)
+	{
+		*NewPointerLocation = ItemArray[ArrayIndex].TotalStacks;
+		ItemArray[ArrayIndex].HoldingValues.AddUnique(NewPointerLocation);
+	}
 
 	FTotalItemStruct()
 	{

@@ -22,6 +22,16 @@ void APSE_LYFE_HitImpact::PostInitializeComponents()
 			SurfaceHit.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition,
 			DefaultDecal.LifeSpan);
 	}
+	SetLifeSpan(DefaultDecal.LifeSpan);
+	if (ImpactFX)
+	{
+		ImpactPSC = UGameplayStatics::SpawnEmitterAtLocation(this, ImpactFX, GetActorLocation(), GetActorRotation());
+	}
 }
 
 
+void APSE_LYFE_HitImpact::BeginPlay()
+{
+	Super::BeginPlay();
+
+}

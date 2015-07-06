@@ -260,6 +260,12 @@ void APSE_LYFE_Character0_Base::Tick( float DeltaTime )
 	if (IsLocallyControlled())
 	{
 		CalculateCameraFinal(DeltaTime);
+
+		GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Red, "Character DeltaTime = " + FString::SanitizeFloat(DeltaTime));
+		GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Red, "ExpectedFPS = " + FString::SanitizeFloat(1/DeltaTime));
+		GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Red, "World DeltaTime = " + FString::SanitizeFloat(GetWorld()->GetDeltaSeconds()));
+		GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Red, "Global TimeDilation = " + FString::SanitizeFloat(UGameplayStatics::GetGlobalTimeDilation(this)));
+		GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Red, "Actor TimeDilation = " + FString::SanitizeFloat(CustomTimeDilation));
 	}
 }
 

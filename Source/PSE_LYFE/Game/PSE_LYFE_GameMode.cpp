@@ -18,3 +18,7 @@ void APSE_LYFE_GameMode::RestartPlayer(AController* NewPlayer)
 	// Can be used to spawn the inventory and link
 }
 
+void APSE_LYFE_GameMode::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}

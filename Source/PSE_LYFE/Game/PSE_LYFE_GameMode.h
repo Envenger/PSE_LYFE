@@ -16,6 +16,8 @@ class PSE_LYFE_API APSE_LYFE_GameMode : public AGameMode
 
 	void BeginPlay() override;
 
+	virtual void Tick(float DeltaTime) override;
+
 	void RestartPlayer(AController* NewPlayer) override;
 	
 	UPROPERTY(EditDefaultsOnly, Category = WorldConditions)

@@ -243,6 +243,10 @@ void APSE_LYFE_Character0_Base::PostInitializeComponents()
 	UpdateCamera(NonAimCameraLocation, NonAimCameraRotation);
 
 	InitializeCharacterSkeletalComponents();
+
+	CurrentCharacterLocSim = GetActorLocation();
+	CurrentCharacterLocAuto = GetActorLocation();
+	CurrentCharacterLocAuth = GetActorLocation();
 }
 
 void APSE_LYFE_Character0_Base::SetupPlayerInputComponent(class UInputComponent* InputComponent)
@@ -261,11 +265,56 @@ void APSE_LYFE_Character0_Base::Tick( float DeltaTime )
 	{
 		CalculateCameraFinal(DeltaTime);
 
-		GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Red, "Character DeltaTime = " + FString::SanitizeFloat(DeltaTime));
-		GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Red, "ExpectedFPS = " + FString::SanitizeFloat(1/DeltaTime));
-		GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Red, "World DeltaTime = " + FString::SanitizeFloat(GetWorld()->GetDeltaSeconds()));
-		GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Red, "Global TimeDilation = " + FString::SanitizeFloat(UGameplayStatics::GetGlobalTimeDilation(this)));
-		GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Red, "Actor TimeDilation = " + FString::SanitizeFloat(CustomTimeDilation));
+
+	}
+
+	if (GetCharacterMovement()->Velocity.Size() > 1.f)
+	{
+		if (Role == ROLE_SimulatedProxy)
+		{
+			FVector NewActorLocation = GetActorLocation();
+			float Speed = FVector::Dist(NewActorLocation, CurrentCharacterLocSim) / DeltaTime;
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Red, "Actual Speed = " + FString::SanitizeFloat(Speed)
+				+ " Intend speed = " + FString::SanitizeFloat(GetCharacterMovement()->Velocity.Size()));
+			CurrentCharacterLocSim = NewActorLocation;
+
+
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Red, "Character DeltaTime = " + FString::SanitizeFloat(DeltaTime));
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Red, "ExpectedFPS = " + FString::SanitizeFloat(1 / DeltaTime));
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Red, "World DeltaTime = " + FString::SanitizeFloat(GetWorld()->GetDeltaSeconds()));
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Red, "Global TimeDilation = " + FString::SanitizeFloat(UGameplayStatics::GetGlobalTimeDilation(this)));
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Red, "Actor TimeDilation = " + FString::SanitizeFloat(CustomTimeDilation));
+		}
+		else if (Role == ROLE_AutonomousProxy)
+		{
+			FVector NewActorLocation = GetActorLocation();
+			float Speed = FVector::Dist(NewActorLocation, CurrentCharacterLocAuto) / DeltaTime;
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Green, "Actual Speed = " + FString::SanitizeFloat(Speed)
+				+ " Intend speed = " + FString::SanitizeFloat(GetCharacterMovement()->Velocity.Size()));
+			CurrentCharacterLocAuto = NewActorLocation;
+
+
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Green, "Character DeltaTime = " + FString::SanitizeFloat(DeltaTime));
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Green, "ExpectedFPS = " + FString::SanitizeFloat(1 / DeltaTime));
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Green, "World DeltaTime = " + FString::SanitizeFloat(GetWorld()->GetDeltaSeconds()));
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Green, "Global TimeDilation = " + FString::SanitizeFloat(UGameplayStatics::GetGlobalTimeDilation(this)));
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Green, "Actor TimeDilation = " + FString::SanitizeFloat(CustomTimeDilation));
+		}
+		else if (Role == ROLE_Authority)
+		{
+			FVector NewActorLocation = GetActorLocation();
+			float Speed = FVector::Dist(NewActorLocation, CurrentCharacterLocAuth) / DeltaTime;
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Blue, "Actual Speed = " + FString::SanitizeFloat(Speed)
+				+ " Intend speed = " + FString::SanitizeFloat(GetCharacterMovement()->Velocity.Size()));
+			CurrentCharacterLocAuth = NewActorLocation;
+
+
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Blue, "Character DeltaTime = " + FString::SanitizeFloat(DeltaTime));
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Blue, "ExpectedFPS = " + FString::SanitizeFloat(1 / DeltaTime));
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Blue, "World DeltaTime = " + FString::SanitizeFloat(GetWorld()->GetDeltaSeconds()));
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Blue, "Global TimeDilation = " + FString::SanitizeFloat(UGameplayStatics::GetGlobalTimeDilation(this)));
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Blue, "Actor TimeDilation = " + FString::SanitizeFloat(CustomTimeDilation));
+		}
 	}
 }
 

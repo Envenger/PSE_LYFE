@@ -220,4 +220,8 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 	
+	/** Test */
+	FVector CurrentCharacterLocSim;
+	FVector CurrentCharacterLocAuto;
+	FVector CurrentCharacterLocAuth;
 };

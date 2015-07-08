@@ -7,7 +7,7 @@
 float UPSE_LYFE_CMovementComponent::GetMaxSpeed() const
 {
 	float MaxSpeed = Super::GetMaxSpeed();
-	APSE_LYFE_Character4_Weapon* OwnerCharacter = Cast<APSE_LYFE_Character4_Weapon>(PawnOwner);
+	APSE_LYFE_Character5_Cover* OwnerCharacter = Cast<APSE_LYFE_Character5_Cover>(PawnOwner);
 	if (OwnerCharacter)
 	{
 		if (OwnerCharacter->CrouchState != ECrouchState::Null)

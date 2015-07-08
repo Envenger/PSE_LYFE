@@ -45,7 +45,7 @@ APSE_LYFE_Character0_Base::APSE_LYFE_Character0_Base(const FObjectInitializer& O
 	Top = GetMesh();// We don't use get GetMesh()
 	Top->AlwaysLoadOnClient = true;
 	Top->AlwaysLoadOnServer = true;
-	Bottom = CreateOptionalDefaultSubobject<USkeletalMeshComponent>("BottomComponent");
+	Bottom = CreateDefaultSubobject<USkeletalMeshComponent>("BottomComponent");
 	if (Bottom)
 	{
 		Bottom->AlwaysLoadOnClient = true;
@@ -63,7 +63,7 @@ APSE_LYFE_Character0_Base::APSE_LYFE_Character0_Base(const FObjectInitializer& O
 	}
 	
 	
-	Hair = CreateOptionalDefaultSubobject<USkeletalMeshComponent>("HairComponent");
+	Hair = CreateDefaultSubobject<USkeletalMeshComponent>("HairComponent");
 	if (Hair)
 	{
 		Hair->AlwaysLoadOnClient = true;
@@ -80,7 +80,7 @@ APSE_LYFE_Character0_Base::APSE_LYFE_Character0_Base(const FObjectInitializer& O
 		Hair->SetMasterPoseComponent(Top);
 	}
 	
-	Boots = CreateOptionalDefaultSubobject<USkeletalMeshComponent>("BootsComponent");
+	Boots = CreateDefaultSubobject<USkeletalMeshComponent>("BootsComponent");
 	if (Boots)
 	{
 		Boots->AlwaysLoadOnClient = true;
@@ -97,7 +97,7 @@ APSE_LYFE_Character0_Base::APSE_LYFE_Character0_Base(const FObjectInitializer& O
 		Boots->SetMasterPoseComponent(Top);
 	}
 
-	BackPack = CreateOptionalDefaultSubobject<UStaticMeshComponent>("BackPack");
+	BackPack = CreateDefaultSubobject<UStaticMeshComponent>("BackPack");
 	if (BackPack)
 	{
 		BackPack->AlwaysLoadOnClient = true;
@@ -247,6 +247,23 @@ void APSE_LYFE_Character0_Base::PostInitializeComponents()
 	CurrentCharacterLocSim = GetActorLocation();
 	CurrentCharacterLocAuto = GetActorLocation();
 	CurrentCharacterLocAuth = GetActorLocation();
+
+
+
+	//////////////////////////////////////////////////////////////
+
+/*
+	TArray<float> BoneDamageCoefficents;
+	TArray<FName> SocketNames = GetMesh()->GetAllSocketNames();
+	for (int32 i = 0; i < SocketNames.Num(); i++)
+	{
+		FName BoneName = SocketNames[i];
+		FString PrintString = "BoneDamageCoefficents[" + FString::FromInt(i) + "] = 0.0; // " + BoneName.ToString();
+		//FName Gazi(*PrintString);
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *PrintString);
+	}
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *GetMesh()->GetBoneName(0).ToString());
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *GetMesh()->GetBoneName(7).ToString());*/
 }
 
 void APSE_LYFE_Character0_Base::SetupPlayerInputComponent(class UInputComponent* InputComponent)

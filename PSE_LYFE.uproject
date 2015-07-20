@@ -1,13 +1,17 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{C4BBF2FD-4D45-6E37-BA4A-BCB55925B7BA}",
+	"EngineAssociation": "{AE9BB527-4E31-06D2-83B1-949A0EA7F651}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
 		{
 			"Name": "PSE_LYFE",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"AIModule"
+			]
 		}
 	],
 	"Plugins": [

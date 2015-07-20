@@ -248,10 +248,7 @@ void APSE_LYFE_Character0_Base::PostInitializeComponents()
 	CurrentCharacterLocAuto = GetActorLocation();
 	CurrentCharacterLocAuth = GetActorLocation();
 
-
-
 	//////////////////////////////////////////////////////////////
-
 /*
 	TArray<float> BoneDamageCoefficents;
 	TArray<FName> SocketNames = GetMesh()->GetAllSocketNames();
@@ -281,10 +278,9 @@ void APSE_LYFE_Character0_Base::Tick( float DeltaTime )
 	if (IsLocallyControlled())
 	{
 		CalculateCameraFinal(DeltaTime);
-
-
 	}
 
+/*
 	if (GetCharacterMovement()->Velocity.Size() > 1.f)
 	{
 		if (Role == ROLE_SimulatedProxy)
@@ -294,7 +290,6 @@ void APSE_LYFE_Character0_Base::Tick( float DeltaTime )
 			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Red, "Actual Speed = " + FString::SanitizeFloat(Speed)
 				+ " Intend speed = " + FString::SanitizeFloat(GetCharacterMovement()->Velocity.Size()));
 			CurrentCharacterLocSim = NewActorLocation;
-
 
 			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Red, "Character DeltaTime = " + FString::SanitizeFloat(DeltaTime));
 			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Red, "ExpectedFPS = " + FString::SanitizeFloat(1 / DeltaTime));
@@ -310,7 +305,6 @@ void APSE_LYFE_Character0_Base::Tick( float DeltaTime )
 				+ " Intend speed = " + FString::SanitizeFloat(GetCharacterMovement()->Velocity.Size()));
 			CurrentCharacterLocAuto = NewActorLocation;
 
-
 			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Green, "Character DeltaTime = " + FString::SanitizeFloat(DeltaTime));
 			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Green, "ExpectedFPS = " + FString::SanitizeFloat(1 / DeltaTime));
 			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Green, "World DeltaTime = " + FString::SanitizeFloat(GetWorld()->GetDeltaSeconds()));
@@ -325,14 +319,13 @@ void APSE_LYFE_Character0_Base::Tick( float DeltaTime )
 				+ " Intend speed = " + FString::SanitizeFloat(GetCharacterMovement()->Velocity.Size()));
 			CurrentCharacterLocAuth = NewActorLocation;
 
-
 			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Blue, "Character DeltaTime = " + FString::SanitizeFloat(DeltaTime));
 			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Blue, "ExpectedFPS = " + FString::SanitizeFloat(1 / DeltaTime));
 			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Blue, "World DeltaTime = " + FString::SanitizeFloat(GetWorld()->GetDeltaSeconds()));
 			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Blue, "Global TimeDilation = " + FString::SanitizeFloat(UGameplayStatics::GetGlobalTimeDilation(this)));
 			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Blue, "Actor TimeDilation = " + FString::SanitizeFloat(CustomTimeDilation));
 		}
-	}
+	}*/
 }
 
 void APSE_LYFE_Character0_Base::CalculateCameraFinal(const float DeltaTime)

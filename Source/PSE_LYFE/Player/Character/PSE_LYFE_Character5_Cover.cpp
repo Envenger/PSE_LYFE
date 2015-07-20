@@ -59,8 +59,7 @@ void APSE_LYFE_Character5_Cover::Tick(float DeltaTime)
 
 	if (IsLocallyControlled())
 	{
-/*
-		
+		/*
 			const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ECoverState"), true);
 			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Green, EnumPtr->GetEnumName((uint8)CoverAnimInstance->CoverState));
 		*/

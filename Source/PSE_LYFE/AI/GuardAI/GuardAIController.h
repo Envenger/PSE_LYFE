@@ -5,6 +5,8 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
+#include "Perception/AIPerceptionComponent.h"
+#include "Perception/AISenseConfig_Sight.h"
 #include "GuardAIController.generated.h"
 
 /**
@@ -14,6 +16,12 @@ UCLASS()
 class PSE_LYFE_API AGuardAIController : public AAIController
 {
 	GENERATED_BODY()
+
+	UPROPERTY(Category = AI, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	class UAIPerceptionComponent* PerceptionComp;
+
+	UPROPERTY(Category = AI, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	class UAISenseConfig_Sight* AISight;
 	
 public:
 
@@ -31,5 +39,11 @@ public:
 	/** Posses The character */
 	virtual void Possess(class APawn* InPawn) override;
 	
-	
+	UPROPERTY(EditDefaultsOnly, Category = BBKeyNames)
+	FName BBPatrolPointName;
+
+	UPROPERTY(EditDefaultsOnly, Category = BBKeyNames)
+	FName BBPatrolPointIndexName;
+
+	void SenseStuff(TArray<AActor*> testActors);
 };

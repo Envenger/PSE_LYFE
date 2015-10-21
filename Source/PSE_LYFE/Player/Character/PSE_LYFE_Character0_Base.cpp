@@ -15,17 +15,18 @@ APSE_LYFE_Character0_Base::APSE_LYFE_Character0_Base(const FObjectInitializer& O
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
 	CameraAimLocation = CreateDefaultSubobject<UArrowComponent>(TEXT("CameraAimLocation"));
 	CameraAimLocation->RelativeLocation = FVector(-250, 0, 42);
-	CameraAimLocation->ArrowColor = FColor(FLinearColor(1, 0, 0));
+	CameraAimLocation->ArrowColor = FLinearColor(1, 0, 0).ToFColor(true);
 	CameraAimLocation->AttachTo(RootComponent);
 
 	CameraNonAimLocation = CreateDefaultSubobject<UArrowComponent>(TEXT("CameraNonAimLocation"));
-	CameraNonAimLocation->ArrowColor = FColor(FLinearColor(0, 1, 0));
+	CameraNonAimLocation->ArrowColor = FLinearColor(0, 1, 0).ToFColor(true);
 	CameraNonAimLocation->AttachTo(RootComponent);
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));

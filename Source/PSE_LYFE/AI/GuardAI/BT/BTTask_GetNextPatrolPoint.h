@@ -17,6 +17,5 @@ class PSE_LYFE_API UBTTask_GetNextPatrolPoint : public UBTTask_BlackboardBase
 	
 	EBTNodeResult::Type ExecuteTask(class UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	
-	UPROPERTY(EditDefaultsOnly, Category = BBKeyNames)
-	FText BBPatrolPointName;
+
 };

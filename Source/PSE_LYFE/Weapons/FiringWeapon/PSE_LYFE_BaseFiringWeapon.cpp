@@ -210,7 +210,7 @@ void APSE_LYFE_BaseFiringWeapon::SpawnImpactEffects_Implementation(const FHitRes
 			UseImpact = Hit;
 		}
 
-		APSE_LYFE_HitImpact* EffectActor = GetWorld()->SpawnActorDeferred<APSE_LYFE_HitImpact>(ImpactTemplate, Impact.ImpactPoint, Impact.ImpactNormal.Rotation());
+		APSE_LYFE_HitImpact* EffectActor = GetWorld()->SpawnActorDeferred<APSE_LYFE_HitImpact>(ImpactTemplate, FTransform(Impact.ImpactNormal.Rotation(), Impact.ImpactPoint), nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		if (EffectActor)
 		{
 			EffectActor->SurfaceHit = UseImpact;

@@ -14,41 +14,102 @@ AGuardAICharacter::AGuardAICharacter()
 
 	MinPatrolWaitTime = 3;
 	MaxPatrolWaitTime = 6;
+
+	GuardAIState = EGuardAIState::Null;
+
+	AnimBP_bHasEquipedWeapon = false;
 }
 
 // Called when the game starts or when spawned
 void AGuardAICharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
-void AGuardAICharacter::GetNextPatrolPoint(const uint8 CurrentPatrolPointIndex, uint8& NewPatrolPointIndex, AAITargetPoint* NewPatrolPoint) const
+void AGuardAICharacter::PostInitializeComponents()
 {
-	//return AIGuardPoints[0];
+	Super::PostInitializeComponents();
 }
 
-void AGuardAICharacter::GetNearestPatrolPoint(uint8& NewPatrolPointIndex, AAITargetPoint* NewPatrolPoint) const
+void AGuardAICharacter::GetNextPatrolPoint(const uint8 CurrentPatrolPointIndex, uint8& NewPatrolPointIndex, AAITargetPoint*& NewPatrolPoint) const
 {
-	AAITargetPoint* NearestpatrolPoint = nullptr;
-	uint8 i;
-	for (i = 0; i < AIGuardPoints.Num(); i++)
+	NewPatrolPointIndex = CurrentPatrolPointIndex + 1;
+	if (NewPatrolPointIndex >= AIGuardPoints.Num())
+	{
+		NewPatrolPointIndex = 0;
+	}
+	NewPatrolPoint = AIGuardPoints[NewPatrolPointIndex];
+}
+
+void AGuardAICharacter::GetClosestPatrolPoint(uint8& NewPatrolPointIndex, AAITargetPoint*& NewPatrolPoint) const
+{
+	AAITargetPoint* NearestPatrolPoint = nullptr;
+	uint8 NearestPatrolPointIndex = 0;
+	for (uint8 i = 0; i < AIGuardPoints.Num(); i++)
 	{
 		AAITargetPoint* PatrolPoint = AIGuardPoints[i];
-		if (NearestpatrolPoint)
+		if (NearestPatrolPoint)
 		{
 			const float NearestPatrolPointDis = FVector::Dist(PatrolPoint->GetActorLocation(), GetActorLocation());
 			const float CurrentPatrolPointDis = FVector::Dist(PatrolPoint->GetActorLocation(), GetActorLocation());
 			if (CurrentPatrolPointDis < NearestPatrolPointDis)
 			{
-				NearestpatrolPoint = PatrolPoint;
+				NearestPatrolPoint = PatrolPoint;
+				NearestPatrolPointIndex = i;
 			}
 		}
 		else
 		{
-			NearestpatrolPoint = PatrolPoint;
+			NearestPatrolPoint = PatrolPoint;
+			NearestPatrolPointIndex = i;
 		}
 	}
-	NewPatrolPoint = NearestpatrolPoint;
-	NewPatrolPointIndex = i;
+	NewPatrolPointIndex = NearestPatrolPointIndex;
+	NewPatrolPoint = NearestPatrolPoint;
+}
+
+bool AGuardAICharacter::SetAIGuardState(EGuardAIState NewAIState)
+{
+	if (NewAIState != GuardAIState)
+	{
+		if (NewAIState == EGuardAIState::Patroling)
+		{
+			GetCharacterMovement()->MaxWalkSpeed = 300;
+			if (AnimBP_bHasEquipedWeapon)
+			{
+				UnEquipWeapon();
+			}
+			GuardAIState = NewAIState;
+		}
+		else if (NewAIState == EGuardAIState::Pursuing)
+		{
+			if (!AnimBP_bHasEquipedWeapon)
+			{
+				EquipWeapon();
+			}
+			GetCharacterMovement()->MaxWalkSpeed = 600;
+		}
+	}
+	return true;
+}
+
+void AGuardAICharacter::EquipWeapon()
+{
+	AnimBP_bHasEquipedWeapon = true;
+}
+
+void AGuardAICharacter::UnEquipWeapon()
+{
+	AnimBP_bHasEquipedWeapon = false;
+}
+
+void AGuardAICharacter::AnimBP_EquipFinishNotify()
+{
+
+}
+
+void AGuardAICharacter::AnimBP_UnEquipFinishNotify()
+{
+
 }

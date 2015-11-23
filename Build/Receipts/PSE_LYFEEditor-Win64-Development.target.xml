@@ -89,6 +89,9 @@
     <BuildProduct Path="$(EngineDir)\Plugins\Runtime\LeapMotionController\Binaries\Win64\UE4Editor-LeapMotionController.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Plugins\Runtime\LeapMotionController\Binaries\Win64\UE4Editor-LeapMotionController.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Plugins\Runtime\LeapMotionController\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-LeapMotionController.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Plugins\Runtime\OculusInput\Binaries\Win64\UE4Editor-OculusInput.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Plugins\Runtime\OculusInput\Binaries\Win64\UE4Editor-OculusInput.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Plugins\Runtime\OculusInput\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-OculusInput.lib" Type="ImportLibrary" />
     <BuildProduct Path="$(EngineDir)\Plugins\Runtime\OculusLibrary\Binaries\Win64\UE4Editor-OculusLibrary.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Plugins\Runtime\OculusLibrary\Binaries\Win64\UE4Editor-OculusLibrary.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Plugins\Runtime\OculusLibrary\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-OculusLibrary.lib" Type="ImportLibrary" />
@@ -110,6 +113,12 @@
     <BuildProduct Path="$(EngineDir)\Plugins\Slate\SlateRemote\Binaries\Win64\UE4Editor-SlateRemote.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Plugins\Slate\SlateRemote\Binaries\Win64\UE4Editor-SlateRemote.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Plugins\Slate\SlateRemote\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SlateRemote.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Plugins\Substance\Binaries\Win64\UE4Editor-SubstanceCore.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Plugins\Substance\Binaries\Win64\UE4Editor-SubstanceCore.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Plugins\Substance\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SubstanceCore.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Plugins\Substance\Binaries\Win64\UE4Editor-SubstanceEditor.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Plugins\Substance\Binaries\Win64\UE4Editor-SubstanceEditor.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Plugins\Substance\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SubstanceEditor.lib" Type="ImportLibrary" />
     <BuildProduct Path="$(ProjectDir)\Binaries\Win64\UE4Editor-PSE_LYFE.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(ProjectDir)\Binaries\Win64\UE4Editor-PSE_LYFE.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(ProjectDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-PSE_LYFE.lib" Type="ImportLibrary" />
@@ -200,54 +209,42 @@
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Renderer.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Renderer.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Renderer.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-HeadMountedDisplay.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-HeadMountedDisplay.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-HeadMountedDisplay.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Foliage.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Foliage.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Foliage.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-RawMesh.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-RawMesh.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-RawMesh.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-UnrealEd.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-UnrealEd.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-UnrealEd.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AnimGraph.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AnimGraph.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-AnimGraph.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-GraphEditor.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-GraphEditor.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-GraphEditor.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MaterialShaderQualitySettings.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MaterialShaderQualitySettings.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-MaterialShaderQualitySettings.lib" Type="ImportLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-EditorStyle.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-EditorStyle.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-EditorStyle.lib" Type="ImportLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-DesktopPlatform.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-DesktopPlatform.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-DesktopPlatform.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AssetRegistry.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AssetRegistry.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-AssetRegistry.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ClassViewer.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ClassViewer.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ClassViewer.lib" Type="ImportLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-PropertyEditor.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-PropertyEditor.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-PropertyEditor.lib" Type="ImportLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-EditorWidgets.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-EditorWidgets.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-EditorWidgets.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Documentation.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Documentation.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Documentation.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Analytics.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Analytics.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Analytics.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SourceControl.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SourceControl.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SourceControl.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MessageLog.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MessageLog.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-MessageLog.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-UnrealEd.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-UnrealEd.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-UnrealEd.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-LevelSequence.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-LevelSequence.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-LevelSequence.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MovieScene.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MovieScene.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-MovieScene.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AnimGraph.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AnimGraph.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-AnimGraph.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-GraphEditor.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-GraphEditor.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-GraphEditor.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AssetRegistry.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AssetRegistry.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-AssetRegistry.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ClassViewer.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ClassViewer.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ClassViewer.lib" Type="ImportLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AssetTools.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AssetTools.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-AssetTools.lib" Type="ImportLibrary" />
@@ -257,6 +254,12 @@
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-WorkspaceMenuStructure.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-WorkspaceMenuStructure.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-WorkspaceMenuStructure.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SourceControl.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SourceControl.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SourceControl.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MessageLog.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MessageLog.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-MessageLog.lib" Type="ImportLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-TextureEditor.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-TextureEditor.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-TextureEditor.lib" Type="ImportLibrary" />
@@ -338,6 +341,9 @@
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\Android\UE4Editor-Android_ASTCTargetPlatform.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\Android\UE4Editor-Android_ASTCTargetPlatform.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\Android\UE4Editor-Android_ASTCTargetPlatform.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\Android\UE4Editor-Android_MultiTargetPlatform.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\Android\UE4Editor-Android_MultiTargetPlatform.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\Android\UE4Editor-Android_MultiTargetPlatform.lib" Type="ImportLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\IOS\UE4Editor-IOSTargetPlatform.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\IOS\UE4Editor-IOSTargetPlatform.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\IOS\UE4Editor-IOSTargetPlatform.lib" Type="ImportLibrary" />
@@ -362,36 +368,12 @@
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Internationalization.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Internationalization.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Internationalization.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Localization.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Localization.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Localization.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-LocalizationService.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-LocalizationService.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-LocalizationService.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-DeviceProfileEditor.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-DeviceProfileEditor.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-DeviceProfileEditor.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-LevelEditor.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-LevelEditor.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-LevelEditor.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-NewsFeed.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-NewsFeed.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-NewsFeed.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-HTTP.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-HTTP.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-HTTP.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-OnlineSubsystem.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-OnlineSubsystem.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-OnlineSubsystem.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-JsonUtilities.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-JsonUtilities.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-JsonUtilities.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-StatsViewer.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-StatsViewer.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-StatsViewer.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-DeviceProfileServices.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-DeviceProfileServices.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-DeviceProfileServices.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Documentation.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Documentation.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Documentation.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Analytics.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Analytics.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Analytics.lib" Type="ImportLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ContentBrowser.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ContentBrowser.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ContentBrowser.lib" Type="ImportLibrary" />
@@ -407,6 +389,9 @@
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SuperSearch.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SuperSearch.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SuperSearch.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-HTTP.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-HTTP.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-HTTP.lib" Type="ImportLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-IntroTutorials.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-IntroTutorials.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-IntroTutorials.lib" Type="ImportLibrary" />
@@ -425,9 +410,6 @@
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-KismetCompiler.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-KismetCompiler.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-KismetCompiler.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MovieScene.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MovieScene.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-MovieScene.lib" Type="ImportLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MovieSceneTools.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MovieSceneTools.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-MovieSceneTools.lib" Type="ImportLibrary" />
@@ -437,9 +419,153 @@
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Sequencer.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Sequencer.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Sequencer.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MovieSceneCapture.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MovieSceneCapture.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-MovieSceneCapture.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-JsonUtilities.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-JsonUtilities.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-JsonUtilities.lib" Type="ImportLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SequencerWidgets.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SequencerWidgets.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SequencerWidgets.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-LevelEditor.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-LevelEditor.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-LevelEditor.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-NewsFeed.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-NewsFeed.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-NewsFeed.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-OnlineSubsystem.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-OnlineSubsystem.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-OnlineSubsystem.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-StatsViewer.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-StatsViewer.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-StatsViewer.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-DeviceProfileServices.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-DeviceProfileServices.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-DeviceProfileServices.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SceneOutliner.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SceneOutliner.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SceneOutliner.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ActorPickerMode.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ActorPickerMode.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ActorPickerMode.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-WebBrowser.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-WebBrowser.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-WebBrowser.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Serialization.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Serialization.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Serialization.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-CEF3Utils.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-CEF3Utils.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-CEF3Utils.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Persona.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Persona.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Persona.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Foliage.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Foliage.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Foliage.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-DeviceManager.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-DeviceManager.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-DeviceManager.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SettingsEditor.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SettingsEditor.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SettingsEditor.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SharedSettingsWidgets.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SharedSettingsWidgets.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SharedSettingsWidgets.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ExternalImagePicker.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ExternalImagePicker.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ExternalImagePicker.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SessionFrontend.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SessionFrontend.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SessionFrontend.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SessionServices.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SessionServices.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SessionServices.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-EngineMessages.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-EngineMessages.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-EngineMessages.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SessionMessages.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SessionMessages.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SessionMessages.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AutomationWindow.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AutomationWindow.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-AutomationWindow.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AutomationController.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AutomationController.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-AutomationController.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AutomationMessages.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AutomationMessages.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-AutomationMessages.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-UnrealEdMessages.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-UnrealEdMessages.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-UnrealEdMessages.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ScreenShotComparison.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ScreenShotComparison.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ScreenShotComparison.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ScreenShotComparisonTools.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ScreenShotComparisonTools.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ScreenShotComparisonTools.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Profiler.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Profiler.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Profiler.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ProfilerClient.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ProfilerClient.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ProfilerClient.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ProfilerMessages.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ProfilerMessages.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ProfilerMessages.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Layers.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Layers.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Layers.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-WorldBrowser.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-WorldBrowser.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-WorldBrowser.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-RawMesh.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-RawMesh.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-RawMesh.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-LandscapeEditor.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-LandscapeEditor.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-LandscapeEditor.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MaterialUtilities.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MaterialUtilities.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-MaterialUtilities.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MeshUtilities.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MeshUtilities.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-MeshUtilities.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MeshSimplifier.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MeshSimplifier.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-MeshSimplifier.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-NewLevelDialog.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-NewLevelDialog.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-NewLevelDialog.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-DeviceProfileEditor.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-DeviceProfileEditor.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-DeviceProfileEditor.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-PlacementMode.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-PlacementMode.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-PlacementMode.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-CollectionManager.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-CollectionManager.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-CollectionManager.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-BspMode.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-BspMode.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-BspMode.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-UserFeedback.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-UserFeedback.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-UserFeedback.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ReferenceViewer.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ReferenceViewer.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ReferenceViewer.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SizeMap.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SizeMap.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SizeMap.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-TreeMap.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-TreeMap.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-TreeMap.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-XmlParser.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-XmlParser.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-XmlParser.lib" Type="ImportLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-FunctionalTesting.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-FunctionalTesting.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-FunctionalTesting.lib" Type="ImportLibrary" />
@@ -470,123 +596,15 @@
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-BlueprintCompilerCppBackend.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-BlueprintCompilerCppBackend.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-BlueprintCompilerCppBackend.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-PlacementMode.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-PlacementMode.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-PlacementMode.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-CollectionManager.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-CollectionManager.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-CollectionManager.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-BspMode.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-BspMode.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-BspMode.lib" Type="ImportLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-LauncherServices.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-LauncherServices.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-LauncherServices.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SessionMessages.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SessionMessages.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SessionMessages.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-UnrealEdMessages.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-UnrealEdMessages.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-UnrealEdMessages.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ReferenceViewer.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ReferenceViewer.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ReferenceViewer.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SizeMap.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SizeMap.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SizeMap.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-TreeMap.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-TreeMap.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-TreeMap.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-XmlParser.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-XmlParser.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-XmlParser.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SceneOutliner.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SceneOutliner.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SceneOutliner.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ActorPickerMode.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ActorPickerMode.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ActorPickerMode.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-WebBrowser.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-WebBrowser.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-WebBrowser.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Serialization.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Serialization.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Serialization.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-CEF3Utils.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-CEF3Utils.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-CEF3Utils.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Persona.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Persona.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Persona.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-DeviceManager.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-DeviceManager.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-DeviceManager.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SettingsEditor.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SettingsEditor.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SettingsEditor.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SharedSettingsWidgets.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SharedSettingsWidgets.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SharedSettingsWidgets.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ExternalImagePicker.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ExternalImagePicker.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ExternalImagePicker.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SessionFrontend.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SessionFrontend.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SessionFrontend.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SessionServices.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SessionServices.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SessionServices.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-EngineMessages.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-EngineMessages.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-EngineMessages.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AutomationWindow.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AutomationWindow.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-AutomationWindow.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AutomationController.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AutomationController.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-AutomationController.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AutomationMessages.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AutomationMessages.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-AutomationMessages.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ScreenShotComparison.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ScreenShotComparison.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ScreenShotComparison.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ScreenShotComparisonTools.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ScreenShotComparisonTools.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ScreenShotComparisonTools.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Profiler.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Profiler.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Profiler.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ProfilerClient.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ProfilerClient.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ProfilerClient.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ProfilerMessages.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ProfilerMessages.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ProfilerMessages.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Layers.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Layers.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Layers.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-WorldBrowser.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-WorldBrowser.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-WorldBrowser.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-LandscapeEditor.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-LandscapeEditor.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-LandscapeEditor.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MaterialUtilities.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MaterialUtilities.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-MaterialUtilities.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MeshUtilities.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MeshUtilities.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-MeshUtilities.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MeshSimplifier.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-MeshSimplifier.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-MeshSimplifier.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-NewLevelDialog.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-NewLevelDialog.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-NewLevelDialog.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-UserFeedback.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-UserFeedback.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-UserFeedback.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Localization.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Localization.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Localization.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-LocalizationService.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-LocalizationService.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-LocalizationService.lib" Type="ImportLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-UndoHistory.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-UndoHistory.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-UndoHistory.lib" Type="ImportLibrary" />
@@ -623,6 +641,9 @@
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-VectorVM.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-VectorVM.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-VectorVM.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-HeadMountedDisplay.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-HeadMountedDisplay.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-HeadMountedDisplay.lib" Type="ImportLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-CurveTableEditor.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-CurveTableEditor.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-CurveTableEditor.lib" Type="ImportLibrary" />
@@ -647,9 +668,6 @@
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SoundClassEditor.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-SoundClassEditor.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-SoundClassEditor.lib" Type="ImportLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ConfigEditor.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ConfigEditor.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ConfigEditor.lib" Type="ImportLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AnimGraphRuntime.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-AnimGraphRuntime.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-AnimGraphRuntime.lib" Type="ImportLibrary" />
@@ -713,6 +731,9 @@
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Media.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Media.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Media.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ConfigEditor.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-ConfigEditor.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ConfigEditor.lib" Type="ImportLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Matinee.dll" Type="DynamicLibrary" />
     <BuildProduct Path="$(EngineDir)\Binaries\Win64\UE4Editor-Matinee.pdb" Type="SymbolFile" />
     <BuildProduct Path="$(EngineDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Matinee.lib" Type="ImportLibrary" />
@@ -888,28 +909,25 @@
   <RuntimeDependencies>
     <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/Leap/Win64/Leap.dll" />
     <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/OpenVR/OpenVRv000/Win64/openvr_api.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/ICU/icu4c-53_1/Win64/VS2013/icudt53.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/ICU/icu4c-53_1/Win64/VS2013/icuuc53.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/ICU/icu4c-53_1/Win64/VS2013/icuin53.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/ICU/icu4c-53_1/Win64/VS2013/icule53.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/ICU/icu4c-53_1/Win64/VS2013/iculx53.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/ICU/icu4c-53_1/Win64/VS2013/icuio53.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/PhysX/PhysX-3.3/Win64/VS2013/PhysX3PROFILE_x64.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/PhysX/PhysX-3.3/Win64/VS2013/PhysX3GpuPROFILE_x64.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/PhysX/PhysX-3.3/Win64/VS2013/PhysX3CommonPROFILE_x64.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/PhysX/PhysX-3.3/Win64/VS2013/PhysX3CookingPROFILE_x64.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/PhysX/PhysX-3.3/Win64/VS2013/nvToolsExt64_1.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/PhysX/PhysX-3.3/Win64/VS2013/PhysXDevice64.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/PhysX/APEX-1.3/Win64/VS2013/APEX_ClothingPROFILE_x64.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/PhysX/APEX-1.3/Win64/VS2013/APEX_DestructiblePROFILE_x64.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/PhysX/APEX-1.3/Win64/VS2013/APEX_LegacyPROFILE_x64.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/PhysX/APEX-1.3/Win64/VS2013/APEX_LoaderPROFILE_x64.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/PhysX/APEX-1.3/Win64/VS2013/APEX_ParticlesPROFILE_x64.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/PhysX/APEX-1.3/Win64/VS2013/ApexFrameworkPROFILE_x64.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/Ogg/Win64/VS2013/libogg_64.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/Vorbis/Win64/VS2013/libvorbis_64.dll" />
-    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/Vorbis/Win64/VS2013/libvorbisfile_64.dll" />
+    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/ICU/icu4c-53_1/Win64/VS2015/icudt53.dll" />
+    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/ICU/icu4c-53_1/Win64/VS2015/icuuc53.dll" />
+    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/ICU/icu4c-53_1/Win64/VS2015/icuin53.dll" />
+    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/ICU/icu4c-53_1/Win64/VS2015/icule53.dll" />
+    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/ICU/icu4c-53_1/Win64/VS2015/iculx53.dll" />
+    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/ICU/icu4c-53_1/Win64/VS2015/icuio53.dll" />
+    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/PhysX/PhysX-3.3/Win64/VS2015/PhysX3PROFILE_x64.dll" />
+    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/PhysX/PhysX-3.3/Win64/VS2015/PhysX3CommonPROFILE_x64.dll" />
+    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/PhysX/PhysX-3.3/Win64/VS2015/PhysX3CookingPROFILE_x64.dll" />
+    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/PhysX/PhysX-3.3/Win64/VS2015/nvToolsExt64_1.dll" />
+    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/PhysX/APEX-1.3/Win64/VS2015/APEX_ClothingPROFILE_x64.dll" />
+    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/PhysX/APEX-1.3/Win64/VS2015/APEX_DestructiblePROFILE_x64.dll" />
+    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/PhysX/APEX-1.3/Win64/VS2015/APEX_LegacyPROFILE_x64.dll" />
+    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/PhysX/APEX-1.3/Win64/VS2015/ApexFrameworkPROFILE_x64.dll" />
+    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/Ogg/Win64/VS2015/libogg_64.dll" />
+    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/Vorbis/Win64/VS2015/libvorbis_64.dll" />
+    <RuntimeDependency Path="$(EngineDir)/Binaries/ThirdParty/Vorbis/Win64/VS2015/libvorbisfile_64.dll" />
     <RuntimeDependency Path="$(EngineDir)/Binaries/Win64/UnrealCEFSubProcess.exe" />
   </RuntimeDependencies>
+  <AdditionalProperties />
   <bRequireDependenciesToExist>true</bRequireDependenciesToExist>
 </BuildReceipt>

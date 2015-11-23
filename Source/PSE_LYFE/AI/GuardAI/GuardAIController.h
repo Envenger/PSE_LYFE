@@ -45,5 +45,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = BBKeyNames)
 	FName BBPatrolPointIndexName;
 
+	UFUNCTION()
 	void SenseStuff(TArray<AActor*> testActors);
 };

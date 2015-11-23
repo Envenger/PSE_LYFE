@@ -1,0 +1,1 @@
+"D:\Unreal Engine Launcher\Unreal Engine\Engine\Binaries\Win64\UE4Editor.exe" "%CD%\PSE_LYFE.uproject"  -game  -ResX=1280 -ResY=960 -WinX=0 -WinY=30 -Fullscreen=false -NoVSync -nosound -log

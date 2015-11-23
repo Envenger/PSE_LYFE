@@ -1,0 +1,1 @@
+"D:\Unreal Engine Launcher\Unreal Engine\Engine\Binaries\Win64\UE4Editor.exe" "%CD%\PSE_LYFE.uproject" Main -server -log -nosteam

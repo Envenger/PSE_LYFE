@@ -33,9 +33,8 @@ void APSE_LYFE_Character3_Survival::BeginPlay()
 			WorldCondtionActor = PSEGameMode->WorldCondtionActor;
 			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Green, "WOrld condition works");
 
-			CalculateHunger();
-			FTimerHandle HungerTimerHandle;
-			GetWorldTimerManager().SetTimer(HungerTimerHandle, this, &APSE_LYFE_Character3_Survival::CalculateHunger, WorldCondtionActor->TickDuration, true);
+			//FTimerHandle HungerTimerHandle;
+			//GetWorldTimerManager().SetTimer(HungerTimerHandle, this, &APSE_LYFE_Character3_Survival::CalculateHunger, WorldCondtionActor->TickDuration, true);
 		}
 
 	}
